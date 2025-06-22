@@ -1,4 +1,4 @@
-name: Weekly WHIP Chart
+name: Weekly Stats Charts
 
 on:
   schedule:
@@ -23,7 +23,7 @@ jobs:
         pip install pybaseball matplotlib seaborn
 
     - name: Run chart script
-      run: python whip_chart.py
+      run: python stats_chart.py
 
     - name: Commit chart
       run: |
