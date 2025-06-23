@@ -19,7 +19,7 @@ sns.set(style="whitegrid")
 def make_chart(df, x_col, title, filename, ascending=True, palette='deep', xlabel=None):
     top = df.sort_values(x_col, ascending=ascending).head(10)
     plt.figure(figsize=(12, 6))
-    sns.barplot(data=top, x=x_col, y='Name', palette=palette)
+    sns.barplot(data=top, x=x_col, y='Name', hue='Name', palette=palette, legend=False)
     plt.title(title)
     plt.xlabel(xlabel or x_col)
     plt.ylabel("Pitcher")
@@ -58,4 +58,4 @@ save_table(qualified, 'HR/9', 'hr9_table.csv', ascending=True)
 
 # 7. FIP
 make_chart(qualified, 'FIP', 'Top 10 FIP Leaders – MLB 2025', 'fip_chart.png', ascending=True, palette='coolwarm')
-save_ta_
+save_table(qualified, 'FIP', 'fip_table.csv', ascending=True)
