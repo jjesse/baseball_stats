@@ -10,31 +10,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout repo
-      uses: actions/checkout@v3
+      - name: 📥 Checkout repo
+        uses: actions/checkout@v3
 
-    - name: 🐍 Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: 📦 Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pybaseball pandas matplotlib seaborn
+      - name: 📦 Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pybaseball pandas matplotlib seaborn
 
-    - name: 📊 Run stats script
-      run: python stats_chart.py
+      - name: 📊 Run stats script
+        run: python stats_chart.py
 
-  - name: 🔐 Set up Git and Push changes
-    env:
-      PAT: ${{ secrets.PAT }}
-    run: |
-      git config user.name "github-actions[bot]"
-      git config user.email "github-actions[bot]@users.noreply.github.com"
-      git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
-      git add docs/
-      git diff --cached --quiet && echo "No changes to commit" || (
-        git commit -m "Update charts and tables [skip ci]"
-        git push --force
-      )
+      - name: 🔐 Set up Git and Push changes
+        env:
+          PAT: ${{ secrets.PAT }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
+          git add docs/
+          git diff --cached --quiet && echo "No changes to commit" || (
+            git commit -m "Update charts and tables [skip ci]"
+            git push --force
+          )
