@@ -2,62 +2,56 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pybaseball import pitching_stats
+from datetime import datetime
+import os
 
-# Load 2025 MLB pitching stats
-stats_2025 = pitching_stats(2025)
+# Ensure output directory exists
+os.makedirs("docs", exist_ok=True)
 
-# Filter: Only pitchers with >= 50 innings pitched
-qualified = stats_2025[stats_2025['IP'] >= 50].copy()
+# Fetch current season data
+df = pitching_stats(2025)
 
-# Add calculated WHIP (if not already present)
-qualified['WHIP'] = (qualified['BB'] + qualified['H']) / qualified['IP']
+# Select relevant stats
+df = df[['Name', 'Team', 'W', 'L', 'ERA', 'SO', 'BB', 'WHIP', 'K/BB', 'HR/9', 'FIP']]
 
-# Use seaborn style
-sns.set(style="whitegrid")
+# Save CSV backup (optional)
+df.to_csv("docs/season_stats.csv", index=False)
 
-# Create bar chart
-def make_chart(df, x_col, title, filename, ascending=True, palette='deep', xlabel=None):
-    top = df.sort_values(x_col, ascending=ascending).head(10)
-    plt.figure(figsize=(12, 6))
-    sns.barplot(data=top, x=x_col, y='Name', hue='Name', palette=palette, legend=False)
+# Define chart creation
+
+def create_chart_and_table(df, stat, title, color):
+    top = df.sort_values(stat, ascending=(stat in ['BB', 'ERA', 'WHIP', 'HR/9'])).head(10)
+
+    # Chart
+    plt.figure(figsize=(10, 6))
+    sns.barplot(data=top, x=stat, y='Name', palette=color)
     plt.title(title)
-    plt.xlabel(xlabel or x_col)
-    plt.ylabel("Pitcher")
     plt.tight_layout()
-    plt.savefig(f"docs/{filename}")
+    chart_path = f"docs/{stat.lower().replace('/', '_')}_chart.png"
+    plt.savefig(chart_path)
     plt.close()
 
-# Save top 10 table to CSV
-def save_table(df, x_col, filename, ascending=True):
-    top = df.sort_values(x_col, ascending=ascending).head(10)
-    top[['Name', x_col]].to_csv(f"docs/{filename}", index=False)
+    # Table HTML
+    table_html = top.to_html(index=False, classes='stat-table')
+    table_path = f"docs/{stat.lower().replace('/', '_')}_table.html"
+    with open(table_path, "w") as f:
+        f.write(table_html)
 
-# === Generate all charts and tables ===
 
-# 1. WHIP
-make_chart(qualified, 'WHIP', 'Top 10 WHIP Leaders – MLB 2025', 'whip_chart.png', ascending=True, palette='viridis')
-save_table(qualified, 'WHIP', 'whip_table.csv', ascending=True)
+# List of stats to chart
+stats_to_plot = [
+    ("WHIP", "Top 10 Pitchers by WHIP", "Blues"),
+    ("ERA", "Top 10 Pitchers by ERA", "Greens"),
+    ("SO", "Top 10 Pitchers by Strikeouts", "Purples"),
+    ("BB", "Top 10 Pitchers by Walks", "Oranges"),
+    ("K/BB", "Top 10 Pitchers by K/BB Ratio", "Reds"),
+    ("HR/9", "Top 10 Pitchers by HR/9", "Greys"),
+    ("FIP", "Top 10 Pitchers by FIP", "BuGn"),
+]
 
-# 2. ERA
-make_chart(qualified, 'ERA', 'Top 10 ERA Leaders – MLB 2025', 'era_chart.png', ascending=True, palette='rocket')
-save_table(qualified, 'ERA', 'era_table.csv', ascending=True)
+for stat, title, color in stats_to_plot:
+    create_chart_and_table(df, stat, title, color)
 
-# 3. Strikeouts (SO)
-make_chart(qualified, 'SO', 'Top 10 Strikeout Leaders – MLB 2025', 'strikeout_chart.png', ascending=False, palette='mako', xlabel='Strikeouts')
-save_table(qualified, 'SO', 'strikeout_table.csv', ascending=False)
-
-# 4. Walks (BB)
-make_chart(qualified, 'BB', 'Top 10 Most Walks – MLB 2025', 'bb_chart.png', ascending=False, palette='flare', xlabel='Walks')
-save_table(qualified, 'BB', 'bb_table.csv', ascending=False)
-
-# 5. K/BB Ratio
-make_chart(qualified, 'K/BB', 'Top 10 K/BB Ratio – MLB 2025', 'kbb_chart.png', ascending=False, palette='cubehelix')
-save_table(qualified, 'K/BB', 'kbb_table.csv', ascending=False)
-
-# 6. HR/9
-make_chart(qualified, 'HR/9', 'Top 10 Lowest HR/9 – MLB 2025', 'hr9_chart.png', ascending=True, palette='crest', xlabel='HR per 9 innings')
-save_table(qualified, 'HR/9', 'hr9_table.csv', ascending=True)
-
-# 7. FIP
-make_chart(qualified, 'FIP', 'Top 10 FIP Leaders – MLB 2025', 'fip_chart.png', ascending=True, palette='coolwarm')
-save_table(qualified, 'FIP', 'fip_table.csv', ascending=True)
+# Write last updated timestamp
+with open("docs/last_updated.txt", "w") as f:
+    f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
