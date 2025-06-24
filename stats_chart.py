@@ -6,16 +6,16 @@ from pybaseball import pitching_stats
 # Load 2025 MLB pitching stats
 stats_2025 = pitching_stats(2025)
 
-# Filter: Only pitchers with >= 50 IP
+# Filter: Only pitchers with >= 50 innings pitched
 qualified = stats_2025[stats_2025['IP'] >= 50].copy()
 
-# Add calculated WHIP column (if not already present)
+# Add calculated WHIP (if not already present)
 qualified['WHIP'] = (qualified['BB'] + qualified['H']) / qualified['IP']
 
-# Apply consistent plot styling
+# Use seaborn style
 sns.set(style="whitegrid")
 
-# Generic chart generator
+# Create bar chart
 def make_chart(df, x_col, title, filename, ascending=True, palette='deep', xlabel=None):
     top = df.sort_values(x_col, ascending=ascending).head(10)
     plt.figure(figsize=(12, 6))
@@ -27,10 +27,12 @@ def make_chart(df, x_col, title, filename, ascending=True, palette='deep', xlabe
     plt.savefig(f"docs/{filename}")
     plt.close()
 
-# CSV table export
+# Save top 10 table to CSV
 def save_table(df, x_col, filename, ascending=True):
     top = df.sort_values(x_col, ascending=ascending).head(10)
     top[['Name', x_col]].to_csv(f"docs/{filename}", index=False)
+
+# === Generate all charts and tables ===
 
 # 1. WHIP
 make_chart(qualified, 'WHIP', 'Top 10 WHIP Leaders – MLB 2025', 'whip_chart.png', ascending=True, palette='viridis')
@@ -48,7 +50,7 @@ save_table(qualified, 'SO', 'strikeout_table.csv', ascending=False)
 make_chart(qualified, 'BB', 'Top 10 Most Walks – MLB 2025', 'bb_chart.png', ascending=False, palette='flare', xlabel='Walks')
 save_table(qualified, 'BB', 'bb_table.csv', ascending=False)
 
-# 5. K/BB ratio
+# 5. K/BB Ratio
 make_chart(qualified, 'K/BB', 'Top 10 K/BB Ratio – MLB 2025', 'kbb_chart.png', ascending=False, palette='cubehelix')
 save_table(qualified, 'K/BB', 'kbb_table.csv', ascending=False)
 
