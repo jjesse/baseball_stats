@@ -1,130 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>MLB Pitching Stats Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2025 MLB Pitching Stats Dashboard</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f9f9f9;
-    }
-    h1, h2, h3 {
-      color: #333;
-    }
-    .tab-buttons button {
+    body { font-family: Arial, sans-serif; background: #f8f9fa; padding: 20px; }
+    h1 { text-align: center; }
+    .tabs { display: flex; justify-content: center; margin-bottom: 20px; }
+    .tab-button {
       padding: 10px 20px;
-      margin: 0 5px 20px 0;
+      margin: 0 5px;
       border: none;
-      background-color: #007acc;
+      background: #007bff;
       color: white;
       cursor: pointer;
-      border-radius: 5px;
     }
-    .tab-buttons button:hover {
-      background-color: #005ea2;
-    }
-    .tab-content {
-      display: none;
-    }
-    .visible {
-      display: block;
-    }
-    .stat-section {
-      margin-bottom: 40px;
-    }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #eee;
-    }
-    .last-updated {
-      font-size: 0.9em;
-      color: #666;
-    }
+    .tab-button.active { background: #0056b3; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    img { max-width: 100%; height: auto; }
+    .stat-table { margin: 20px auto; border-collapse: collapse; width: 100%; }
+    .stat-table th, .stat-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+    .stat-table th { background-color: #f2f2f2; }
+    footer { text-align: center; margin-top: 40px; font-size: 0.9em; color: #555; }
   </style>
+  <script>
+    function switchTab(tab) {
+      document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(div => div.classList.remove('active'));
+      document.getElementById(tab + '-tab').classList.add('active');
+      document.getElementById(tab + '-content').classList.add('active');
+    }
+    window.onload = () => switchTab('basic');
+  </script>
 </head>
 <body>
-  <h1>MLB Pitching Stats – 2025</h1>
-  <p class="last-updated">Last updated: <span id="last-updated-date">Loading...</span></p>
-
-  <div class="tab-buttons">
-    <button onclick="showTab('basic')">Basic</button>
-    <button onclick="showTab('advanced')">Advanced</button>
-    <button onclick="showTab('trends')">Trends</button>
+  <h1>2025 MLB Pitching Stats Dashboard</h1>
+  <div class="tabs">
+    <button class="tab-button" id="basic-tab" onclick="switchTab('basic')">Basic Stats</button>
+    <button class="tab-button" id="advanced-tab" onclick="switchTab('advanced')">Advanced Stats</button>
   </div>
 
-  <div id="basic" class="tab-content visible">
-    <div class="stat-section">
-      <h2>WHIP Leaders</h2>
-      <img src="basic_whip_chart.png" alt="WHIP Chart" width="100%">
-    </div>
-    <div class="stat-section">
-      <h2>ERA Leaders</h2>
-      <img src="basic_era_chart.png" alt="ERA Chart" width="100%">
-    </div>
-    <div class="stat-section">
-      <h2>Strikeout Leaders (SO)</h2>
-      <img src="basic_so_chart.png" alt="Strikeouts Chart" width="100%">
-    </div>
-    <div class="stat-section">
-      <h2>Walk Leaders (BB)</h2>
-      <img src="basic_bb_chart.png" alt="Walks Chart" width="100%">
-    </div>
+  <div class="tab-content" id="basic-content">
+    <h2>WHIP</h2>
+    <img src="whip_chart.png" alt="WHIP Chart" />
+    <iframe src="whip_table.html" width="100%" height="300"></iframe>
+
+    <h2>ERA</h2>
+    <img src="era_chart.png" alt="ERA Chart" />
+    <iframe src="era_table.html" width="100%" height="300"></iframe>
+
+    <h2>Strikeouts</h2>
+    <img src="so_chart.png" alt="SO Chart" />
+    <iframe src="so_table.html" width="100%" height="300"></iframe>
   </div>
 
-  <div id="advanced" class="tab-content">
-    <div class="stat-section">
-      <h2>K/BB Ratio Leaders</h2>
-      <img src="advanced_k_bb_chart.png" alt="K/BB Chart" width="100%">
-    </div>
-    <div class="stat-section">
-      <h2>Home Runs per 9 IP (HR/9)</h2>
-      <img src="advanced_hr_9_chart.png" alt="HR/9 Chart" width="100%">
-    </div>
-    <div class="stat-section">
-      <h2>FIP Leaders</h2>
-      <img src="advanced_fip_chart.png" alt="FIP Chart" width="100%">
-    </div>
+  <div class="tab-content" id="advanced-content">
+    <h2>Walks</h2>
+    <img src="bb_chart.png" alt="BB Chart" />
+    <iframe src="bb_table.html" width="100%" height="300"></iframe>
+
+    <h2>K/BB</h2>
+    <img src="k_bb_chart.png" alt="K/BB Chart" />
+    <iframe src="k_bb_table.html" width="100%" height="300"></iframe>
+
+    <h2>HR/9</h2>
+    <img src="hr_9_chart.png" alt="HR/9 Chart" />
+    <iframe src="hr_9_table.html" width="100%" height="300"></iframe>
+
+    <h2>FIP</h2>
+    <img src="fip_chart.png" alt="FIP Chart" />
+    <iframe src="fip_table.html" width="100%" height="300"></iframe>
   </div>
 
-  <div id="trends" class="tab-content">
-    <div class="stat-section">
-      <h2>WHIP Trend Over Time</h2>
-      <img src="whip_trend.png" alt="WHIP Trend Chart" width="100%">
-    </div>
-    <div class="stat-section">
-      <h2>ERA Trend Over Time</h2>
-      <img src="era_trend.png" alt="ERA Trend Chart" width="100%">
-    </div>
-    <div class="stat-section">
-      <h2>K/BB Trend Over Time</h2>
-      <img src="k_bb_trend.png" alt="K/BB Trend Chart" width="100%">
-    </div>
-  </div>
-
-  <script>
-    function showTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(div => {
-        div.classList.remove('visible');
-      });
-      document.getElementById(tabId).classList.add('visible');
-    }
-
-    // Load last updated date
-    fetch('last_updated.txt')
-      .then(response => response.text())
-      .then(date => {
-        document.getElementById('last-updated-date').textContent = date;
-      });
-  </script>
+  <footer>
+    <p id="timestamp"></p>
+    <script>
+      fetch('last_updated.txt')
+        .then(res => res.text())
+        .then(data => document.getElementById('timestamp').innerText = data);
+    </script>
+  </footer>
 </body>
 </html>
