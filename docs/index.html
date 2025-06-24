@@ -2,138 +2,129 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MLB Pitching Leaders – 2025</title>
+  <title>MLB Pitching Stats Dashboard</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f8f9fa;
-      text-align: center;
-      padding: 2rem;
+      margin: 40px;
+      background-color: #f9f9f9;
+    }
+    h1, h2, h3 {
       color: #333;
     }
-    h1 {
-      font-size: 2.4rem;
-      margin-bottom: 1rem;
+    .tab-buttons button {
+      padding: 10px 20px;
+      margin: 0 5px 20px 0;
+      border: none;
+      background-color: #007acc;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
     }
-    h2 {
-      margin-top: 2.5rem;
-      font-size: 1.5rem;
-      color: #2c3e50;
+    .tab-buttons button:hover {
+      background-color: #005ea2;
     }
-    p {
-      font-size: 1rem;
-      color: #555;
+    .tab-content {
+      display: none;
     }
-    img {
-      max-width: 90%;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      margin-top: 1rem;
+    .visible {
+      display: block;
+    }
+    .stat-section {
+      margin-bottom: 40px;
     }
     table {
-      margin: 1rem auto;
       border-collapse: collapse;
-      width: 80%;
-      max-width: 600px;
+      width: 100%;
+      margin-top: 10px;
     }
     th, td {
-      padding: 0.5rem 0.75rem;
       border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
     }
     th {
       background-color: #eee;
     }
-    button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      margin: 1rem;
-      border: none;
-      background-color: #007bff;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #0056b3;
+    .last-updated {
+      font-size: 0.9em;
+      color: #666;
     }
   </style>
 </head>
 <body>
-  <h1>MLB Pitching Leaders – 2025</h1>
-  <p>Updated weekly via GitHub Actions</p>
-  <button onclick="toggleStats()">Show Advanced Stats</button>
+  <h1>MLB Pitching Stats – 2025</h1>
+  <p class="last-updated">Last updated: <span id="last-updated-date">Loading...</span></p>
 
-  <!-- Basic Stats Section -->
-  <div id="basicStats">
-    <h2>WHIP</h2>
-    <img src="whip_chart.png" alt="WHIP Chart">
-    <div id="whip_table"></div>
-
-    <h2>ERA</h2>
-    <img src="era_chart.png" alt="ERA Chart">
-    <div id="era_table"></div>
-
-    <h2>Strikeouts</h2>
-    <img src="strikeout_chart.png" alt="Strikeout Chart">
-    <div id="strikeout_table"></div>
+  <div class="tab-buttons">
+    <button onclick="showTab('basic')">Basic</button>
+    <button onclick="showTab('advanced')">Advanced</button>
+    <button onclick="showTab('trends')">Trends</button>
   </div>
 
-  <!-- Advanced Stats Section -->
-  <div id="advancedStats" style="display: none;">
-    <h2>Walks (BB)</h2>
-    <img src="bb_chart.png" alt="BB Chart">
-    <div id="bb_table"></div>
+  <div id="basic" class="tab-content visible">
+    <div class="stat-section">
+      <h2>WHIP Leaders</h2>
+      <img src="basic_whip_chart.png" alt="WHIP Chart" width="100%">
+    </div>
+    <div class="stat-section">
+      <h2>ERA Leaders</h2>
+      <img src="basic_era_chart.png" alt="ERA Chart" width="100%">
+    </div>
+    <div class="stat-section">
+      <h2>Strikeout Leaders (SO)</h2>
+      <img src="basic_so_chart.png" alt="Strikeouts Chart" width="100%">
+    </div>
+    <div class="stat-section">
+      <h2>Walk Leaders (BB)</h2>
+      <img src="basic_bb_chart.png" alt="Walks Chart" width="100%">
+    </div>
+  </div>
 
-    <h2>K/BB Ratio</h2>
-    <img src="kbb_chart.png" alt="K/BB Chart">
-    <div id="kbb_table"></div>
+  <div id="advanced" class="tab-content">
+    <div class="stat-section">
+      <h2>K/BB Ratio Leaders</h2>
+      <img src="advanced_k_bb_chart.png" alt="K/BB Chart" width="100%">
+    </div>
+    <div class="stat-section">
+      <h2>Home Runs per 9 IP (HR/9)</h2>
+      <img src="advanced_hr_9_chart.png" alt="HR/9 Chart" width="100%">
+    </div>
+    <div class="stat-section">
+      <h2>FIP Leaders</h2>
+      <img src="advanced_fip_chart.png" alt="FIP Chart" width="100%">
+    </div>
+  </div>
 
-    <h2>HR/9</h2>
-    <img src="hr9_chart.png" alt="HR/9 Chart">
-    <div id="hr9_table"></div>
-
-    <h2>FIP</h2>
-    <img src="fip_chart.png" alt="FIP Chart">
-    <div id="fip_table"></div>
+  <div id="trends" class="tab-content">
+    <div class="stat-section">
+      <h2>WHIP Trend Over Time</h2>
+      <img src="whip_trend.png" alt="WHIP Trend Chart" width="100%">
+    </div>
+    <div class="stat-section">
+      <h2>ERA Trend Over Time</h2>
+      <img src="era_trend.png" alt="ERA Trend Chart" width="100%">
+    </div>
+    <div class="stat-section">
+      <h2>K/BB Trend Over Time</h2>
+      <img src="k_bb_trend.png" alt="K/BB Trend Chart" width="100%">
+    </div>
   </div>
 
   <script>
-    let showingAdvanced = false;
-
-    function toggleStats() {
-      showingAdvanced = !showingAdvanced;
-      document.getElementById("basicStats").style.display = showingAdvanced ? "none" : "block";
-      document.getElementById("advancedStats").style.display = showingAdvanced ? "block" : "none";
-      document.querySelector("button").innerText = showingAdvanced ? "Show Basic Stats" : "Show Advanced Stats";
+    function showTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(div => {
+        div.classList.remove('visible');
+      });
+      document.getElementById(tabId).classList.add('visible');
     }
 
-    async function loadTable(id, csvFile) {
-      try {
-        const res = await fetch(csvFile);
-        const text = await res.text();
-        const rows = text.trim().split('\n').map(r => r.split(','));
-        const html = `
-          <table>
-            <thead><tr><th>${rows[0][0]}</th><th>${rows[0][1]}</th></tr></thead>
-            <tbody>
-              ${rows.slice(1).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}
-            </tbody>
-          </table>`;
-        document.getElementById(id).innerHTML = html;
-      } catch (err) {
-        document.getElementById(id).innerHTML = `<p style="color:red;">Failed to load table: ${csvFile}</p>`;
-      }
-    }
-
-    // Load all tables on page load
-    loadTable("whip_table", "whip_table.csv");
-    loadTable("era_table", "era_table.csv");
-    loadTable("strikeout_table", "strikeout_table.csv");
-    loadTable("bb_table", "bb_table.csv");
-    loadTable("kbb_table", "kbb_table.csv");
-    loadTable("hr9_table", "hr9_table.csv");
-    loadTable("fip_table", "fip_table.csv");
+    // Load last updated date
+    fetch('last_updated.txt')
+      .then(response => response.text())
+      .then(date => {
+        document.getElementById('last-updated-date').textContent = date;
+      });
   </script>
 </body>
 </html>
