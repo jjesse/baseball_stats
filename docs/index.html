@@ -27,19 +27,6 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       margin-top: 1rem;
     }
-    table {
-      margin: 1rem auto;
-      border-collapse: collapse;
-      width: 80%;
-      max-width: 600px;
-    }
-    th, td {
-      padding: 0.5rem 0.75rem;
-      border: 1px solid #ccc;
-    }
-    th {
-      background-color: #eee;
-    }
   </style>
 </head>
 <body>
@@ -48,54 +35,23 @@
 
   <h2>Top WHIP Leaders</h2>
   <img src="whip_chart.png" alt="WHIP Chart">
-  <div id="whip_table"></div>
 
   <h2>Top ERA Leaders</h2>
   <img src="era_chart.png" alt="ERA Chart">
-  <div id="era_table"></div>
 
   <h2>Top Strikeout Leaders</h2>
   <img src="strikeout_chart.png" alt="Strikeout Chart">
-  <div id="strikeout_table"></div>
 
   <h2>Top Walk Leaders</h2>
   <img src="bb_chart.png" alt="BB Chart">
-  <div id="bb_table"></div>
 
   <h2>Top K/BB Ratio</h2>
   <img src="kbb_chart.png" alt="K/BB Chart">
-  <div id="kbb_table"></div>
 
   <h2>Top HR/9 (Lowest)</h2>
   <img src="hr9_chart.png" alt="HR/9 Chart">
-  <div id="hr9_table"></div>
 
   <h2>Top FIP Leaders</h2>
   <img src="fip_chart.png" alt="FIP Chart">
-  <div id="fip_table"></div>
-
-  <script>
-    async function loadTable(id, csvFile) {
-      const res = await fetch(csvFile);
-      const text = await res.text();
-      const rows = text.trim().split('\n').map(r => r.split(','));
-      const html = `
-        <table>
-          <thead><tr><th>${rows[0][0]}</th><th>${rows[0][1]}</th></tr></thead>
-          <tbody>
-            ${rows.slice(1).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}
-          </tbody>
-        </table>`;
-      document.getElementById(id).innerHTML = html;
-    }
-
-    loadTable("whip_table", "whip_table.csv");
-    loadTable("era_table", "era_table.csv");
-    loadTable("strikeout_table", "strikeout_table.csv");
-    loadTable("bb_table", "bb_table.csv");
-    loadTable("kbb_table", "kbb_table.csv");
-    loadTable("hr9_table", "hr9_table.csv");
-    loadTable("fip_table", "fip_table.csv");
-  </script>
 </body>
 </html>
