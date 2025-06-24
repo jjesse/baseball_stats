@@ -1,36 +1,38 @@
-name: Weekly Stats Charts
+name: Weekly Pitching Stats Dashboard
 
 on:
   schedule:
     - cron: '0 12 * * 1'  # Every Monday at 12:00 UTC
-  workflow_dispatch:
+  workflow_dispatch:     # Allows manual run
 
 jobs:
-  update-chart:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v3
 
     - name: Set up Python
-      uses: actions/setup-python@v5
+      uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
     - name: Install dependencies
       run: |
-        pip install pybaseball matplotlib seaborn
+        python -m pip install --upgrade pip
+        pip install pybaseball pandas matplotlib seaborn
 
-    - name: Run chart script
+    - name: Run stats script
       run: python stats_chart.py
 
-    - name: Commit chart
+    - name: Commit and push chart updates
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git add docs/*.png
-        git commit -m "Update WHIP chart [skip ci]" || echo "No changes to commit"
+        git pull --rebase
+        git add docs/
+        git commit -m "Update charts and tables [skip ci]" || echo "No changes to commit"
         git push
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
