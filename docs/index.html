@@ -46,6 +46,12 @@
       text-align: center;
       margin-bottom: 2rem;
     }
+    .chart-container img {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+    }
     iframe {
       width: 100%;
       height: 400px;
@@ -133,15 +139,15 @@
   <div id="trends" class="content">
     <div class="chart-container">
       <h2>WHIP Trend</h2>
-      <img src="trend_whip.png" alt="WHIP Trend Chart">
+      <img src="trend_whip.png" alt="WHIP Trend Chart" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<p><em>Trend charts will appear after multiple weekly updates.</em></p>');">
     </div>
     <div class="chart-container">
       <h2>ERA Trend</h2>
-      <img src="trend_era.png" alt="ERA Trend Chart">
+      <img src="trend_era.png" alt="ERA Trend Chart" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<p><em>Trend charts will appear after multiple weekly updates.</em></p>');">
     </div>
     <div class="chart-container">
       <h2>K Trend</h2>
-      <img src="trend_k.png" alt="K Trend Chart">
+      <img src="trend_k.png" alt="K Trend Chart" onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<p><em>Trend charts will appear after multiple weekly updates.</em></p>');">
     </div>
   </div>
 
