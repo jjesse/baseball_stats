@@ -1,43 +1,39 @@
-name: Weekly Pitching Stats Dashboard
+name: Update Pitching Stats
 
 on:
   schedule:
-    - cron: '0 12 * * 1'  # Every Monday at 12:00 UTC
-  workflow_dispatch:
+    - cron: '0 3 * * 1'  # Runs every Monday at 3 AM UTC
+  workflow_dispatch:      # Allows manual run
 
 jobs:
-  update-stats:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-    - name: 📥 Checkout repo
+    - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: 🐍 Set up Python
+    - name: Set up Python
       uses: actions/setup-python@v4
       with:
         python-version: '3.11'
 
-    - name: 📦 Install dependencies
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pybaseball pandas matplotlib seaborn
+        pip install pandas matplotlib seaborn
 
-    - name: 📊 Run stats chart script
-      run: python stats_chart.py
+    - name: Generate pitching stats charts
+      run: python pitching_chart.py
 
-    - name: 📈 Build trend charts
-      run: python trend_chart.py
+    - name: Generate pitching trends charts
+      run: python trend_pitching.py
 
-    - name: 🔐 Push changes to GitHub
-      env:
-        PAT: ${{ secrets.PAT }}
+    - name: Commit and push changes
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-        git remote set-url origin https://x-access-token:${PAT}@github.com/${{ github.repository }}
-        git add docs/ archive/
-        git diff --cached --quiet && echo "No changes to commit" || (
-          git commit -m "Update charts, tables, and trend plots [skip ci]"
-          git push --force
-        )
+        git add .
+        git commit -m "Update pitching stats and trends [skip ci]" || echo "No changes to commit"
+        git pull --rebase
+        git push

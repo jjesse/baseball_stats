@@ -1,0 +1,38 @@
+name: Weekly Pitching Stats
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 1'  # Every Monday at 12:00 UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas matplotlib
+
+      - name: Run Pitching Chart Script
+        run: python pitching_chart.py
+
+      - name: Set up Git config
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit and push changes
+        run: |
+          git add *.png *.html last_updated.txt || true
+          git commit -m "Update pitching charts [skip ci]" || echo "No changes to commit"
+          git push origin batting_stats
