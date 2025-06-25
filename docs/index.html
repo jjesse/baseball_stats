@@ -85,6 +85,10 @@
         .then(res => res.text())
         .then(text => {
           document.getElementById("last-updated").innerText = "Last updated: " + text;
+        })
+        .catch(err => {
+          console.error('Failed to load update time:', err);
+          document.getElementById("last-updated").innerText = "Update time unavailable";
         });
     };
   </script>
@@ -104,41 +108,41 @@
   <div id="basic" class="content">
     <div class="chart-container">
       <h2>WHIP</h2>
-      <img src="whip_chart.png" alt="WHIP Chart">
-      <iframe src="whip_table.html"></iframe>
+      <img src="whip_chart.png" alt="WHIP Chart" onerror="this.onerror=null; console.error('Failed to load WHIP chart'); this.src='placeholder.png';">
+      <iframe src="whip_table.html" onerror="console.error('Failed to load WHIP table'); this.style.display='none';"></iframe>
     </div>
     <div class="chart-container">
       <h2>ERA</h2>
-      <img src="era_chart.png" alt="ERA Chart">
-      <iframe src="era_table.html"></iframe>
+      <img src="era_chart.png" alt="ERA Chart" onerror="this.onerror=null; console.error('Failed to load ERA chart'); this.src='placeholder.png';">
+      <iframe src="era_table.html" onerror="console.error('Failed to load ERA table'); this.style.display='none';"></iframe>
     </div>
     <div class="chart-container">
       <h2>Strikeouts (K)</h2>
-      <img src="strikeout_chart.png" alt="Strikeout Chart">
-      <iframe src="strikeout_table.html"></iframe>
+      <img src="strikeout_chart.png" alt="Strikeout Chart" onerror="this.onerror=null; console.error('Failed to load strikeout chart'); this.src='placeholder.png';">
+      <iframe src="strikeout_table.csv" onerror="console.error('Failed to load strikeout table'); this.style.display='none';"></iframe>
     </div>
   </div>
 
   <div id="advanced" class="content">
     <div class="chart-container">
       <h2>Walks (BB)</h2>
-      <img src="bb_chart.png" alt="BB Chart">
-      <iframe src="bb_table.html"></iframe>
+      <img src="bb_chart.png" alt="BB Chart" onerror="this.onerror=null; console.error('Failed to load BB chart'); this.src='placeholder.png';">
+      <iframe src="bb_table.html" onerror="console.error('Failed to load BB table'); this.style.display='none';"></iframe>
     </div>
     <div class="chart-container">
       <h2>K/BB Ratio</h2>
-      <img src="kbb_chart.png" alt="KBB Chart">
-      <iframe src="kbb_table.html"></iframe>
+      <img src="kbb_chart.png" alt="KBB Chart" onerror="this.onerror=null; console.error('Failed to load K/BB chart'); this.src='placeholder.png';">
+      <iframe src="kbb_table.html" onerror="console.error('Failed to load K/BB table'); this.style.display='none';"></iframe>
     </div>
     <div class="chart-container">
       <h2>HR/9</h2>
-      <img src="hr9_chart.png" alt="HR/9 Chart">
-      <iframe src="hr9_table.html"></iframe>
+      <img src="hr9_chart.png" alt="HR/9 Chart" onerror="this.onerror=null; console.error('Failed to load HR/9 chart'); this.src='placeholder.png';">
+      <iframe src="hr9_table.html" onerror="console.error('Failed to load HR/9 table'); this.style.display='none';"></iframe>
     </div>
     <div class="chart-container">
       <h2>FIP</h2>
-      <img src="fip_chart.png" alt="FIP Chart">
-      <iframe src="fip_table.html"></iframe>
+      <img src="fip_chart.png" alt="FIP Chart" onerror="this.onerror=null; console.error('Failed to load FIP chart'); this.src='placeholder.png';">
+      <iframe src="fip_table.html" onerror="console.error('Failed to load FIP table'); this.style.display='none';"></iframe>
     </div>
   </div>
 
