@@ -45,10 +45,19 @@ jobs:
         if [[ -n $(git status --porcelain) ]]; then
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/ archive/
+          
+          # Handle potential conflicts
+          git fetch origin main
+          git reset --hard origin/main
+          
+          # Re-run the scripts after reset
+          python pitching_chart.py || exit 1
+          python trend_pitching.py || exit 1
+          
+          # Try commit and push again - using consistent pattern with batting workflow
+          git add docs/pitching_*.png docs/pitching_*.html docs/last_updated_pitching.txt archive/pitching_*.csv
           git commit -m "Update pitching stats and trends [skip ci]"
-          git pull --rebase
-          git push
+          git push origin main
         else
           echo "No changes to commit"
         fi
