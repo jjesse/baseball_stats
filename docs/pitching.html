@@ -1,20 +1,38 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pitching Stats</title>
   <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #333;
+      --header-bg: #222;
+      --nav-bg: #222;
+      --link-hover: rgba(255, 255, 255, 0.1);
+      --link-active: rgba(255, 255, 255, 0.2);
+    }
+
+    [data-theme='dark'] {
+      --bg: #121212;
+      --text: #eee;
+      --header-bg: #000;
+      --nav-bg: #000;
+      --link-hover: rgba(255, 255, 255, 0.15);
+      --link-active: rgba(255, 255, 255, 0.25);
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #f4f4f4;
-      color: #333;
+      background-color: var(--bg);
+      color: var(--text);
       transition: background-color 0.3s, color 0.3s;
     }
     header {
-      background-color: #222;
+      background-color: var(--header-bg);
       color: #fff;
       padding: 1rem;
       text-align: center;
@@ -92,6 +110,31 @@
       background: #444;
       color: #fff;
     }
+
+    .nav-bar {
+      background-color: var(--nav-bg);
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .nav-bar a:hover {
+      background-color: var(--link-hover);
+    }
+
+    .nav-bar a.active {
+      background-color: var(--link-active);
+    }
   </style>
   <script>
     function switchTab(tabName) {
@@ -104,8 +147,10 @@
     }
 
     function toggleDarkMode() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('theme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
     }
 
     window.onload = () => {
@@ -122,6 +167,11 @@
 </head>
 <body>
   <header>
+    <div class="nav-bar">
+      <a href="index.html">Home</a>
+      <a href="pitching.html" class="active">Pitching Stats</a>
+      <a href="batting.html">Batting Stats</a>
+    </div>
     <h1>Pitching Stats Dashboard</h1>
     <p id="last-updated">Loading update time...</p>
     <button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>

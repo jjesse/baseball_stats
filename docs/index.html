@@ -21,6 +21,30 @@
       --link-shadow: rgba(255, 255, 255, 0.1);
     }
 
+    .nav-bar {
+      background-color: var(--header-bg);
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .nav-bar a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-bar a.active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
     body {
       font-family: Arial, sans-serif;
       background-color: var(--bg);
@@ -86,6 +110,11 @@
 </head>
 <body>
   <header>
+    <div class="nav-bar">
+      <a href="index.html" class="active">Home</a>
+      <a href="pitching.html">Pitching Stats</a>
+      <a href="batting.html">Batting Stats</a>
+    </div>
     <h1>MLB Stats Dashboard</h1>
     <p>Pitching and Batting Leaderboards for the 2025 Season</p>
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
