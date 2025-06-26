@@ -1,0 +1,61 @@
+name: Update Batting Stats
+
+on:
+  schedule:
+    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC (adjust if needed)
+  workflow_dispatch:      # Allows manual trigger from GitHub UI
+
+jobs:
+  update-batting:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Add timeout
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for trends
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'  # Enable pip caching
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pybaseball matplotlib seaborn pandas
+      timeout-minutes: 5
+
+    - name: Run batting chart script
+      run: |
+        python batting_chart.py || exit 1
+      timeout-minutes: 5
+      continue-on-error: false
+
+    - name: Archive current batting stats
+      run: |
+        mkdir -p archive
+        cp docs/batting_stats.csv archive/batting_$(date +%F).csv
+      timeout-minutes: 2
+
+    - name: Run batting trend chart script
+      run: |
+        python trend_batting.py || exit 1
+      timeout-minutes: 5
+      continue-on-error: false
+
+    - name: Commit and push changes
+      run: |
+        if [[ -n $(git status --porcelain) ]]; then
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/ archive/
+          git commit -m "Update batting stats and trends [skip ci]"
+          git pull --rebase
+          git push
+        else
+          echo "No changes to commit"
+        fi
+      timeout-minutes: 2

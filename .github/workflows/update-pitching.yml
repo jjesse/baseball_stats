@@ -1,0 +1,61 @@
+name: Update Pitching Stats
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'  # Runs every Monday at 3 AM UTC
+  workflow_dispatch:      # Allows manual run
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15  # Prevent hung jobs
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Fetch all history for trends
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+        cache: 'pip'  # Enable pip caching
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pybaseball pandas matplotlib seaborn
+      timeout-minutes: 5
+
+    - name: Generate pitching stats charts
+      run: |
+        python pitching_chart.py || exit 1
+      timeout-minutes: 5
+      continue-on-error: false
+
+    - name: Generate pitching trends charts
+      run: |
+        python trend_pitching.py || exit 1
+      timeout-minutes: 5
+      continue-on-error: false
+
+    - name: Commit and push changes
+      run: |
+        if [[ -n $(git status --porcelain) ]]; then
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/ archive/
+          git commit -m "Update pitching stats and trends [skip ci]"
+          git pull --rebase
+          git push
+        else
+          echo "No changes to commit"
+        fi
+      timeout-minutes: 2
+
+    - name: Check for failures
+      if: failure()
+      run: |
+        echo "::error::Workflow failed! Check the logs for details."
+        exit 1
