@@ -53,5 +53,5 @@ for stat, title, color in stats_to_plot:
     create_chart_and_table(df, stat, title, color)
 
 # Write last updated timestamp
-with open("docs/last_updated.txt", "w") as f:
+with open("docs/last_updated_pitching.txt", "w") as f:
     f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

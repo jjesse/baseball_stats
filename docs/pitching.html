@@ -155,7 +155,7 @@
 
     window.onload = () => {
       switchTab("basic");
-      fetch("last_updated.txt")
+      fetch("last_updated_pitching.txt")
         .then(res => res.text())
         .then(text => {
           document.getElementById("last-updated").innerText = "Last updated: " + text;

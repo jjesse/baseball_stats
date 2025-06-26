@@ -137,7 +137,7 @@
         document.documentElement.setAttribute("data-theme", "dark");
       }
       switchTab("basic");
-      fetch("last_updated.txt")
+      fetch("last_updated_batting.txt")
         .then(res => res.text())
         .then(text => {
           document.getElementById("last-updated").innerText = "Last updated: " + text;
