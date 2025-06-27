@@ -8,19 +8,23 @@
     :root {
       --bg: #f9f9f9;
       --text: #333;
+      --card-bg: #fff;
       --header-bg: #222;
       --nav-bg: #222;
-      --link-hover: rgba(255, 255, 255, 0.1);
-      --link-active: rgba(255, 255, 255, 0.2);
+      --tab-bg: #ddd;
+      --tab-active: #fff;
+      --tab-border: #333;
     }
 
     [data-theme='dark'] {
       --bg: #121212;
       --text: #eee;
+      --card-bg: #1f1f1f;
       --header-bg: #000;
       --nav-bg: #000;
-      --link-hover: rgba(255, 255, 255, 0.15);
-      --link-active: rgba(255, 255, 255, 0.25);
+      --tab-bg: #333;
+      --tab-active: #222;
+      --tab-border: #fff;
     }
 
     body {
@@ -31,6 +35,7 @@
       color: var(--text);
       transition: background-color 0.3s, color 0.3s;
     }
+
     header {
       background-color: var(--header-bg);
       color: #fff;
@@ -52,7 +57,7 @@
     .tabs {
       display: flex;
       justify-content: center;
-      background-color: #ddd;
+      background-color: var(--tab-bg);
     }
     .tabs button {
       padding: 1rem;
@@ -62,8 +67,8 @@
       font-size: 1rem;
     }
     .tabs button.active {
-      background-color: #fff;
-      border-bottom: 3px solid #333;
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
       font-weight: bold;
     }
     .content {
@@ -87,28 +92,6 @@
       padding: 1rem;
       font-size: 0.9rem;
       color: #666;
-    }
-
-    body.dark-mode {
-      background-color: #1c1c1c;
-      color: #eee;
-    }
-    body.dark-mode header {
-      background-color: #000;
-    }
-    body.dark-mode .tabs {
-      background-color: #333;
-    }
-    body.dark-mode .tabs button {
-      color: #eee;
-    }
-    body.dark-mode .tabs button.active {
-      background-color: #222;
-      border-bottom: 3px solid #fff;
-    }
-    body.dark-mode .toggle-btn {
-      background: #444;
-      color: #fff;
     }
 
     .nav-bar {
@@ -154,14 +137,16 @@
     }
 
     window.onload = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
       switchTab("basic");
       fetch("last_updated_pitching.txt")
         .then(res => res.text())
         .then(text => {
           document.getElementById("last-updated").innerText = "Last updated: " + text;
         });
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') document.body.classList.add('dark-mode');
     };
   </script>
 </head>
@@ -229,6 +214,21 @@
       <h2>WHIP Trend</h2>
       <img src="trend_whip.png" alt="WHIP Trend Chart">
     </div>
+    <div class="chart-container">
+      <h2>ERA Trend</h2>
+      <img src="trend_era.png" alt="ERA Trend Chart">
+    </div>
+    <div class="chart-container">
+      <h2>K Trend</h2>
+      <img src="trend_k.png" alt="K Trend Chart">
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2025 MLB Stats Dashboard by jjesse
+  </div>
+</body>
+</html>
     <div class="chart-container">
       <h2>ERA Trend</h2>
       <img src="trend_era.png" alt="ERA Trend Chart">

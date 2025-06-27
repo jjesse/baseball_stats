@@ -8,19 +8,23 @@
     :root {
       --bg: #f9f9f9;
       --text: #333;
+      --card-bg: #fff;
       --header-bg: #222;
       --nav-bg: #222;
-      --link-hover: rgba(255, 255, 255, 0.1);
-      --link-active: rgba(255, 255, 255, 0.2);
+      --tab-bg: #ddd;
+      --tab-active: #fff;
+      --tab-border: #333;
     }
 
     [data-theme='dark'] {
       --bg: #121212;
       --text: #eee;
+      --card-bg: #1f1f1f;
       --header-bg: #000;
       --nav-bg: #000;
-      --link-hover: rgba(255, 255, 255, 0.15);
-      --link-active: rgba(255, 255, 255, 0.25);
+      --tab-bg: #333;
+      --tab-active: #222;
+      --tab-border: #fff;
     }
 
     body {
@@ -41,7 +45,7 @@
     .tabs {
       display: flex;
       justify-content: center;
-      background-color: #ddd;
+      background-color: var(--tab-bg);
     }
     .tabs button {
       padding: 1rem;
@@ -51,8 +55,8 @@
       font-size: 1rem;
     }
     .tabs button.active {
-      background-color: #fff;
-      border-bottom: 3px solid #333;
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
       font-weight: bold;
     }
     .content {
