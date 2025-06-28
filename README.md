@@ -32,6 +32,7 @@ GitHub Actions power the data collection and chart generation, with two schedule
 |-----------------------|---------------------------------------|-----------------|
 | `update-pitching.yml` | Updates pitching stats, charts, trends | Daily at 12:00 UTC |
 | `update-batting.yml`  | Updates batting stats, charts, trends  | Daily at 12:00 UTC |
+| `update-standings.yml` | Updates standings stats, charts, trends  | Daily at 13:00 UTC |
 
 You can also manually trigger them in the GitHub UI.
 
@@ -46,6 +47,32 @@ You can also manually trigger them in the GitHub UI.
 │ ├── *.png # Chart images
 │ ├──*.html # Data tables
 │ └── last_updated.txt
+│ └── last_updated_pitching.txt # Last update timestamp for pitching
+│ └── last_updated_batting.txt # Last update timestamp for batting
+│ └── standings.html # Standings page
+│ └── standings.png # Standings chart
+│ └── standings.csv # Standings data
+│ └── standings_trend.png # Standings trend chart
+│ └── standings_trend.csv # Standings trend data
+│ └── standings_trend.txt # Last update timestamp for standings
+│ └── standings_trend_pitching.png # Standings trend chart for pitching
+│ └── standings_trend_pitching.csv # Standings trend data for pitching
+│ └── standings_trend_pitching.txt # Last update timestamp for pitching standings trend
+│ └── standings_trend_batting.png # Standings trend chart for batting
+│ └── standings_trend_batting.csv # Standings trend data for batting
+│ └── standings_trend_batting.txt # Last update timestamp for batting standings trend
+│ └── standings_trend_batting_pitching.png # Standings trend chart for batting
+│ └── standings_trend_batting_pitching.csv # Standings trend data for batting
+│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting standings
+│ └── standings_trend_batting_pitching.png # Standings trend chart for batting and pitching
+│ └── standings_trend_batting_pitching.csv # Standings trend data for batting
+│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting and pitching
+│ └── standings_trend_batting_pitching.png # Standings trend chart for batting and pitching
+│ └── standings_trend_batting_pitching.csv # Standings trend data for batting and pitching
+│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting and pitching
+│ └── standings_trend_batting_pitching.png # Standings trend chart for batting and pitching
+│ └── standings_trend_batting_pitching.csv # Standings trend data for batting and pitching
+│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting and pitching
 │
 ├── archive/ # Daily CSV snapshots for trend analysis
 │
@@ -57,6 +84,11 @@ You can also manually trigger them in the GitHub UI.
 ├── .github/workflows/
 │ ├── update-pitching.yml
 │ └── update-batting.yml
+│ └── update-standings.yml
+├── .gitignore
+├── LICENSE
+├── README.md
+└── requirements.txt # Python dependencies
 
 ---
 

@@ -114,25 +114,31 @@
       <a href="index.html" class="active">Home</a>
       <a href="pitching.html">Pitching Stats</a>
       <a href="batting.html">Batting Stats</a>
+      <a href="standings.html">Standings</a>
     </div>
     <h1>MLB Stats Dashboard</h1>
-    <p>Pitching and Batting Leaderboards for the 2025 Season</p>
+    <p>Pitching, Batting, and Team Standings for the 2025 Season</p>
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
   <main>
-    <p>This dashboard tracks key MLB player statistics using data from <code>pybaseball</code>. 
-    Leaderboards include traditional and advanced metrics for both pitchers and batters. 
-    Stats are updated automatically once per day.</p>
+    <p>This dashboard tracks key MLB data using <code>pybaseball</code>. 
+    Leaderboards include traditional and advanced metrics for pitchers, batters, and live team standings. 
+    All stats are updated automatically every day.</p>
 
     <a class="link-card" href="pitching.html">
       <h2>View Pitching Stats ➤</h2>
-      <p>See WHIP, ERA, Strikeouts, and more, including trends over time.</p>
+      <p>See WHIP, ERA, Strikeouts, and more, including historical trends.</p>
     </a>
 
     <a class="link-card" href="batting.html">
       <h2>View Batting Stats ➤</h2>
-      <p>Explore AVG, OBP, HRs, wOBA, and other advanced offensive metrics.</p>
+      <p>Explore AVG, OBP, HRs, wOBA, and advanced offensive metrics.</p>
+    </a>
+
+    <a class="link-card" href="standings.html">
+      <h2>View Team Standings ➤</h2>
+      <p>Check the latest standings by league and division, including win trends.</p>
     </a>
   </main>
 
@@ -148,7 +154,6 @@
       localStorage.setItem("theme", next);
     }
 
-    // Load stored preference
     window.onload = () => {
       const stored = localStorage.getItem("theme");
       if (stored) {

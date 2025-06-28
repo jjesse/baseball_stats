@@ -145,7 +145,11 @@
       fetch("last_updated_pitching.txt")
         .then(res => res.text())
         .then(text => {
-          document.getElementById("last-updated").innerText = "Last updated: " + text;
+          document.getElementById("last-updated").innerText = text;
+        })
+        .catch(err => {
+          console.error('Error loading update time:', err);
+          document.getElementById("last-updated").innerText = "Update time unavailable";
         });
     };
   </script>
@@ -229,10 +233,6 @@
   </div>
 </body>
 </html>
-    <div class="chart-container">
-      <h2>ERA Trend</h2>
-      <img src="trend_era.png" alt="ERA Trend Chart">
-    </div>
     <div class="chart-container">
       <h2>K Trend</h2>
       <img src="trend_k.png" alt="K Trend Chart">

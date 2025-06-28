@@ -1,0 +1,35 @@
+name: Update Standings
+
+on:
+  schedule:
+    - cron: '0 13 * * *'  # Runs daily at 13:00 UTC
+  workflow_dispatch:      # Allow manual trigger from GitHub UI
+
+jobs:
+  update-standings:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pybaseball pandas matplotlib seaborn
+
+      - name: Run standings script
+        run: python standings_chart.py
+
+      - name: Commit and push changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/
+          git commit -m "Update standings [skip ci]" || echo "No changes to commit"
+          git push

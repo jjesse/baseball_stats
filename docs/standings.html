@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MLB Standings</title>
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #333;
+      --card-bg: #fff;
+      --header-bg: #222;
+      --nav-bg: #222;
+      --tab-bg: #ddd;
+      --tab-active: #fff;
+      --tab-border: #333;
+      --link-hover: rgba(255, 255, 255, 0.1);
+      --link-active: rgba(255, 255, 255, 0.2);
+    }
+
+    [data-theme='dark'] {
+      --bg: #121212;
+      --text: #eee;
+      --card-bg: #1f1f1f;
+      --header-bg: #000;
+      --nav-bg: #000;
+      --tab-bg: #333;
+      --tab-active: #222;
+      --tab-border: #fff;
+      --link-hover: rgba(255, 255, 255, 0.15);
+      --link-active: rgba(255, 255, 255, 0.25);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .toggle-btn {
+      position: absolute;
+      right: 1rem;
+      top: 1rem;
+      background: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 5px;
+    }
+
+    .nav-bar {
+      background-color: var(--nav-bg);
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .nav-bar a:hover {
+      background-color: var(--link-hover);
+    }
+
+    .nav-bar a.active {
+      background-color: var(--link-active);
+    }
+
+    .division-section {
+      margin: 2rem auto;
+      max-width: 800px;
+      padding: 1rem;
+      border: 1px solid #ccc;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      transition: background-color 0.3s;
+    }
+
+    .division-section h2 {
+      text-align: center;
+    }
+
+    iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+    }
+
+    .chart-container {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+  <script>
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+      
+      fetch("last_updated_standings.txt")
+        .then(res => res.text())
+        .then(text => {
+          document.getElementById("last-updated").innerText = text;
+        })
+        .catch(err => {
+          console.error('Error loading update time:', err);
+          document.getElementById("last-updated").innerText = "Update time unavailable";
+        });
+    };
+  </script>
+</head>
+<body>
+  <header>
+    <div class="nav-bar">
+      <a href="index.html">Home</a>
+      <a href="pitching.html">Pitching Stats</a>
+      <a href="batting.html">Batting Stats</a>
+      <a href="standings.html" class="active">Standings</a>
+    </div>
+    <h1>MLB Standings Dashboard</h1>
+    <p id="last-updated">Loading update time...</p>
+    <button class="toggle-btn" onclick="toggleTheme()">Toggle Dark Mode</button>
+  </header>
+
+  <!-- AL East -->
+  <div class="division-section">
+    <h2>AL East</h2>
+    <iframe src="standings_al_east.html"></iframe>
+    <div class="chart-container">
+      <img src="standings_al_east_wins_chart.png" alt="AL East Wins Chart">
+    </div>
+  </div>
+
+  <!-- AL Central -->
+  <div class="division-section">
+    <h2>AL Central</h2>
+    <iframe src="standings_al_central.html"></iframe>
+    <div class="chart-container">
+      <img src="standings_al_central_wins_chart.png" alt="AL Central Wins Chart">
+    </div>
+  </div>
+
+  <!-- AL West -->
+  <div class="division-section">
+    <h2>AL West</h2>
+    <iframe src="standings_al_west.html"></iframe>
+    <div class="chart-container">
+      <img src="standings_al_west_wins_chart.png" alt="AL West Wins Chart">
+    </div>
+  </div>
+
+  <!-- NL East -->
+  <div class="division-section">
+    <h2>NL East</h2>
+    <iframe src="standings_nl_east.html"></iframe>
+    <div class="chart-container">
+      <img src="standings_nl_east_wins_chart.png" alt="NL East Wins Chart">
+    </div>
+  </div>
+
+  <!-- NL Central -->
+  <div class="division-section">
+    <h2>NL Central</h2>
+    <iframe src="standings_nl_central.html"></iframe>
+    <div class="chart-container">
+      <img src="standings_nl_central_wins_chart.png" alt="NL Central Wins Chart">
+    </div>
+  </div>
+
+  <!-- NL West -->
+  <div class="division-section">
+    <h2>NL West</h2>
+    <iframe src="standings_nl_west.html"></iframe>
+    <div class="chart-container">
+      <img src="standings_nl_west_wins_chart.png" alt="NL West Wins Chart">
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2025 MLB Stats Dashboard by jjesse
+  </div>
+</body>
+</html>

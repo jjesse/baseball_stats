@@ -137,14 +137,19 @@
     }
 
     window.onload = () => {
-      if (localStorage.getItem('theme') === 'dark') {
-        document.documentElement.setAttribute("data-theme", "dark");
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
       }
       switchTab("basic");
       fetch("last_updated_batting.txt")
         .then(res => res.text())
         .then(text => {
-          document.getElementById("last-updated").innerText = "Last updated: " + text;
+          document.getElementById("last-updated").innerText = text;
+        })
+        .catch(err => {
+          console.error('Error loading update time:', err);
+          document.getElementById("last-updated").innerText = "Update time unavailable";
         });
     };
   </script>
