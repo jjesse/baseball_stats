@@ -1,49 +1,61 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-from pybaseball import standings
-from datetime import datetime
 import os
+from datetime import datetime
+from pybaseball import standings
 
-# Ensure output directory exists
+# Make sure output folder exists
 os.makedirs("docs", exist_ok=True)
 
-# Fetch current standings
-df = standings()
+# Get list of standings DataFrames
+division_standings = standings()
 
-# Save CSV backup
-df.to_csv("docs/standings.csv", index=False)
+division_names = [
+    "AL_East",
+    "AL_Central",
+    "AL_West",
+    "NL_East",
+    "NL_Central",
+    "NL_West"
+]
 
-# Get unique divisions
-divisions = df['Division'].unique()
+# Save each division CSV and HTML table
+all_dfs = []
 
-# Create tables and charts per division
-for division in divisions:
-    div_df = df[df['Division'] == division].copy()
-    div_df = div_df.sort_values('W', ascending=False)
+for df, name in zip(division_standings, division_names):
+    csv_path = f"docs/standings_{name}.csv"
+    html_path = f"docs/standings_{name}.html"
+    
+    df.to_csv(csv_path, index=False)
+    df.to_html(html_path, index=False, classes='standings-table')
+    
+    all_dfs.append(df.assign(Division=name))  # For combining later
 
-    # Clean column order
-    columns = ['Team', 'W', 'L', 'Win %', 'GB', 'Runs For', 'Runs Against', 'Division']
-    div_df = div_df[[col for col in columns if col in div_df.columns]]
+# Combine all into a master CSV
+combined = pd.concat(all_dfs)
+combined.to_csv("docs/standings_all.csv", index=False)
 
-    # Save HTML table
-    table_html = div_df.to_html(index=False, classes='stat-table')
-    table_path = f"docs/standings_{division.lower().replace(' ', '_')}.html"
-    with open(table_path, "w") as f:
-        f.write(f"<h2>{division} Standings</h2>\n")
-        f.write(table_html)
+# Create bar chart of total wins per team
+plt.figure(figsize=(12, 6))
+plt.bar(combined["Tm"], combined["W"], color="steelblue")
+plt.xticks(rotation=90)
+plt.title("Total Wins by Team")
+plt.xlabel("Team")
+plt.ylabel("Wins")
+plt.tight_layout()
+plt.savefig("docs/standings_wins_chart.png")
+plt.close()
 
-    # Create bar chart for Wins
-    plt.figure(figsize=(10, 6))
-    sns.barplot(data=div_df, x='W', y='Team', palette='Blues_d')
-    plt.title(f"{division} - Wins")
-    plt.xlabel("Wins")
-    plt.ylabel("Team")
-    plt.tight_layout()
-    chart_path = f"docs/standings_{division.lower().replace(' ', '_')}_wins_chart.png"
-    plt.savefig(chart_path)
-    plt.close()
-
-# Write last updated timestamp
+# Save last updated timestamp
 with open("docs/last_updated_standings.txt", "w") as f:
-    f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    f.write(datetime.now().strftime("Last updated: %Y-%m-%d %H:%M:%S"))
+
+print("Standings data and charts successfully generated.")
+# This script generates standings data and charts for MLB divisions using the pybaseball library.
+# It saves individual division standings as CSV and HTML files, combines them into a master CSV,
+# and creates a bar chart of total wins by team. The last updated timestamp is also saved
+# to track when the data was last refreshed.
+# The output files are saved in the "docs" directory.
+# Make sure to have the pybaseball library installed and up-to-date to fetch the latest standings data.
+# You can install it using pip:
+# pip install pybaseball 
