@@ -10,7 +10,9 @@ os.makedirs("docs", exist_ok=True)
 # Get list of standings DataFrames
 division_standings = standings()
 
-# Validate
+print("DEBUG: standings() returned:", division_standings)
+
+# Validate length
 if not division_standings or len(division_standings) != 6:
     print("Error: standings() did not return 6 DataFrames.")
     print(f"Returned: {division_standings}")
@@ -25,10 +27,10 @@ division_names = [
     "NL_West"
 ]
 
-# Save each division CSV and HTML table
 all_dfs = []
 
 for df, name in zip(division_standings, division_names):
+    print(f"DEBUG: Checking {name} shape: {df.shape}")
     if df.empty:
         print(f"Warning: Division {name} is empty. Skipping.")
         continue
@@ -39,7 +41,7 @@ for df, name in zip(division_standings, division_names):
     df.to_csv(csv_path, index=False)
     df.to_html(html_path, index=False, classes='standings-table')
     
-    all_dfs.append(df.assign(Division=name))  # For combining later
+    all_dfs.append(df.assign(Division=name))
 
 if not all_dfs:
     print("Error: No division standings were fetched.")
@@ -65,6 +67,7 @@ with open("docs/last_updated_standings.txt", "w") as f:
     f.write(datetime.now().strftime("Last updated: %Y-%m-%d %H:%M:%S"))
 
 print("Standings data and charts successfully generated.")
+
 
 # This script generates standings data and charts for MLB divisions using the pybaseball library.
 # It saves individual division standings as CSV and HTML files, combines them into a master CSV,
