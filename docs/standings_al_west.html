@@ -24,12 +24,23 @@
                     padding: 20px;
                     background-color: var(--bg);
                     color: var(--text);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                }
+                
+                .table-container {
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: auto;
                 }
                 
                 .standings-table { 
                     width: 100%; 
                     border-collapse: collapse; 
                     background-color: var(--bg);
+                    margin: 0 auto;
                 }
                 
                 .standings-table th, .standings-table td { 
@@ -70,7 +81,8 @@
             </script>
         </head>
         <body>
-            <table border="1" class="dataframe standings-table">
+            <div class="table-container">
+                <table border="1" class="dataframe standings-table">
   <thead>
     <tr style="text-align: right;">
       <th>Tm</th>
@@ -152,6 +164,7 @@
     </tr>
   </tbody>
 </table>
+            </div>
         </body>
         </html>
         
