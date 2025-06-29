@@ -31,11 +31,81 @@ def create_chart_and_table(df, stat, title, color):
     plt.savefig(chart_path)
     plt.close()
 
-    # Table HTML
-    table_html = top.to_html(index=False, classes='stat-table')
+    # Table HTML with dark mode support
+    html_content = f"""
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            :root {{
+                --bg: #ffffff;
+                --text: #333333;
+                --border: #dddddd;
+                --header-bg: #f8f9fa;
+            }}
+            
+            [data-theme='dark'] {{
+                --bg: #1f1f1f;
+                --text: #eeeeee;
+                --border: #555555;
+                --header-bg: #2d2d2d;
+            }}
+            
+            body {{ 
+                font-family: Arial, sans-serif; 
+                margin: 0; 
+                padding: 20px;
+                background-color: var(--bg);
+                color: var(--text);
+            }}
+            
+            table {{ 
+                width: 100%; 
+                border-collapse: collapse; 
+                background-color: var(--bg);
+            }}
+            
+            th, td {{ 
+                border: 1px solid var(--border); 
+                padding: 8px; 
+                text-align: center;
+                background-color: var(--bg);
+                color: var(--text);
+            }}
+            
+            th {{ 
+                background-color: var(--header-bg);
+                font-weight: bold;
+            }}
+            
+            tr:nth-child(even) {{ 
+                background-color: var(--bg);
+                opacity: 0.8;
+            }}
+        </style>
+        <script>
+            // Inherit theme from parent window
+            window.onload = function() {{
+                try {{
+                    const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                    if (parentTheme) {{
+                        document.documentElement.setAttribute('data-theme', parentTheme);
+                    }}
+                }} catch(e) {{
+                    // Cross-origin issues, use default
+                }}
+            }};
+        </script>
+    </head>
+    <body>
+        {top.to_html(index=False, classes='stats-table', escape=False)}
+    </body>
+    </html>
+    """
+    
     table_path = f"docs/{stat.lower().replace('/', '_')}_table.html"
     with open(table_path, "w") as f:
-        f.write(table_html)
+        f.write(html_content)
 
 
 # List of stats to chart

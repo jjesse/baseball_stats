@@ -175,7 +175,81 @@ for i, df in enumerate(division_standings):
             df['W'] = pd.to_numeric(df['W'], errors='coerce').fillna(0)
         
         df.to_csv(csv_path, index=False)
-        df.to_html(html_path, index=False, classes='standings-table')
+        
+        # Create HTML table with dark mode support
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                :root {{
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
+                }}
+                
+                [data-theme='dark'] {{
+                    --bg: #1f1f1f;
+                    --text: #eeeeee;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                }}
+                
+                body {{ 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 20px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                }}
+                
+                .standings-table {{ 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    background-color: var(--bg);
+                }}
+                
+                .standings-table th, .standings-table td {{ 
+                    border: 1px solid var(--border); 
+                    padding: 8px; 
+                    text-align: center;
+                    background-color: var(--bg);
+                    color: var(--text);
+                }}
+                
+                .standings-table th {{ 
+                    background-color: var(--header-bg);
+                    font-weight: bold;
+                }}
+                
+                .standings-table tr:nth-child(even) {{ 
+                    background-color: var(--bg);
+                    opacity: 0.8;
+                }}
+            </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {{
+                    try {{
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {{
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }}
+                    }} catch(e) {{
+                        // Cross-origin issues, use default
+                    }}
+                }};
+            </script>
+        </head>
+        <body>
+            {df.to_html(index=False, classes='standings-table', escape=False)}
+        </body>
+        </html>
+        """
+        
+        with open(html_path, "w") as f:
+            f.write(html_content)
         
         # Add to master list
         df_copy = df.copy()

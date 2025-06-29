@@ -128,6 +128,19 @@
       border: none;
       display: block;
       margin: 0 auto;
+      background-color: var(--card-bg);
+      border-radius: 8px;
+    }
+
+    /* Enhanced iframe styling for dark mode tables */
+    .chart-container iframe {
+      background-color: var(--card-bg);
+      border: 1px solid var(--text);
+      opacity: 0.95;
+    }
+
+    [data-theme='dark'] .chart-container iframe {
+      border: 1px solid #555;
     }
     .footer {
       text-align: center;
