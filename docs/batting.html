@@ -14,6 +14,7 @@
       --tab-bg: #ddd;
       --tab-active: #fff;
       --tab-border: #333;
+      --link-shadow: rgba(0, 0, 0, 0.1);
     }
 
     [data-theme='dark'] {
@@ -25,6 +26,7 @@
       --tab-bg: #333;
       --tab-active: #222;
       --tab-border: #fff;
+      --link-shadow: rgba(255, 255, 255, 0.1);
     }
 
     body {
@@ -35,37 +37,51 @@
       color: var(--text);
       transition: background-color 0.3s, color 0.3s;
     }
-    header {
+
+    .nav-bar {
       background-color: var(--header-bg);
-      color: #fff;
-      padding: 1rem;
-      text-align: center;
-      position: relative;
-    }
-    .tabs {
+      padding: 0.5rem;
       display: flex;
       justify-content: center;
-      background-color: var(--tab-bg);
+      gap: 1rem;
     }
-    .tabs button {
-      padding: 1rem;
-      border: none;
-      background-color: inherit;
+
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .nav-bar a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-bar a.active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: white;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dark-toggle {
+      margin-top: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      background: none;
+      border: 1px solid white;
+      color: white;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 1rem;
     }
-    .tabs button.active {
-      background-color: var(--tab-active);
-      border-bottom: 3px solid var(--tab-border);
-      font-weight: bold;
-    }
-    .content {
-      display: none;
-      padding: 1rem;
-    }
-    .content.active {
-      display: block;
-    }
+
     .chart-container {
       text-align: center;
       margin-bottom: 2rem;
@@ -90,43 +106,6 @@
       padding: 1rem;
       font-size: 0.9rem;
       color: #666;
-    }
-    .theme-toggle {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-      background-color: #444;
-      color: #fff;
-      border: none;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      font-size: 0.8rem;
-      border-radius: 5px;
-    }
-
-    .nav-bar {
-      background-color: var(--nav-bg);
-      padding: 0.5rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      transition: background-color 0.3s;
-    }
-
-    .nav-bar a {
-      color: white;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-
-    .nav-bar a:hover {
-      background-color: var(--link-hover);
-    }
-
-    .nav-bar a.active {
-      background-color: var(--link-active);
     }
   </style>
   <script>
@@ -170,10 +149,11 @@
       <a href="index.html">Home</a>
       <a href="pitching.html">Pitching Stats</a>
       <a href="batting.html" class="active">Batting Stats</a>
+      <a href="standings.html">Standings</a>
     </div>
     <h1>MLB Batting Stats Dashboard</h1>
     <p id="last-updated">Loading update time...</p>
-    <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+    <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
   <div class="tabs">
@@ -232,6 +212,26 @@
     </div>
     <div class="chart-container">
       <h2>ISO</h2>
+      <img src="batting_iso_chart.png" alt="ISO Chart">
+      <iframe src="batting_iso_table.html"></iframe>
+    </div>
+    <div class="chart-container">
+      <h2>K%</h2>
+      <img src="batting_kpct_chart.png" alt="K% Chart">
+      <iframe src="batting_kpct_table.html"></iframe>
+    </div>
+    <div class="chart-container">
+      <h2>BB%</h2>
+      <img src="batting_bbpct_chart.png" alt="BB% Chart">
+      <iframe src="batting_bbpct_table.html"></iframe>
+    </div>
+  </div>
+
+  <div class="footer">
+    &copy; 2025 MLB Stats Dashboard by jjesse
+  </div>
+</body>
+</html>
       <img src="batting_iso_chart.png" alt="ISO Chart">
       <iframe src="batting_iso_table.html"></iframe>
     </div>

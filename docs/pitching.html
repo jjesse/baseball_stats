@@ -16,6 +16,7 @@
       --tab-border: #333;
       --link-hover: rgba(255, 255, 255, 0.1);
       --link-active: rgba(255, 255, 255, 0.2);
+      --link-shadow: rgba(0, 0, 0, 0.1);
     }
 
     [data-theme='dark'] {
@@ -29,6 +30,7 @@
       --tab-border: #fff;
       --link-hover: rgba(255, 255, 255, 0.15);
       --link-active: rgba(255, 255, 255, 0.25);
+      --link-shadow: rgba(255, 255, 255, 0.1);
     }
 
     body {
@@ -40,24 +42,50 @@
       transition: background-color 0.3s, color 0.3s;
     }
 
+    .nav-bar {
+      background-color: var(--header-bg);
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+    }
+
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .nav-bar a:hover {
+      background-color: var(--link-hover);
+    }
+
+    .nav-bar a.active {
+      background-color: var(--link-active);
+    }
+
     header {
       background-color: var(--header-bg);
-      color: #fff;
-      padding: 1rem;
-      text-align: center;
-      position: relative;
+      color: white;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
     }
-    .toggle-btn {
-      position: absolute;
-      right: 1rem;
-      top: 1rem;
-      background: #fff;
-      border: none;
-      padding: 0.5rem 1rem;
-      cursor: pointer;
-      font-weight: bold;
+
+    .dark-toggle {
+      margin-top: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      background: none;
+      border: 1px solid white;
+      color: white;
       border-radius: 5px;
+      cursor: pointer;
     }
+
     .tabs {
       display: flex;
       justify-content: center;
@@ -107,31 +135,6 @@
       font-size: 0.9rem;
       color: #666;
     }
-
-    .nav-bar {
-      background-color: var(--nav-bg);
-      padding: 0.5rem;
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      transition: background-color 0.3s;
-    }
-
-    .nav-bar a {
-      color: white;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-
-    .nav-bar a:hover {
-      background-color: var(--link-hover);
-    }
-
-    .nav-bar a.active {
-      background-color: var(--link-active);
-    }
   </style>
   <script>
     function switchTab(tabName) {
@@ -178,7 +181,7 @@
     </div>
     <h1>Pitching Stats Dashboard</h1>
     <p id="last-updated">Loading update time...</p>
-    <button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <button class="dark-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
   </header>
 
   <div class="tabs">
