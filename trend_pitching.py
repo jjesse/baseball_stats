@@ -9,13 +9,13 @@ sns.set(style="whitegrid")
 os.makedirs("docs", exist_ok=True)
 
 # Load historical data files
-archive_files = sorted(glob("archive/*.csv"))
+archive_files = sorted(glob("archive/pitching_*.csv"))
 if not archive_files:
-    print("No archive files found.")
+    print("No pitching archive files found.")
     exit()
 
-# Stats to track
-tracked_stats = ['WHIP', 'ERA', 'K/BB']
+# Stats to track trends for - matching batting format
+tracked_stats = ['WHIP', 'ERA', 'SO', 'K/BB', 'HR/9', 'FIP']
 min_appearances = 3
 
 # Combine valid CSVs
@@ -26,7 +26,7 @@ for file in archive_files:
         if df.empty or 'Name' not in df.columns:
             print(f"Skipping empty or malformed file: {file}")
             continue
-        date = os.path.basename(file).replace(".csv", "")
+        date = os.path.basename(file).replace(".csv", "").replace("pitching_", "")
         df = df[['Name'] + [col for col in tracked_stats if col in df.columns]].copy()
         df['Date'] = date
         dfs.append(df)
@@ -35,7 +35,7 @@ for file in archive_files:
         continue
 
 if not dfs:
-    print("No valid data found in archive.")
+    print("No valid pitching data found in archive.")
     exit()
 
 # Combine into full dataset
@@ -47,7 +47,13 @@ for stat in tracked_stats:
     stat_df = all_data.pivot_table(index='Date', columns='Name', values=stat)
     valid_players = stat_df.count()[stat_df.count() >= min_appearances].index
     filtered = stat_df[valid_players]
-    top_players = filtered.mean().sort_values().head(5).index
+    
+    # For ERA, WHIP, HR/9, FIP lower is better, so sort ascending; others descending
+    if stat in ['ERA', 'WHIP', 'HR/9', 'FIP']:
+        top_players = filtered.mean().sort_values().head(5).index
+    else:
+        top_players = filtered.mean().sort_values(ascending=False).head(5).index
+    
     trend = filtered[top_players]
 
     plt.figure(figsize=(12, 6))
@@ -59,6 +65,6 @@ for stat in tracked_stats:
     plt.xticks(rotation=45)
     plt.legend()
     plt.tight_layout()
-    filename = f"docs/{stat.lower().replace('/', '_')}_trend.png"
+    filename = f"docs/trend_{stat.lower().replace('/', '_')}.png"
     plt.savefig(filename)
     plt.close()
