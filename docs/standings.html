@@ -141,6 +141,36 @@
           console.error('Error loading update time:', err);
           document.getElementById("last-updated").innerText = "Update time unavailable";
         });
+
+      // Check if main wins chart exists, if not show fallback
+      const mainChart = document.querySelector('img[src="standings_wins_chart.png"]');
+      if (mainChart) {
+        mainChart.onerror = function() {
+          document.getElementById('fallback-standings').style.display = 'block';
+        };
+      }
+
+      // Check if individual division iframes are loading
+      setTimeout(() => {
+        const iframes = document.querySelectorAll('iframe[src*="standings_"]');
+        let loadedCount = 0;
+        
+        iframes.forEach(iframe => {
+          try {
+            // Simple check - if iframe content is accessible and has content
+            if (iframe.contentDocument || iframe.src) {
+              loadedCount++;
+            }
+          } catch (e) {
+            // Cross-origin or other iframe issues
+          }
+        });
+
+        // If no individual divisions loaded, show combined fallback
+        if (loadedCount === 0) {
+          document.getElementById('fallback-standings').style.display = 'block';
+        }
+      }, 3000);
     };
   </script>
 </head>
@@ -157,57 +187,55 @@
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
-  <!-- AL East -->
-  <div class="division-section">
-    <h2>AL East</h2>
-    <iframe src="standings_al_east.html"></iframe>
-    <div class="chart-container">
-      <img src="standings_al_east_wins_chart.png" alt="AL East Wins Chart">
+  <div class="main-content">
+    <!-- Overall Wins Chart -->
+    <div class="division-section">
+      <h2>Team Wins Comparison</h2>
+      <div class="chart-container">
+        <img src="standings_wins_chart.png" alt="MLB Team Wins Chart" style="max-width: 100%; height: auto;">
+      </div>
     </div>
-  </div>
 
-  <!-- AL Central -->
-  <div class="division-section">
-    <h2>AL Central</h2>
-    <iframe src="standings_al_central.html"></iframe>
-    <div class="chart-container">
-      <img src="standings_al_central_wins_chart.png" alt="AL Central Wins Chart">
+    <!-- AL East -->
+    <div class="division-section">
+      <h2>AL East</h2>
+      <iframe src="standings_al_east.html" onerror="this.style.display='none'"></iframe>
     </div>
-  </div>
 
-  <!-- AL West -->
-  <div class="division-section">
-    <h2>AL West</h2>
-    <iframe src="standings_al_west.html"></iframe>
-    <div class="chart-container">
-      <img src="standings_al_west_wins_chart.png" alt="AL West Wins Chart">
+    <!-- AL Central -->
+    <div class="division-section">
+      <h2>AL Central</h2>
+      <iframe src="standings_al_central.html" onerror="this.style.display='none'"></iframe>
     </div>
-  </div>
 
-  <!-- NL East -->
-  <div class="division-section">
-    <h2>NL East</h2>
-    <iframe src="standings_nl_east.html"></iframe>
-    <div class="chart-container">
-      <img src="standings_nl_east_wins_chart.png" alt="NL East Wins Chart">
+    <!-- AL West -->
+    <div class="division-section">
+      <h2>AL West</h2>
+      <iframe src="standings_al_west.html" onerror="this.style.display='none'"></iframe>
     </div>
-  </div>
 
-  <!-- NL Central -->
-  <div class="division-section">
-    <h2>NL Central</h2>
-    <iframe src="standings_nl_central.html"></iframe>
-    <div class="chart-container">
-      <img src="standings_nl_central_wins_chart.png" alt="NL Central Wins Chart">
+    <!-- NL East -->
+    <div class="division-section">
+      <h2>NL East</h2>
+      <iframe src="standings_nl_east.html" onerror="this.style.display='none'"></iframe>
     </div>
-  </div>
 
-  <!-- NL West -->
-  <div class="division-section">
-    <h2>NL West</h2>
-    <iframe src="standings_nl_west.html"></iframe>
-    <div class="chart-container">
-      <img src="standings_nl_west_wins_chart.png" alt="NL West Wins Chart">
+    <!-- NL Central -->
+    <div class="division-section">
+      <h2>NL Central</h2>
+      <iframe src="standings_nl_central.html" onerror="this.style.display='none'"></iframe>
+    </div>
+
+    <!-- NL West -->
+    <div class="division-section">
+      <h2>NL West</h2>
+      <iframe src="standings_nl_west.html" onerror="this.style.display='none'"></iframe>
+    </div>
+
+    <!-- Fallback: Show combined standings if individual divisions don't load -->
+    <div class="division-section" id="fallback-standings" style="display: none;">
+      <h2>All Teams Combined</h2>
+      <iframe src="standings_all.html" style="height: 600px;"></iframe>
     </div>
   </div>
 

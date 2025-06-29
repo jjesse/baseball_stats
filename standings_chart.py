@@ -202,6 +202,33 @@ if not all_dfs:
 try:
     combined = pd.concat(all_dfs, ignore_index=True)
     combined.to_csv("docs/standings_all.csv", index=False)
+    
+    # Also create a combined HTML file as fallback
+    combined_html = combined.to_html(index=False, classes='standings-table', escape=False)
+    with open("docs/standings_all.html", "w") as f:
+        f.write(f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: Arial, sans-serif; margin: 20px; }}
+                .standings-table {{ width: 100%; border-collapse: collapse; }}
+                .standings-table th, .standings-table td {{ 
+                    border: 1px solid #ddd; 
+                    padding: 8px; 
+                    text-align: left; 
+                }}
+                .standings-table th {{ background-color: #f2f2f2; }}
+                .standings-table tr:nth-child(even) {{ background-color: #f9f9f9; }}
+            </style>
+        </head>
+        <body>
+            <h2>All MLB Teams Standings</h2>
+            {combined_html}
+        </body>
+        </html>
+        """)
+    
     print(f"✓ Created combined standings with {len(combined)} teams")
 except Exception as e:
     print(f"Error creating combined standings: {e}")
