@@ -135,6 +135,64 @@
       font-size: 0.9rem;
       color: #666;
     }
+
+    /* Stat explanation styles */
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .info-icon {
+      background: var(--tab-border);
+      color: var(--tab-active);
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .info-icon:hover {
+      background: var(--link-active);
+      transform: scale(1.1);
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 300px;
+      background-color: var(--card-bg);
+      color: var(--text);
+      text-align: left;
+      border-radius: 6px;
+      padding: 1rem;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -150px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      border: 1px solid var(--tab-border);
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
   </style>
   <script>
     function switchTab(tabName) {
@@ -188,21 +246,52 @@
     <button id="basic-btn" onclick="switchTab('basic')">Basic Stats</button>
     <button id="advanced-btn" onclick="switchTab('advanced')">Advanced Stats</button>
     <button id="trends-btn" onclick="switchTab('trends')">Trends</button>
+    <button id="glossary-btn" onclick="switchTab('glossary')">Glossary</button>
   </div>
 
   <div id="basic" class="content">
     <div class="chart-container">
-      <h2>WHIP</h2>
+      <div class="stat-header">
+        <h2>WHIP</h2>
+        <div class="tooltip">
+          <span class="info-icon">?</span>
+          <span class="tooltiptext">
+            <strong>WHIP (Walks + Hits per Inning Pitched)</strong><br>
+            Measures how many baserunners a pitcher allows per inning. Lower is better.<br>
+            <em>Excellent: &lt;1.00 | Good: 1.00-1.25 | Average: 1.25-1.40 | Poor: &gt;1.40</em>
+          </span>
+        </div>
+      </div>
       <img src="whip_chart.png" alt="WHIP Chart">
       <iframe src="whip_table.html"></iframe>
     </div>
     <div class="chart-container">
-      <h2>ERA</h2>
+      <div class="stat-header">
+        <h2>ERA</h2>
+        <div class="tooltip">
+          <span class="info-icon">?</span>
+          <span class="tooltiptext">
+            <strong>ERA (Earned Run Average)</strong><br>
+            Average number of earned runs allowed per 9 innings. Lower is better.<br>
+            <em>Excellent: &lt;3.00 | Good: 3.00-4.00 | Average: 4.00-5.00 | Poor: &gt;5.00</em>
+          </span>
+        </div>
+      </div>
       <img src="era_chart.png" alt="ERA Chart">
       <iframe src="era_table.html"></iframe>
     </div>
     <div class="chart-container">
-      <h2>Strikeouts (K)</h2>
+      <div class="stat-header">
+        <h2>Strikeouts (K)</h2>
+        <div class="tooltip">
+          <span class="info-icon">?</span>
+          <span class="tooltiptext">
+            <strong>Strikeouts (K)</strong><br>
+            Total number of batters struck out. Higher is better for pitchers.<br>
+            <em>Shows a pitcher's ability to miss bats and avoid contact.</em>
+          </span>
+        </div>
+      </div>
       <img src="so_chart.png" alt="Strikeout Chart">
       <iframe src="so_table.html"></iframe>
     </div>
@@ -210,22 +299,62 @@
 
   <div id="advanced" class="content">
     <div class="chart-container">
-      <h2>Walks (BB)</h2>
+      <div class="stat-header">
+        <h2>Walks (BB)</h2>
+        <div class="tooltip">
+          <span class="info-icon">?</span>
+          <span class="tooltiptext">
+            <strong>Walks (BB - Base on Balls)</strong><br>
+            Number of batters walked. Lower is better for pitchers.<br>
+            <em>Shows pitcher's control and command of the strike zone.</em>
+          </span>
+        </div>
+      </div>
       <img src="bb_chart.png" alt="BB Chart">
       <iframe src="bb_table.html"></iframe>
     </div>
     <div class="chart-container">
-      <h2>K/BB Ratio</h2>
+      <div class="stat-header">
+        <h2>K/BB Ratio</h2>
+        <div class="tooltip">
+          <span class="info-icon">?</span>
+          <span class="tooltiptext">
+            <strong>K/BB Ratio (Strikeout-to-Walk Ratio)</strong><br>
+            Strikeouts divided by walks. Higher is better.<br>
+            <em>Excellent: &gt;4.0 | Good: 3.0-4.0 | Average: 2.0-3.0 | Poor: &lt;2.0</em>
+          </span>
+        </div>
+      </div>
       <img src="kbb_chart.png" alt="KBB Chart">
       <iframe src="kbb_table.html"></iframe>
     </div>
     <div class="chart-container">
-      <h2>HR/9</h2>
+      <div class="stat-header">
+        <h2>HR/9</h2>
+        <div class="tooltip">
+          <span class="info-icon">?</span>
+          <span class="tooltiptext">
+            <strong>HR/9 (Home Runs per 9 Innings)</strong><br>
+            Average home runs allowed per 9 innings. Lower is better.<br>
+            <em>Excellent: &lt;0.80 | Good: 0.80-1.20 | Average: 1.20-1.60 | Poor: &gt;1.60</em>
+          </span>
+        </div>
+      </div>
       <img src="hr9_chart.png" alt="HR/9 Chart">
       <iframe src="hr_9_table.html"></iframe>
     </div>
     <div class="chart-container">
-      <h2>FIP</h2>
+      <div class="stat-header">
+        <h2>FIP</h2>
+        <div class="tooltip">
+          <span class="info-icon">?</span>
+          <span class="tooltiptext">
+            <strong>FIP (Fielding Independent Pitching)</strong><br>
+            ERA-like stat focusing only on strikeouts, walks, and home runs. Lower is better.<br>
+            <em>Removes defense from the equation. Excellent: &lt;3.20 | Good: 3.20-3.90 | Average: 3.90-4.40</em>
+          </span>
+        </div>
+      </div>
       <img src="fip_chart.png" alt="FIP Chart">
       <iframe src="fip_table.html"></iframe>
     </div>
@@ -255,6 +384,35 @@
     <div class="chart-container">
       <h2>FIP Trend</h2>
       <img src="trend_fip.png" alt="FIP Trend Chart">
+    </div>
+  </div>
+
+  <div id="glossary" class="content">
+    <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+      <h2 style="text-align: center;">Pitching Stats Glossary</h2>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <h3>Basic Stats</h3>
+        <p><strong>ERA (Earned Run Average):</strong> The average number of earned runs allowed per 9 innings pitched.</p>
+        <p><strong>WHIP (Walks + Hits per Inning):</strong> The average number of baserunners allowed per inning.</p>
+        <p><strong>SO/K (Strikeouts):</strong> Total number of batters struck out.</p>
+        <p><strong>W (Wins) / L (Losses):</strong> Traditional pitching record.</p>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <h3>Advanced Stats</h3>
+        <p><strong>BB (Walks):</strong> Number of batters walked (free passes to first base).</p>
+        <p><strong>K/BB Ratio:</strong> Strikeouts divided by walks. Shows pitcher control.</p>
+        <p><strong>HR/9:</strong> Home runs allowed per 9 innings pitched.</p>
+        <p><strong>FIP (Fielding Independent Pitching):</strong> Like ERA but only considers strikeouts, walks, hit batters, and home runs.</p>
+      </div>
+
+      <div>
+        <h3>Understanding the Numbers</h3>
+        <p><strong>Lower is Better:</strong> ERA, WHIP, BB, HR/9, FIP</p>
+        <p><strong>Higher is Better:</strong> SO/K, K/BB Ratio, Wins</p>
+        <p><strong>Context Matters:</strong> Stats should be compared within the same era and league context.</p>
+      </div>
     </div>
   </div>
 
