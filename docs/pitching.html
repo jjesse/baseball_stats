@@ -146,7 +146,7 @@
       document.getElementById(tabName + "-btn").classList.add("active");
     }
 
-    function toggleDarkMode() {
+    function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
@@ -181,7 +181,7 @@
     </div>
     <h1>Pitching Stats Dashboard</h1>
     <p id="last-updated">Loading update time...</p>
-    <button class="dark-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
   <div class="tabs">
