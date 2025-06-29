@@ -55,13 +55,10 @@ def create_chart_and_table(df, stat, title, color):
             body {{ 
                 font-family: Arial, sans-serif; 
                 margin: 0; 
-                padding: 20px;
+                padding: 10px;
                 background-color: var(--bg);
                 color: var(--text);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                min-height: 100vh;
+                overflow: hidden;
             }}
             
             .table-container {{
@@ -75,11 +72,12 @@ def create_chart_and_table(df, stat, title, color):
                 border-collapse: collapse; 
                 background-color: var(--bg);
                 margin: 0 auto;
+                font-size: 14px;
             }}
             
             th, td {{ 
                 border: 1px solid var(--border); 
-                padding: 8px; 
+                padding: 6px; 
                 text-align: center;
                 color: var(--text) !important;
             }}

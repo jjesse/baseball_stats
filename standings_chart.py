@@ -200,13 +200,10 @@ for i, df in enumerate(division_standings):
                 body {{ 
                     font-family: Arial, sans-serif; 
                     margin: 0; 
-                    padding: 20px;
+                    padding: 10px;
                     background-color: var(--bg);
                     color: var(--text);
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    min-height: 100vh;
+                    overflow: hidden;
                 }}
                 
                 .table-container {{
@@ -220,11 +217,12 @@ for i, df in enumerate(division_standings):
                     border-collapse: collapse; 
                     background-color: var(--bg);
                     margin: 0 auto;
+                    font-size: 14px;
                 }}
                 
                 .standings-table th, .standings-table td {{ 
                     border: 1px solid var(--border); 
-                    padding: 8px; 
+                    padding: 6px; 
                     text-align: center;
                     color: var(--text) !important;
                 }}
