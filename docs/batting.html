@@ -146,8 +146,8 @@
     }
 
     .info-icon {
-      background: var(--tab-border);
-      color: var(--tab-active);
+      background: #333;
+      color: #fff;
       border-radius: 50%;
       width: 20px;
       height: 20px;
@@ -158,10 +158,16 @@
       font-weight: bold;
       cursor: pointer;
       transition: all 0.2s;
+      flex-shrink: 0;
+    }
+
+    [data-theme='dark'] .info-icon {
+      background: #666;
+      color: #fff;
     }
 
     .info-icon:hover {
-      background: var(--link-active);
+      background: #007acc;
       transform: scale(1.1);
     }
 
@@ -172,26 +178,26 @@
 
     .tooltip .tooltiptext {
       visibility: hidden;
-      width: 300px;
+      width: 320px;
       background-color: var(--card-bg);
       color: var(--text);
       text-align: left;
       border-radius: 6px;
       padding: 1rem;
       position: absolute;
-      z-index: 1;
+      z-index: 1000;
       bottom: 125%;
       left: 50%;
-      margin-left: -150px;
+      margin-left: -160px;
       opacity: 0;
       transition: opacity 0.3s;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      border: 1px solid var(--tab-border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid #ccc;
     }
 
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
+    [data-theme='dark'] .tooltip .tooltiptext {
+      border: 1px solid #555;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
     }
   </style>
   <script>
