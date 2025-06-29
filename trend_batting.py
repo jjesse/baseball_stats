@@ -40,6 +40,10 @@ all_data = pd.concat(dfs)
 all_data['Date'] = pd.to_datetime(all_data['Date'])
 
 for stat in tracked_stats:
+    if stat not in all_data.columns:
+        print(f"Stat {stat} not found in data, skipping...")
+        continue
+        
     stat_df = all_data.pivot_table(index='Date', columns='Name', values=stat)
     valid_players = stat_df.count()[stat_df.count() >= min_appearances].index
     filtered = stat_df[valid_players]
@@ -54,13 +58,14 @@ for stat in tracked_stats:
 
     plt.figure(figsize=(12, 6))
     for player in trend.columns:
-        plt.plot(trend.index, trend[player], marker='o', label=player)
+        plt.plot(trend.index, trend[player], marker='o', label=player, linewidth=2)
     plt.title(f"{stat} Trends Over Time")
     plt.xlabel("Date")
     plt.ylabel(stat)
     plt.xticks(rotation=45)
-    plt.legend()
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
     filename = f"docs/batting_{stat.lower().replace('%', 'pct')}_trend.png"
-    plt.savefig(filename)
+    plt.savefig(filename, dpi=150, bbox_inches='tight')
     plt.close()
+    print(f"Created trend chart: {filename}")
