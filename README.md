@@ -1,121 +1,161 @@
-# ⚾ MLB Stats Dashboard
+# MLB Stats Dashboard ⚾
 
-This project automatically pulls **MLB pitching and batting stats** and presents them via a public GitHub Pages dashboard. It uses [pybaseball](https://github.com/jldbc/pybaseball) for data, and includes trend analysis, daily updates, and clean visualizations.
+A comprehensive MLB statistics dashboard that automatically tracks pitching, batting, and team standings for the 2025 season using the `pybaseball` library. Features interactive charts, educational tooltips, and automated data updates via GitHub Actions.
 
-👉 **Live dashboard**: [jjesse.github.io/baseball_stats](https://jjesse.github.io/baseball_stats)
+## 🌟 Features
+
+### 📊 Interactive Dashboard
+- **Pitching Stats**: WHIP, ERA, Strikeouts, K/BB Ratio, HR/9, FIP
+- **Batting Stats**: AVG, HR, RBI, OBP, SLG, SB, wOBA, wRC+, BABIP, ISO, K%, BB%
+- **Team Standings**: Live standings by division with win trend charts
+- **Trend Analysis**: Historical performance tracking for all key metrics
+
+### 🎨 User Experience
+- **Responsive Design**: Works seamlessly on desktop and mobile
+- **Dark/Light Themes**: User preference saved in localStorage
+- **Educational Tooltips**: Hover over "?" icons for detailed stat explanations
+- **Performance Benchmarks**: Learn what constitutes excellent/good/average performance
+- **Comprehensive Glossary**: Complete explanation of all tracked metrics
+
+### 🤖 Automation
+- **Daily Updates**: Batting stats and standings refresh automatically
+- **Weekly Pitching**: Pitching stats update every Monday
+- **Trend Tracking**: Historical data archived for trend analysis
+- **GitHub Actions**: Fully automated data pipeline
+
+## 🚀 Live Demo
+
+Visit the dashboard: [https://yourusername.github.io/baseball_stats/](https://yourusername.github.io/baseball_stats/)
+
+## 📁 Project Structure
+
+```
+baseball_stats/
+├── docs/                           # GitHub Pages site
+│   ├── index.html                 # Homepage with navigation
+│   ├── pitching.html              # Pitching stats dashboard
+│   ├── batting.html               # Batting stats dashboard
+│   ├── standings.html             # Team standings
+│   ├── *.png                      # Generated charts
+│   ├── *.html                     # Generated data tables
+│   └── last_updated_*.txt         # Timestamp files
+├── archive/                       # Historical data for trends
+│   ├── batting_*.csv             # Daily batting archives
+│   └── pitching_*.csv            # Weekly pitching archives
+├── .github/workflows/            # Automation
+│   ├── update-batting.yml        # Daily batting updates
+│   ├── update-pitching.yml       # Weekly pitching updates
+│   └── update-standings.yml      # Daily standings updates
+├── pitching_chart.py             # Pitching data processor
+├── batting_chart.py              # Batting data processor
+├── standings_chart.py            # Standings data processor
+├── trend_pitching.py             # Pitching trend analyzer
+├── trend_batting.py              # Batting trend analyzer
+└── README.md                     # This file
+```
+
+## 🛠️ Setup & Installation
+
+### Prerequisites
+- Python 3.8+
+- Required packages: `pybaseball`, `pandas`, `matplotlib`, `seaborn`
+
+### Local Development
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/baseball_stats.git
+cd baseball_stats
+
+# Install dependencies
+pip install pybaseball pandas matplotlib seaborn
+
+# Generate initial data
+python pitching_chart.py
+python batting_chart.py
+python standings_chart.py
+
+# Serve locally (optional)
+python -m http.server 8000 --directory docs
+```
+
+### GitHub Pages Deployment
+1. Enable GitHub Pages in repository settings
+2. Set source to "GitHub Actions"
+3. The workflows will automatically update the site
+
+## 📈 Data Sources & Metrics
+
+### Pitching Stats
+| Stat | Description | Good Performance |
+|------|-------------|------------------|
+| **ERA** | Earned Run Average | < 3.00 |
+| **WHIP** | (Walks + Hits) / Innings | < 1.00 |
+| **K/BB** | Strikeout-to-Walk Ratio | > 4.0 |
+| **FIP** | Fielding Independent Pitching | < 3.20 |
+| **HR/9** | Home Runs per 9 Innings | < 0.80 |
+
+### Batting Stats
+| Stat | Description | Good Performance |
+|------|-------------|------------------|
+| **wRC+** | Weighted Runs Created Plus | > 120 |
+| **wOBA** | Weighted On-Base Average | > .350 |
+| **OBP** | On-Base Percentage | > .360 |
+| **SLG** | Slugging Percentage | > .450 |
+| **ISO** | Isolated Power | > .200 |
+
+## 🔄 Update Schedule
+
+- **Batting Stats**: Daily at 12:00 UTC
+- **Pitching Stats**: Weekly (Mondays) at 3:00 UTC  
+- **Standings**: Daily at 13:00 UTC
+- **Trend Analysis**: Generated with each update
+
+## 🎯 Key Features Explained
+
+### Educational Tooltips
+Each stat includes hover tooltips with:
+- Clear explanations of what the metric measures
+- Performance benchmarks (excellent/good/average/poor)
+- Context about why the stat matters
+
+### Trend Analysis
+Historical tracking shows:
+- Player performance over time
+- Top 5 performers in each category
+- Visual trends with professional charts
+- Data points from daily/weekly archives
+
+### Responsive Design
+- Mobile-optimized layouts
+- Consistent navigation across all pages
+- Dark/light theme with user preference storage
+- Professional chart styling with proper centering
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- [pybaseball](https://github.com/jldbc/pybaseball) - Excellent Python library for baseball data
+- [FanGraphs](https://www.fangraphs.com/) - Statistical definitions and benchmarks
+- [Baseball Reference](https://www.baseball-reference.com/) - Additional statistical context
+
+## 📞 Support
+
+If you encounter any issues or have suggestions:
+- Open an [Issue](https://github.com/yourusername/baseball_stats/issues)
+- Check the [Discussions](https://github.com/yourusername/baseball_stats/discussions) tab
+- Review the automated workflow logs for debugging
 
 ---
 
-## 📊 Features
-
-### 🔹 Pitching Dashboard
-
-- Basic stats: WHIP, ERA, Strikeouts
-- Advanced stats: BB, K/BB Ratio, HR/9, FIP
-- Trends: WHIP, ERA, K/BB over time  
-➡️ View: [`pitching.html`](docs/pitching.html)
-
-### 🔸 Batting Dashboard
-
-- Basic stats: AVG, HR, RBI, OBP, SLG, SB
-- Advanced stats: wOBA, wRC+, BABIP, ISO, K%, BB%
-- Trends: (coming soon) ISO, OBP, and wRC+ over time  
-➡️ View: [`batting.html`](docs/batting.html)
-
----
-
-## 🔄 How It Works
-
-GitHub Actions power the data collection and chart generation, with two scheduled workflows:
-
-| Action                | Description                           | Frequency       |
-|-----------------------|---------------------------------------|-----------------|
-| `update-pitching.yml` | Updates pitching stats, charts, trends | Daily at 12:00 UTC |
-| `update-batting.yml`  | Updates batting stats, charts, trends  | Daily at 12:00 UTC |
-| `update-standings.yml` | Updates standings stats, charts, trends  | Daily at 13:00 UTC |
-
-You can also manually trigger them in the GitHub UI.
-
----
-
-## 🛠 Project Structure
-
-.
-├── docs/ # GitHub Pages output (charts, tables, HTML)
-│ ├── pitching.html
-│ ├── batting.html
-│ ├── *.png # Chart images
-│ ├──*.html # Data tables
-│ └── last_updated.txt
-│ └── last_updated_pitching.txt # Last update timestamp for pitching
-│ └── last_updated_batting.txt # Last update timestamp for batting
-│ └── standings.html # Standings page
-│ └── standings.png # Standings chart
-│ └── standings.csv # Standings data
-│ └── standings_trend.png # Standings trend chart
-│ └── standings_trend.csv # Standings trend data
-│ └── standings_trend.txt # Last update timestamp for standings
-│ └── standings_trend_pitching.png # Standings trend chart for pitching
-│ └── standings_trend_pitching.csv # Standings trend data for pitching
-│ └── standings_trend_pitching.txt # Last update timestamp for pitching standings trend
-│ └── standings_trend_batting.png # Standings trend chart for batting
-│ └── standings_trend_batting.csv # Standings trend data for batting
-│ └── standings_trend_batting.txt # Last update timestamp for batting standings trend
-│ └── standings_trend_batting_pitching.png # Standings trend chart for batting
-│ └── standings_trend_batting_pitching.csv # Standings trend data for batting
-│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting standings
-│ └── standings_trend_batting_pitching.png # Standings trend chart for batting and pitching
-│ └── standings_trend_batting_pitching.csv # Standings trend data for batting
-│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting and pitching
-│ └── standings_trend_batting_pitching.png # Standings trend chart for batting and pitching
-│ └── standings_trend_batting_pitching.csv # Standings trend data for batting and pitching
-│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting and pitching
-│ └── standings_trend_batting_pitching.png # Standings trend chart for batting and pitching
-│ └── standings_trend_batting_pitching.csv # Standings trend data for batting and pitching
-│ └── standings_trend_batting_pitching.txt # Last update timestamp for batting and pitching
-│
-├── archive/ # Daily CSV snapshots for trend analysis
-│
-├── pitching_chart.py # Pulls and plots pitching stats
-├── batting_chart.py # Pulls and plots batting stats
-├── trend_pitching.py # Creates trend charts from archive/
-├── trend_batting.py # Creates trend charts from archive/
-│
-├── .github/workflows/
-│ ├── update-pitching.yml
-│ └── update-batting.yml
-│ └── update-standings.yml
-├── .gitignore
-├── LICENSE
-├── README.md
-└── requirements.txt # Python dependencies
-
----
-
-## 🔦 Technologies Used
-
-- [pybaseball](https://github.com/jldbc/pybaseball)
-- matplotlib + seaborn
-- pandas
-- GitHub Actions
-- GitHub Pages
-
----
-
-## 📅 Data Update Schedule
-
-All stats are refreshed **daily at 12:00 UTC** via GitHub Actions.  
-Historical daily snapshots are stored in `archive/` and used to build trend charts.
-
----
-
-## 📬 Contributions
-
-This is a personal project by [@jjesse](https://github.com/jjesse).  
-Suggestions, issues, and PRs are welcome!
-
----
-
-## 📄 License
-
-[MIT License](LICENSE) — free to use, modify, or share.
+**Last Updated**: January 2025 | **Status**: Actively Maintained ✅
