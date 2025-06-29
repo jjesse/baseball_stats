@@ -12,16 +12,18 @@ A comprehensive MLB statistics dashboard that automatically tracks pitching, bat
 
 ### 🎨 User Experience
 - **Responsive Design**: Works seamlessly on desktop and mobile
-- **Dark/Light Themes**: User preference saved in localStorage
+- **Dark/Light Themes**: Full dark mode support with readable tables, user preference saved in localStorage
 - **Educational Tooltips**: Hover over "?" icons for detailed stat explanations
 - **Performance Benchmarks**: Learn what constitutes excellent/good/average performance
 - **Comprehensive Glossary**: Complete explanation of all tracked metrics
+- **Theme-Aware Tables**: Data tables automatically adapt to light/dark themes with proper contrast
 
 ### 🤖 Automation
+
 - **Daily Updates**: Batting stats and standings refresh automatically
 - **Weekly Pitching**: Pitching stats update every Monday
 - **Trend Tracking**: Historical data archived for trend analysis
-- **GitHub Actions**: Fully automated data pipeline
+- **GitHub Actions**: Fully automated data pipeline with master rebuild workflow
 
 ## 🚀 Live Demo
 
@@ -45,7 +47,8 @@ baseball_stats/
 ├── .github/workflows/            # Automation
 │   ├── update-batting.yml        # Daily batting updates
 │   ├── update-pitching.yml       # Weekly pitching updates
-│   └── update-standings.yml      # Daily standings updates
+│   ├── update-standings.yml      # Daily standings updates
+│   └── update-all.yml            # Master workflow (complete rebuild)
 ├── pitching_chart.py             # Pitching data processor
 ├── batting_chart.py              # Batting data processor
 ├── standings_chart.py            # Standings data processor
@@ -109,8 +112,17 @@ python -m http.server 8000 --directory docs
 - **Pitching Stats**: Weekly (Mondays) at 3:00 UTC  
 - **Standings**: Daily at 13:00 UTC
 - **Trend Analysis**: Generated with each update
+- **Complete Rebuild**: Manual trigger via "Update All Stats" workflow
 
 ## 🎯 Key Features Explained
+
+### Complete Site Rebuild
+The "Update All Stats (Complete Rebuild)" workflow allows you to:
+- Trigger all three workflows simultaneously from the GitHub Actions UI
+- Perfect for testing after code changes or fixing data issues
+- Includes optional reason field for documentation
+- Runs all updates in parallel for faster completion
+- Ideal for regenerating tables after styling fixes
 
 ### Educational Tooltips
 Each stat includes hover tooltips with:
@@ -126,9 +138,10 @@ Historical tracking shows:
 - Data points from daily/weekly archives
 
 ### Responsive Design
+
 - Mobile-optimized layouts
 - Consistent navigation across all pages
-- Dark/light theme with user preference storage
+- Dark/light theme with user preference storage and readable table text
 - Professional chart styling with proper centering
 
 ## 🤝 Contributing

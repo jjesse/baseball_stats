@@ -203,12 +203,23 @@ for i, df in enumerate(division_standings):
                     padding: 20px;
                     background-color: var(--bg);
                     color: var(--text);
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 100vh;
+                }}
+                
+                .table-container {{
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: auto;
                 }}
                 
                 .standings-table {{ 
                     width: 100%; 
                     border-collapse: collapse; 
                     background-color: var(--bg);
+                    margin: 0 auto;
                 }}
                 
                 .standings-table th, .standings-table td {{ 
@@ -249,7 +260,9 @@ for i, df in enumerate(division_standings):
             </script>
         </head>
         <body>
-            {df.to_html(index=False, classes='standings-table', escape=False)}
+            <div class="table-container">
+                {df.to_html(index=False, classes='standings-table', escape=False)}
+            </div>
         </body>
         </html>
         """

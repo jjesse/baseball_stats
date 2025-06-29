@@ -58,12 +58,23 @@ def create_chart_and_table(df, stat, title, color):
                 padding: 20px;
                 background-color: var(--bg);
                 color: var(--text);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+            }}
+            
+            .table-container {{
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
             }}
             
             table {{ 
                 width: 100%; 
                 border-collapse: collapse; 
                 background-color: var(--bg);
+                margin: 0 auto;
             }}
             
             th, td {{ 
@@ -104,7 +115,9 @@ def create_chart_and_table(df, stat, title, color):
         </script>
     </head>
     <body>
-        {top.to_html(index=False, classes='stats-table', escape=False)}
+        <div class="table-container">
+            {top.to_html(index=False, classes='stats-table', escape=False)}
+        </div>
     </body>
     </html>
     """
