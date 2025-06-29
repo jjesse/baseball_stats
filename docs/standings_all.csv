@@ -14,8 +14,8 @@ CHWChicago White Sox,79.0,al_east,,,,,,,,,
 West,78.0,al_east,,,,,,,,,
 HOUHouston Astros,77.0,al_east,,,,,,,,,
 SEASeattle Mariners,76.0,al_east,,,,,,,,,
-TEXTexas Rangers,75.0,al_east,,,,,,,,,
-LAALos Angeles Angels,74.0,al_east,,,,,,,,,
+LAALos Angeles Angels,75.0,al_east,,,,,,,,,
+TEXTexas Rangers,74.0,al_east,,,,,,,,,
 ATHAthletics,73.0,al_east,,,,,,,,,
 W,0.0,al_central,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
 47,0.0,al_central,35,.573,-,25-17,22-18,410,304,+106,L1
@@ -32,8 +32,8 @@ W,0.0,al_central,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
 W,0.0,al_central,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
 49,0.0,al_central,34,.590,-,31-14,18-20,348,304,+44,L1
 42,0.0,al_central,40,.512,6.5,20-19,22-21,374,363,+11,L1
+41,0.0,al_central,41,.500,7.5,20-19,21-22,355,401,-46,W1
 41,0.0,al_central,42,.494,8,24-17,17-25,304,286,+18,W1
-40,0.0,al_central,41,.494,8,19-19,21-22,347,399,-52,L1
 34,0.0,al_central,51,.400,16,15-27,19-24,349,484,-135,W1
 East,90.0,al_west,,,,,,,,,
 PHIPhiladelphia Phillies,89.0,al_west,,,,,,,,,
@@ -58,7 +58,7 @@ W,0.0,nl_east,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
 48,0.0,nl_east,36,.571,0.5,29-12,19-24,367,317,+50,L2
 38,0.0,nl_east,44,.463,9.5,23-16,15-28,338,325,+13,W1
 36,0.0,nl_east,45,.444,11,17-24,19-21,347,423,-76,W6
-34,0.0,nl_east,48,.415,13.5,16-24,18-24,357,422,-65,W1
+34,0.0,nl_east,49,.410,14,16-24,18-25,359,430,-71,L1
 W,0.0,nl_east,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
 49,0.0,nl_east,34,.590,-,25-15,24-19,453,347,+106,W1
 47,0.0,nl_east,36,.566,2,27-16,20-20,394,337,+57,W4
