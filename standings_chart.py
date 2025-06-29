@@ -233,9 +233,10 @@ try:
 except Exception as e:
     print(f"Error creating combined standings: {e}")
 
-# Create wins chart
+# Create wins chart if we have the required columns
 try:
     if 'Tm' in combined.columns and 'W' in combined.columns:
+        # Create overall wins chart
         plt.figure(figsize=(15, 8))
         
         # Sort by wins for better visualization
@@ -258,11 +259,55 @@ try:
         plt.tight_layout()
         plt.savefig("docs/standings_wins_chart.png", dpi=150, bbox_inches='tight')
         plt.close()
-        print("✓ Created wins chart")
+        print("✓ Created overall wins chart")
+
+        # Create individual division charts
+        for i, df in enumerate(all_dfs):
+            if i >= len(division_names):
+                break
+                
+            div_name = division_names[i]
+            
+            if 'Tm' in df.columns and 'W' in df.columns and not df.empty:
+                try:
+                    plt.figure(figsize=(10, 6))
+                    
+                    # Sort by wins for the division
+                    div_data = df.sort_values('W', ascending=False)
+                    
+                    # Create bars with team colors
+                    colors = plt.cm.Set2(range(len(div_data)))
+                    bars = plt.bar(div_data["Tm"], div_data["W"], color=colors)
+                    
+                    # Format division name for title
+                    title_name = div_name.replace('_', ' ').title()
+                    plt.title(f"{title_name} - Team Wins", fontsize=14, fontweight='bold')
+                    plt.xlabel("Team", fontsize=12)
+                    plt.ylabel("Wins", fontsize=12)
+                    plt.xticks(rotation=45)
+                    
+                    # Add value labels on bars
+                    for bar in bars:
+                        height = bar.get_height()
+                        plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                                f'{int(height)}', ha='center', va='bottom', fontsize=10)
+                    
+                    plt.tight_layout()
+                    chart_filename = f"docs/standings_{div_name}_wins_chart.png"
+                    plt.savefig(chart_filename, dpi=150, bbox_inches='tight')
+                    plt.close()
+                    print(f"✓ Created {div_name} wins chart")
+                    
+                except Exception as e:
+                    print(f"Error creating {div_name} wins chart: {e}")
+                    continue
+            else:
+                print(f"Warning: Cannot create {div_name} wins chart - missing data")
+                
     else:
-        print("Warning: Cannot create wins chart - missing required columns")
+        print("Warning: Cannot create wins charts - missing required columns")
 except Exception as e:
-    print(f"Error creating wins chart: {e}")
+    print(f"Error creating wins charts: {e}")
 
 # Save success timestamp
 try:

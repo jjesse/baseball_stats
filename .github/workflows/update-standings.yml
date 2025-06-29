@@ -45,7 +45,7 @@ jobs:
             python standings_chart.py || exit 1
             
             # Try commit and push again
-            git add docs/standings_*.csv docs/standings_*.html docs/standings_wins_chart.png docs/last_updated_standings.txt
+            git add docs/standings_*.csv docs/standings_*.html docs/standings_*_wins_chart.png docs/standings_wins_chart.png docs/last_updated_standings.txt
             git commit -m "Update standings [skip ci]"
             git push origin main
           else
