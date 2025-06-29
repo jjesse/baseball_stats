@@ -14,6 +14,8 @@
       --tab-bg: #ddd;
       --tab-active: #fff;
       --tab-border: #333;
+      --link-hover: rgba(255, 255, 255, 0.1);
+      --link-active: rgba(255, 255, 255, 0.2);
       --link-shadow: rgba(0, 0, 0, 0.1);
     }
 
@@ -26,6 +28,8 @@
       --tab-bg: #333;
       --tab-active: #222;
       --tab-border: #fff;
+      --link-hover: rgba(255, 255, 255, 0.15);
+      --link-active: rgba(255, 255, 255, 0.25);
       --link-shadow: rgba(255, 255, 255, 0.1);
     }
 
@@ -55,11 +59,11 @@
     }
 
     .nav-bar a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--link-hover);
     }
 
     .nav-bar a.active {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: var(--link-active);
     }
 
     header {
@@ -82,6 +86,30 @@
       cursor: pointer;
     }
 
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background-color: var(--tab-bg);
+    }
+    .tabs button {
+      padding: 1rem;
+      border: none;
+      background-color: inherit;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .tabs button.active {
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
+      font-weight: bold;
+    }
+    .content {
+      display: none;
+      padding: 1rem;
+    }
+    .content.active {
+      display: block;
+    }
     .chart-container {
       text-align: center;
       margin-bottom: 2rem;
@@ -212,26 +240,6 @@
     </div>
     <div class="chart-container">
       <h2>ISO</h2>
-      <img src="batting_iso_chart.png" alt="ISO Chart">
-      <iframe src="batting_iso_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <h2>K%</h2>
-      <img src="batting_kpct_chart.png" alt="K% Chart">
-      <iframe src="batting_kpct_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <h2>BB%</h2>
-      <img src="batting_bbpct_chart.png" alt="BB% Chart">
-      <iframe src="batting_bbpct_table.html"></iframe>
-    </div>
-  </div>
-
-  <div class="footer">
-    &copy; 2025 MLB Stats Dashboard by jjesse
-  </div>
-</body>
-</html>
       <img src="batting_iso_chart.png" alt="ISO Chart">
       <iframe src="batting_iso_table.html"></iframe>
     </div>
