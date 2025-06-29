@@ -1,0 +1,73 @@
+Tm,W,Division,1,2,3,4,5,6,7,8,9
+East,90.0,al_east,,,,,,,,,
+NYYNew York Yankees,89.0,al_east,,,,,,,,,
+TBTampa Bay Rays,88.0,al_east,,,,,,,,,
+TORToronto Blue Jays,87.0,al_east,,,,,,,,,
+BOSBoston Red Sox,86.0,al_east,,,,,,,,,
+BALBaltimore Orioles,85.0,al_east,,,,,,,,,
+Central,84.0,al_east,,,,,,,,,
+DETDetroit Tigers,83.0,al_east,,,,,,,,,
+CLECleveland Guardians,82.0,al_east,,,,,,,,,
+MINMinnesota Twins,81.0,al_east,,,,,,,,,
+KCKansas City Royals,80.0,al_east,,,,,,,,,
+CHWChicago White Sox,79.0,al_east,,,,,,,,,
+West,78.0,al_east,,,,,,,,,
+HOUHouston Astros,77.0,al_east,,,,,,,,,
+SEASeattle Mariners,76.0,al_east,,,,,,,,,
+TEXTexas Rangers,75.0,al_east,,,,,,,,,
+LAALos Angeles Angels,74.0,al_east,,,,,,,,,
+ATHAthletics,73.0,al_east,,,,,,,,,
+W,0.0,al_central,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
+47,0.0,al_central,35,.573,-,25-17,22-18,410,304,+106,L1
+47,0.0,al_central,36,.566,0.5,27-23,20-13,402,327,+75,W1
+44,0.0,al_central,38,.537,3,25-16,19-22,360,366,-6,L1
+41,0.0,al_central,43,.488,7,23-18,18-25,396,384,+12,W1
+35,0.0,al_central,47,.427,12,18-22,17-25,340,421,-81,L1
+W,0.0,al_central,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
+52,0.0,al_central,32,.619,-,29-14,23-18,421,325,+96,W1
+40,0.0,al_central,41,.494,10.5,20-19,20-22,303,343,-40,L3
+40,0.0,al_central,43,.482,11.5,22-17,18-26,356,367,-11,L1
+39,0.0,al_central,44,.470,12.5,20-23,19-21,276,305,-29,W1
+27,0.0,al_central,56,.325,24.5,18-24,9-32,282,365,-83,W1
+W,0.0,al_central,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
+49,0.0,al_central,34,.590,-,31-14,18-20,348,304,+44,L1
+42,0.0,al_central,40,.512,6.5,20-19,22-21,374,363,+11,L1
+41,0.0,al_central,42,.494,8,24-17,17-25,304,286,+18,W1
+40,0.0,al_central,41,.494,8,19-19,21-22,347,399,-52,L1
+34,0.0,al_central,51,.400,16,15-27,19-24,349,484,-135,W1
+East,90.0,al_west,,,,,,,,,
+PHIPhiladelphia Phillies,89.0,al_west,,,,,,,,,
+NYMNew York Mets,88.0,al_west,,,,,,,,,
+ATLAtlanta Braves,87.0,al_west,,,,,,,,,
+MIAMiami Marlins,86.0,al_west,,,,,,,,,
+WSHWashington Nationals,85.0,al_west,,,,,,,,,
+Central,84.0,al_west,,,,,,,,,
+CHCChicago Cubs,83.0,al_west,,,,,,,,,
+MILMilwaukee Brewers,82.0,al_west,,,,,,,,,
+STLSt. Louis Cardinals,81.0,al_west,,,,,,,,,
+CINCincinnati Reds,80.0,al_west,,,,,,,,,
+PITPittsburgh Pirates,79.0,al_west,,,,,,,,,
+West,78.0,al_west,,,,,,,,,
+LADLos Angeles Dodgers,77.0,al_west,,,,,,,,,
+SDSan Diego Padres,76.0,al_west,,,,,,,,,
+SFSan Francisco Giants,75.0,al_west,,,,,,,,,
+ARIArizona Diamondbacks,74.0,al_west,,,,,,,,,
+COLColorado Rockies,73.0,al_west,,,,,,,,,
+W,0.0,nl_east,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
+48,0.0,nl_east,35,.578,-,26-14,22-21,384,339,+45,L1
+48,0.0,nl_east,36,.571,0.5,29-12,19-24,367,317,+50,L2
+38,0.0,nl_east,44,.463,9.5,23-16,15-28,338,325,+13,W1
+36,0.0,nl_east,45,.444,11,17-24,19-21,347,423,-76,W6
+34,0.0,nl_east,48,.415,13.5,16-24,18-24,357,422,-65,W1
+W,0.0,nl_east,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
+49,0.0,nl_east,34,.590,-,25-15,24-19,453,347,+106,W1
+47,0.0,nl_east,36,.566,2,27-16,20-20,394,337,+57,W4
+46,0.0,nl_east,38,.548,3.5,26-17,20-21,396,358,+38,W2
+43,0.0,nl_east,40,.518,6,23-19,20-21,384,345,+39,L1
+34,0.0,nl_east,50,.405,15.5,22-21,12-29,285,338,-53,W2
+W,0.0,nl_east,L,PCT,GB,HOME,AWAY,RS,RA,DIFF,STRK
+52,0.0,nl_east,32,.619,-,30-14,22-18,472,386,+86,L1
+45,0.0,nl_east,37,.549,6,25-14,20-23,343,325,+18,W1
+45,0.0,nl_east,38,.542,6.5,25-17,20-21,347,312,+35,L1
+41,0.0,nl_east,41,.500,10,20-20,21-21,428,424,+4,L3
+18,0.0,nl_east,65,.217,33.5,8-32,10-33,291,513,-222,L5
