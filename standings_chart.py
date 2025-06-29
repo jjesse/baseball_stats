@@ -191,9 +191,10 @@ for i, df in enumerate(division_standings):
                 
                 [data-theme='dark'] {{
                     --bg: #1f1f1f;
-                    --text: #eeeeee;
+                    --text: #ffffff;
                     --border: #555555;
                     --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
                 }}
                 
                 body {{ 
@@ -214,18 +215,23 @@ for i, df in enumerate(division_standings):
                     border: 1px solid var(--border); 
                     padding: 8px; 
                     text-align: center;
-                    background-color: var(--bg);
-                    color: var(--text);
+                    color: var(--text) !important;
                 }}
                 
                 .standings-table th {{ 
-                    background-color: var(--header-bg);
+                    background-color: var(--header-bg) !important;
                     font-weight: bold;
+                    color: var(--text) !important;
                 }}
                 
-                .standings-table tr:nth-child(even) {{ 
-                    background-color: var(--bg);
-                    opacity: 0.8;
+                .standings-table tr:nth-child(even) td {{ 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }}
+                
+                .standings-table tr:nth-child(odd) td {{ 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
                 }}
             </style>
             <script>
