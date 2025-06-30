@@ -397,44 +397,6 @@ except Exception as e:
 # Create wins chart if we have the required columns
 try:
     if 'Tm' in combined.columns and 'W' in combined.columns:
-<<<<<<< HEAD
-        # Create overall wins chart with league separation
-        plt.figure(figsize=(16, 10))
-        
-        # Sort by wins and add league info for coloring
-        plot_data = combined.sort_values('W', ascending=True).copy()
-        
-        # Create colors based on league (AL/NL)
-        al_divisions = ['al_east', 'al_central', 'al_west']
-        colors = []
-        for _, row in plot_data.iterrows():
-            if row['Division'] in al_divisions:
-                colors.append('#1f77b4')  # Blue for AL
-            else:
-                colors.append('#ff7f0e')  # Orange for NL
-        
-        bars = plt.barh(plot_data["Tm"], plot_data["W"], color=colors)
-        plt.title("MLB Team Wins by League", fontsize=18, fontweight='bold', pad=20)
-        plt.xlabel("Wins", fontsize=14)
-        plt.ylabel("Team", fontsize=14)
-        
-        # Add value labels on bars
-        for bar in bars:
-            width = bar.get_width()
-            plt.text(width + 0.5, bar.get_y() + bar.get_height()/2, 
-                    f'{int(width)}', ha='left', va='center', fontsize=10)
-        
-        # Add legend
-        from matplotlib.patches import Patch
-        legend_elements = [Patch(facecolor='#1f77b4', label='American League'),
-                          Patch(facecolor='#ff7f0e', label='National League')]
-        plt.legend(handles=legend_elements, loc='lower right')
-        
-        plt.tight_layout()
-        plt.savefig("docs/standings_wins_chart.png", dpi=150, bbox_inches='tight')
-        plt.close()
-        print("✓ Created enhanced overall wins chart")
-=======
         # Clean the combined data for charting
         plot_data = combined.copy()
         
@@ -474,9 +436,8 @@ try:
             plt.savefig("docs/standings_wins_chart.png", dpi=150, bbox_inches='tight')
             plt.close()
             print(f"✓ Created overall wins chart with {len(plot_data)} teams")
->>>>>>> dcd823b (working on fixing the standings charts)
 
-        # Create individual division charts with better styling
+        # Create individual division charts
         for i, df in enumerate(all_dfs):
             if i >= len(division_names):
                 break
@@ -485,18 +446,6 @@ try:
             
             if 'Tm' in df.columns and 'W' in df.columns and not df.empty:
                 try:
-<<<<<<< HEAD
-                    plt.figure(figsize=(12, 8))
-                    
-                    # Sort by wins for the division
-                    div_data = df.sort_values('W', ascending=False).copy()
-                    
-                    # Create gradient colors
-                    n_teams = len(div_data)
-                    colors = plt.cm.viridis(np.linspace(0.3, 0.9, n_teams))
-                    
-                    bars = plt.bar(range(len(div_data)), div_data["W"], color=colors)
-=======
                     # Additional cleaning for chart data
                     chart_data = df.copy()
                     
@@ -522,72 +471,32 @@ try:
                     # Create bars with team colors
                     colors = plt.cm.Set2(range(len(chart_data)))
                     bars = plt.bar(chart_data["Tm"], chart_data["W"], color=colors)
->>>>>>> dcd823b (working on fixing the standings charts)
                     
                     # Format division name for title
                     title_name = div_name.replace('_', ' ').title()
-                    plt.title(f"{title_name} Division - Team Wins", fontsize=16, fontweight='bold')
+                    plt.title(f"{title_name} - Team Wins", fontsize=14, fontweight='bold')
                     plt.xlabel("Team", fontsize=12)
                     plt.ylabel("Wins", fontsize=12)
-                    
-                    # Set team names as x-axis labels
-                    plt.xticks(range(len(div_data)), div_data["Tm"], rotation=45)
+                    plt.xticks(rotation=45)
                     
                     # Add value labels on bars
-                    for i, (bar, wins) in enumerate(zip(bars, div_data["W"])):
+                    for bar in bars:
                         height = bar.get_height()
-<<<<<<< HEAD
-                        plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                                f'{int(wins)}', ha='center', va='bottom', fontsize=11, fontweight='bold')
-                        
-                        # Add ranking number at base of bar
-                        plt.text(bar.get_x() + bar.get_width()/2., 2,
-                                f'#{i+1}', ha='center', va='bottom', fontsize=9, 
-                                color='white', fontweight='bold')
-=======
                         if height > 0:  # Only show labels for non-zero values
                             plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
                                     f'{int(height)}', ha='center', va='bottom', fontsize=10)
->>>>>>> dcd823b (working on fixing the standings charts)
                     
                     plt.tight_layout()
                     chart_filename = f"docs/standings_{div_name}_wins_chart.png"
                     plt.savefig(chart_filename, dpi=150, bbox_inches='tight')
                     plt.close()
-<<<<<<< HEAD
-                    print(f"✓ Created enhanced {div_name} wins chart")
-=======
                     print(f"✓ Created {div_name} wins chart with {len(chart_data)} teams")
->>>>>>> dcd823b (working on fixing the standings charts)
                     
                 except Exception as e:
                     print(f"Error creating {div_name} wins chart: {e}")
                     continue
             else:
                 print(f"Warning: Cannot create {div_name} wins chart - missing data")
-
-        # Create summary statistics for overview page
-        try:
-            al_data = combined[combined['Division'].str.startswith('al')]
-            nl_data = combined[combined['Division'].str.startswith('nl')]
-            
-            summary_stats = {
-                'al_leader': al_data.loc[al_data['W'].idxmax(), 'Tm'] if not al_data.empty else 'N/A',
-                'nl_leader': nl_data.loc[nl_data['W'].idxmax(), 'Tm'] if not nl_data.empty else 'N/A',
-                'best_record': combined.loc[combined['W'].idxmax(), 'Tm'] if not combined.empty else 'N/A',
-                'al_leader_wins': int(al_data['W'].max()) if not al_data.empty else 0,
-                'nl_leader_wins': int(nl_data['W'].max()) if not nl_data.empty else 0,
-                'best_record_wins': int(combined['W'].max()) if not combined.empty else 0
-            }
-            
-            # Save summary as JSON for JavaScript to use
-            import json
-            with open("docs/standings_summary.json", "w") as f:
-                json.dump(summary_stats, f)
-            print("✓ Created standings summary statistics")
-            
-        except Exception as e:
-            print(f"Error creating summary stats: {e}")
                 
     else:
         print("Warning: Cannot create wins charts - missing required columns")
