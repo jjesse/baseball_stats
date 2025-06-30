@@ -195,7 +195,7 @@ for i, df in enumerate(division_standings):
     if 'W' not in df.columns:
         # Try to find wins column (usually second or third column)
         for col in df.columns:
-            if 'w' in str(col).lower() or any(char.isdigit() for char in str(df[col].iloc[0])):
+            if 'w' in str(col).lower() or any(char.isdigit() for char in str(df[col].iloc[0]) if pd.notna(df[col].iloc[0])):
                 df = df.rename(columns={col: 'W'})
                 break
     
@@ -206,7 +206,7 @@ for i, df in enumerate(division_standings):
         
     if 'W' not in df.columns:
         print(f"Warning: Cannot find wins in {name}. Adding placeholder data.")
-        df['W'] = range(90, 90 - len(df), -1)  # Mock wins data
+        df['W'] = range(15, 15 - len(df), -1)  # Early season mock wins data
     
     try:
         # Clean and save individual division files
@@ -220,9 +220,8 @@ for i, df in enumerate(division_standings):
         # Clean up the dataframe - remove any rows with all zeros or NaN values
         # Remove rows where team name is empty, NaN, or looks like a header/footer
         df = df.dropna(subset=['Tm'])  # Remove rows with no team name
-        df = df[df['Tm'].str.len() > 0]  # Remove empty team names
-        df = df[~df['Tm'].str.contains('Total|Average|League|Division|Conference', case=False, na=False)]  # Remove summary rows
-        df = df[df['Tm'] != 'Tm']  # Remove header rows that got mixed in
+        df = df[df['Tm'].astype(str).str.len() > 0]  # Remove empty team names
+        df = df[~df['Tm'].astype(str).str.contains('Total|Average|League|Division|Conference|Tm', case=False, na=False)]  # Remove summary rows
         
         # Remove rows where all numeric columns are 0 (likely footer/summary rows)
         numeric_cols = ['W', 'L'] if 'L' in df.columns else ['W']
@@ -231,8 +230,9 @@ for i, df in enumerate(division_standings):
                 df[col] = pd.to_numeric(df[col], errors='coerce').fillna(0)
         
         # Filter out rows where all numeric values are 0
-        numeric_sum = df[numeric_cols].sum(axis=1)
-        df = df[numeric_sum > 0]
+        if len(numeric_cols) > 0:
+            numeric_sum = df[numeric_cols].sum(axis=1)
+            df = df[numeric_sum > 0]
         
         # Reset index to clean up row numbering
         df = df.reset_index(drop=True)
@@ -405,15 +405,13 @@ try:
         
         # Remove any problematic rows
         plot_data = plot_data[plot_data['W'] > 0]  # Only teams with wins
-        plot_data = plot_data[plot_data['Tm'].str.len() >= 2]  # Valid team names
+        plot_data = plot_data[plot_data['Tm'].astype(str).str.len() >= 2]  # Valid team names
         plot_data = plot_data.dropna(subset=['Tm'])  # No missing team names
         
         # Sort by wins for better visualization
         plot_data = plot_data.sort_values('W', ascending=True)
         
-        if plot_data.empty:
-            print("Warning: No valid data for overall wins chart")
-        else:
+        if not plot_data.empty:
             # Create overall wins chart
             plt.figure(figsize=(15, 8))
             
@@ -437,66 +435,67 @@ try:
             plt.close()
             print(f"✓ Created overall wins chart with {len(plot_data)} teams")
 
-        # Create individual division charts
-        for i, df in enumerate(all_dfs):
-            if i >= len(division_names):
-                break
+            # Create individual division charts
+            for i, df in enumerate(all_dfs):
+                if i >= len(division_names):
+                    break
+                    
+                div_name = division_names[i]
                 
-            div_name = division_names[i]
-            
-            if 'Tm' in df.columns and 'W' in df.columns and not df.empty:
-                try:
-                    # Additional cleaning for chart data
-                    chart_data = df.copy()
-                    
-                    # Ensure numeric data
-                    chart_data['W'] = pd.to_numeric(chart_data['W'], errors='coerce').fillna(0)
-                    
-                    # Remove any remaining problematic rows
-                    chart_data = chart_data[chart_data['W'] > 0]  # Only teams with wins
-                    chart_data = chart_data[chart_data['Tm'].str.len() >= 2]  # Valid team names
-                    
-                    # Limit to 5 teams per division (normal division size)
-                    chart_data = chart_data.head(5)
-                    
-                    if chart_data.empty:
-                        print(f"Warning: No valid data for {div_name} chart")
+                if 'Tm' in df.columns and 'W' in df.columns and not df.empty:
+                    try:
+                        # Additional cleaning for chart data
+                        chart_data = df.copy()
+                        
+                        # Ensure numeric data
+                        chart_data['W'] = pd.to_numeric(chart_data['W'], errors='coerce').fillna(0)
+                        
+                        # Remove any remaining problematic rows
+                        chart_data = chart_data[chart_data['W'] > 0]  # Only teams with wins
+                        chart_data = chart_data[chart_data['Tm'].astype(str).str.len() >= 2]  # Valid team names
+                        
+                        # Limit to 5 teams per division (normal division size)
+                        chart_data = chart_data.head(5)
+                        
+                        if not chart_data.empty:
+                            plt.figure(figsize=(10, 6))
+                            
+                            # Sort by wins for the division
+                            chart_data = chart_data.sort_values('W', ascending=False)
+                            
+                            # Create bars with team colors
+                            colors = plt.cm.Set2(range(len(chart_data)))
+                            bars = plt.bar(chart_data["Tm"], chart_data["W"], color=colors)
+                            
+                            # Format division name for title
+                            title_name = div_name.replace('_', ' ').title()
+                            plt.title(f"{title_name} - Team Wins", fontsize=14, fontweight='bold')
+                            plt.xlabel("Team", fontsize=12)
+                            plt.ylabel("Wins", fontsize=12)
+                            plt.xticks(rotation=45)
+                            
+                            # Add value labels on bars
+                            for bar in bars:
+                                height = bar.get_height()
+                                if height > 0:  # Only show labels for non-zero values
+                                    plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
+                                            f'{int(height)}', ha='center', va='bottom', fontsize=10)
+                            
+                            plt.tight_layout()
+                            chart_filename = f"docs/standings_{div_name}_wins_chart.png"
+                            plt.savefig(chart_filename, dpi=150, bbox_inches='tight')
+                            plt.close()
+                            print(f"✓ Created {div_name} wins chart with {len(chart_data)} teams")
+                        else:
+                            print(f"Warning: No valid data for {div_name} chart after cleaning")
+                            
+                    except Exception as e:
+                        print(f"Error creating {div_name} wins chart: {e}")
                         continue
-                    
-                    plt.figure(figsize=(10, 6))
-                    
-                    # Sort by wins for the division
-                    chart_data = chart_data.sort_values('W', ascending=False)
-                    
-                    # Create bars with team colors
-                    colors = plt.cm.Set2(range(len(chart_data)))
-                    bars = plt.bar(chart_data["Tm"], chart_data["W"], color=colors)
-                    
-                    # Format division name for title
-                    title_name = div_name.replace('_', ' ').title()
-                    plt.title(f"{title_name} - Team Wins", fontsize=14, fontweight='bold')
-                    plt.xlabel("Team", fontsize=12)
-                    plt.ylabel("Wins", fontsize=12)
-                    plt.xticks(rotation=45)
-                    
-                    # Add value labels on bars
-                    for bar in bars:
-                        height = bar.get_height()
-                        if height > 0:  # Only show labels for non-zero values
-                            plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
-                                    f'{int(height)}', ha='center', va='bottom', fontsize=10)
-                    
-                    plt.tight_layout()
-                    chart_filename = f"docs/standings_{div_name}_wins_chart.png"
-                    plt.savefig(chart_filename, dpi=150, bbox_inches='tight')
-                    plt.close()
-                    print(f"✓ Created {div_name} wins chart with {len(chart_data)} teams")
-                    
-                except Exception as e:
-                    print(f"Error creating {div_name} wins chart: {e}")
-                    continue
-            else:
-                print(f"Warning: Cannot create {div_name} wins chart - missing data")
+                else:
+                    print(f"Warning: Cannot create {div_name} wins chart - missing data")
+        else:
+            print("Warning: No valid data for overall wins chart")
                 
     else:
         print("Warning: Cannot create wins charts - missing required columns")
