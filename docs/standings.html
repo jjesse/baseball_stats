@@ -86,29 +86,109 @@
       cursor: pointer;
     }
 
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background-color: var(--tab-bg);
+      flex-wrap: wrap;
+    }
+    
+    .tabs button {
+      padding: 1rem;
+      border: none;
+      background-color: inherit;
+      cursor: pointer;
+      font-size: 1rem;
+      min-width: 120px;
+    }
+    
+    .tabs button.active {
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
+      font-weight: bold;
+    }
+
+    .content {
+      display: none;
+      padding: 1rem;
+    }
+    
+    .content.active {
+      display: block;
+    }
+
     .division-section {
       margin: 2rem auto;
-      max-width: 800px;
-      padding: 1rem;
+      max-width: 900px;
+      padding: 1.5rem;
       border: 1px solid #ccc;
       background-color: var(--card-bg);
       border-radius: 8px;
       transition: background-color 0.3s;
+      box-shadow: 0 2px 8px var(--link-shadow);
     }
 
     .division-section h2 {
       text-align: center;
-    }
-
-    iframe {
-      width: 100%;
-      height: 300px;
-      border: none;
+      margin-bottom: 1rem;
+      color: var(--text);
     }
 
     .chart-container {
       text-align: center;
-      margin-top: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .chart-container img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto 1rem auto;
+    }
+
+    iframe {
+      width: 100%;
+      height: 320px;
+      border: none;
+      border-radius: 8px;
+      background-color: var(--card-bg);
+    }
+
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 2rem auto;
+      max-width: 1000px;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px var(--link-shadow);
+      border: 1px solid #ddd;
+    }
+
+    [data-theme='dark'] .stat-card {
+      border: 1px solid #555;
+    }
+
+    .stat-card h3 {
+      margin: 0 0 0.5rem 0;
+      color: var(--text);
+      font-size: 1.1rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #007acc;
+    }
+
+    [data-theme='dark'] .stat-card .stat-value {
+      color: #4db8ff;
     }
 
     .footer {
@@ -117,8 +197,76 @@
       font-size: 0.9rem;
       color: #666;
     }
+
+    /* Info tooltips for standings terms */
+    .info-icon {
+      background: #333;
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-left: 0.3rem;
+    }
+
+    [data-theme='dark'] .info-icon {
+      background: #666;
+    }
+
+    .info-icon:hover {
+      background: #007acc;
+      transform: scale(1.1);
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 280px;
+      background-color: var(--card-bg);
+      color: var(--text);
+      text-align: left;
+      border-radius: 6px;
+      padding: 1rem;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -140px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid #ccc;
+    }
+
+    [data-theme='dark'] .tooltip .tooltiptext {
+      border: 1px solid #555;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
   </style>
   <script>
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll(".tabs button");
+      const contents = document.querySelectorAll(".content");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      contents.forEach(content => content.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName + "-btn").classList.add("active");
+    }
+
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
@@ -132,6 +280,8 @@
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
       
+      switchTab("overview");
+      
       fetch("last_updated_standings.txt")
         .then(res => res.text())
         .then(text => {
@@ -141,36 +291,6 @@
           console.error('Error loading update time:', err);
           document.getElementById("last-updated").innerText = "Update time unavailable";
         });
-
-      // Check if main wins chart exists, if not show fallback
-      const mainChart = document.querySelector('img[src="standings_wins_chart.png"]');
-      if (mainChart) {
-        mainChart.onerror = function() {
-          document.getElementById('fallback-standings').style.display = 'block';
-        };
-      }
-
-      // Check if individual division iframes are loading
-      setTimeout(() => {
-        const iframes = document.querySelectorAll('iframe[src*="standings_"]');
-        let loadedCount = 0;
-        
-        iframes.forEach(iframe => {
-          try {
-            // Simple check - if iframe content is accessible and has content
-            if (iframe.contentDocument || iframe.src) {
-              loadedCount++;
-            }
-          } catch (e) {
-            // Cross-origin or other iframe issues
-          }
-        });
-
-        // If no individual divisions loaded, show combined fallback
-        if (loadedCount === 0) {
-          document.getElementById('fallback-standings').style.display = 'block';
-        }
-      }, 3000);
     };
   </script>
 </head>
@@ -187,55 +307,154 @@
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
-  <div class="main-content">
-    <!-- Overall Wins Chart -->
-    <div class="division-section">
-      <h2>Team Wins Comparison</h2>
-      <div class="chart-container">
-        <img src="standings_wins_chart.png" alt="MLB Team Wins Chart" style="max-width: 100%; height: auto;">
+  <div class="tabs">
+    <button id="overview-btn" onclick="switchTab('overview')">Overview</button>
+    <button id="american-btn" onclick="switchTab('american')">American League</button>
+    <button id="national-btn" onclick="switchTab('national')">National League</button>
+    <button id="glossary-btn" onclick="switchTab('glossary')">Glossary</button>
+  </div>
+
+  <div id="overview" class="content">
+    <div class="chart-container">
+      <h2>League-Wide Team Wins Comparison</h2>
+      <img src="standings_wins_chart.png" alt="MLB Team Wins Chart">
+    </div>
+
+    <div class="overview-stats">
+      <div class="stat-card">
+        <h3>AL Leader
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>American League Leader</strong><br>
+              Team with the best record in the AL.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
+      </div>
+      <div class="stat-card">
+        <h3>NL Leader
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>National League Leader</strong><br>
+              Team with the best record in the NL.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
+      </div>
+      <div class="stat-card">
+        <h3>Best Record
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>Best Overall Record</strong><br>
+              Team with the most wins in MLB.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
+      </div>
+      <div class="stat-card">
+        <h3>Closest Division
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>Tightest Division Race</strong><br>
+              Division with smallest lead margin.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
       </div>
     </div>
 
-    <!-- AL East -->
+    <!-- Fallback combined table -->
+    <div class="division-section">
+      <h2>All Teams Combined</h2>
+      <iframe src="standings_all.html"></iframe>
+    </div>
+  </div>
+
+  <div id="american" class="content">
     <div class="division-section">
       <h2>AL East</h2>
-      <iframe src="standings_al_east.html" onerror="this.style.display='none'"></iframe>
+      <iframe src="standings_al_east.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_al_east_wins_chart.png" alt="AL East Wins Chart">
+      </div>
     </div>
 
-    <!-- AL Central -->
     <div class="division-section">
       <h2>AL Central</h2>
-      <iframe src="standings_al_central.html" onerror="this.style.display='none'"></iframe>
+      <iframe src="standings_al_central.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_al_central_wins_chart.png" alt="AL Central Wins Chart">
+      </div>
     </div>
 
-    <!-- AL West -->
     <div class="division-section">
       <h2>AL West</h2>
-      <iframe src="standings_al_west.html" onerror="this.style.display='none'"></iframe>
+      <iframe src="standings_al_west.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_al_west_wins_chart.png" alt="AL West Wins Chart">
+      </div>
     </div>
+  </div>
 
-    <!-- NL East -->
+  <div id="national" class="content">
     <div class="division-section">
       <h2>NL East</h2>
-      <iframe src="standings_nl_east.html" onerror="this.style.display='none'"></iframe>
+      <iframe src="standings_nl_east.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_nl_east_wins_chart.png" alt="NL East Wins Chart">
+      </div>
     </div>
 
-    <!-- NL Central -->
     <div class="division-section">
       <h2>NL Central</h2>
-      <iframe src="standings_nl_central.html" onerror="this.style.display='none'"></iframe>
+      <iframe src="standings_nl_central.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_nl_central_wins_chart.png" alt="NL Central Wins Chart">
+      </div>
     </div>
 
-    <!-- NL West -->
     <div class="division-section">
       <h2>NL West</h2>
-      <iframe src="standings_nl_west.html" onerror="this.style.display='none'"></iframe>
+      <iframe src="standings_nl_west.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_nl_west_wins_chart.png" alt="NL West Wins Chart">
+      </div>
     </div>
+  </div>
 
-    <!-- Fallback: Show combined standings if individual divisions don't load -->
-    <div class="division-section" id="fallback-standings" style="display: none;">
-      <h2>All Teams Combined</h2>
-      <iframe src="standings_all.html" style="height: 600px;"></iframe>
+  <div id="glossary" class="content">
+    <div style="max-width: 600px; margin: 0 auto; text-align: left;">
+      <h2 style="text-align: center;">Standings Glossary</h2>
+      
+      <div style="margin-bottom: 1.5rem;">
+        <h3>Basic Terms</h3>
+        <p><strong>W (Wins):</strong> Total games won by the team.</p>
+        <p><strong>L (Losses):</strong> Total games lost by the team.</p>
+        <p><strong>PCT (Winning Percentage):</strong> Wins divided by total games played.</p>
+        <p><strong>GB (Games Behind):</strong> How many games behind the division leader.</p>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <h3>Playoff Structure</h3>
+        <p><strong>Division Winners:</strong> First place team in each of the 6 divisions automatically qualify for playoffs.</p>
+        <p><strong>Wild Card:</strong> Next 3 best records in each league (6 total) qualify for Wild Card round.</p>
+        <p><strong>Playoff Format:</strong> Wild Card → Division Series → Championship Series → World Series</p>
+      </div>
+
+      <div>
+        <h3>Understanding the Race</h3>
+        <p><strong>Magic Number:</strong> Wins needed (or competitor losses) to clinch playoff spot.</p>
+        <p><strong>Elimination Number:</strong> Losses that would eliminate team from playoffs.</p>
+        <p><strong>Strength of Schedule:</strong> Difficulty of remaining games affects playoff chances.</p>
+      </div>
     </div>
   </div>
 
