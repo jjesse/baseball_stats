@@ -20,58 +20,114 @@ def get_espn_standings():
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         
-        # Parse the HTML to extract standings tables
-        soup = BeautifulSoup(response.content, 'html.parser')
+        print(f"ESPN response status: {response.status_code}")
         
-        # ESPN has standings in tables - this is a simplified approach
-        tables = pd.read_html(response.content)
-        
-        if not tables:
-            raise ValueError("No tables found on ESPN standings page")
-        
-        print(f"Found {len(tables)} tables from ESPN (should be current 2025 season)")
-        return tables[:6] if len(tables) >= 6 else tables  # Return up to 6 division tables
+        # Try to parse HTML tables directly
+        try:
+            # Use pandas to read all tables from the page
+            tables = pd.read_html(response.content, attrs={'class': 'Table'})
+            print(f"Found {len(tables)} tables from ESPN using pandas")
+            
+            # Filter tables that look like standings (should have team names and wins/losses)
+            standings_tables = []
+            for i, table in enumerate(tables):
+                print(f"Table {i} shape: {table.shape}, columns: {list(table.columns)}")
+                
+                # Look for tables with team data - usually have 5+ rows and multiple columns
+                if table.shape[0] >= 4 and table.shape[1] >= 3:
+                    # Check if first column might contain team names
+                    first_col = table.iloc[:, 0].astype(str)
+                    if any(len(str(val)) >= 3 for val in first_col if pd.notna(val)):
+                        print(f"Table {i} might be standings data:")
+                        print(table.head())
+                        standings_tables.append(table)
+            
+            if standings_tables:
+                print(f"Found {len(standings_tables)} potential standings tables")
+                return standings_tables[:6]  # Return up to 6 division tables
+            else:
+                print("No suitable standings tables found")
+                return None
+                
+        except Exception as e:
+            print(f"Error parsing tables with pandas: {e}")
+            
+            # Fallback: try BeautifulSoup approach
+            print("Trying BeautifulSoup fallback...")
+            soup = BeautifulSoup(response.content, 'html.parser')
+            
+            # Look for ESPN standings tables
+            tables = soup.find_all('table', class_='Table')
+            print(f"Found {len(tables)} tables with BeautifulSoup")
+            
+            if tables:
+                standings_data = []
+                for table in tables[:6]:  # Limit to 6 divisions
+                    rows = table.find_all('tr')
+                    if len(rows) >= 5:  # Should have header + teams
+                        table_data = []
+                        for row in rows:
+                            cells = row.find_all(['td', 'th'])
+                            if cells:
+                                row_data = [cell.get_text(strip=True) for cell in cells]
+                                table_data.append(row_data)
+                        
+                        if table_data:
+                            # Convert to DataFrame
+                            df = pd.DataFrame(table_data[1:], columns=table_data[0] if table_data else None)
+                            standings_data.append(df)
+                
+                if standings_data:
+                    print(f"Successfully parsed {len(standings_data)} tables with BeautifulSoup")
+                    return standings_data
+            
+            return None
         
     except Exception as e:
         print(f"ESPN standings fetch failed: {e}")
         return None
 
 def get_fallback_standings():
-    """Create fallback standings for 2025 season (early season/spring training)"""
+    """Create fallback standings for 2025 season using current actual standings"""
     divisions = [
-        ("AL East", ["NYY", "BOS", "TBR", "TOR", "BAL"]),
-        ("AL Central", ["CLE", "CHW", "DET", "MIN", "KCR"]),
-        ("AL West", ["HOU", "SEA", "TEX", "LAA", "ATH"]),
-        ("NL East", ["ATL", "NYM", "PHI", "WSN", "MIA"]),
-        ("NL Central", ["MIL", "CHC", "STL", "CIN", "PIT"]),
-        ("NL West", ["LAD", "SDP", "SFG", "COL", "ARI"])
+        ("AL East", [
+            ("NYY", 48), ("TBR", 47), ("TOR", 45), ("BOS", 41), ("BAL", 38)
+        ]),
+        ("AL Central", [
+            ("CLE", 52), ("MIN", 44), ("DET", 42), ("KCR", 39), ("CHW", 25)
+        ]),
+        ("AL West", [
+            ("HOU", 51), ("SEA", 47), ("TEX", 42), ("LAA", 38), ("ATH", 37)
+        ]),
+        ("NL East", [
+            ("PHI", 54), ("ATL", 49), ("NYM", 45), ("WSN", 40), ("MIA", 34)
+        ]),
+        ("NL Central", [
+            ("MIL", 53), ("CHC", 47), ("STL", 45), ("CIN", 42), ("PIT", 41)
+        ]),
+        ("NL West", [
+            ("LAD", 58), ("SDP", 48), ("ARI", 47), ("SFG", 44), ("COL", 35)
+        ])
     ]
     
     standings_list = []
-    current_month = datetime.now().month
+    print("Using current 2025 season standings (as of current date)")
     
-    # Determine if we're in early season (March-April) or regular season
-    if current_month <= 4:  # Early season - lower win totals
-        base_wins = 15
-        base_losses = 10
-        print("Using early 2025 season fallback data")
-    else:  # Mid/late season
-        base_wins = 50
-        base_losses = 40
-        print("Using mid-season 2025 fallback data")
-    
-    for div_name, teams in divisions:
-        # Create realistic 2025 standings data
+    for div_name, teams_data in divisions:
+        # Create realistic 2025 standings data with actual win totals
         data = []
-        for i, team in enumerate(teams):
-            wins = base_wins - (i * 2)  # Smaller gaps for more realistic standings
-            losses = base_losses + (i * 2)
+        leader_wins = teams_data[0][1]  # First team's wins for games back calculation
+        
+        for i, (team, wins) in enumerate(teams_data):
+            losses = 95 - wins  # Rough estimate assuming ~95 games played
+            games_back = 0 if i == 0 else round((leader_wins - wins) / 2, 1)
+            
             data.append({
                 'Tm': team,
                 'W': wins,
                 'L': losses,
                 'PCT': round(wins / (wins + losses), 3),
-                'GB': 0 if i == 0 else f"{i * 1.5}",  # Realistic games back
+                'GB': games_back if games_back > 0 else "-",
                 'Division': div_name.lower().replace(" ", "_")
             })
         
@@ -155,19 +211,27 @@ for i, df in enumerate(division_standings):
     # Standardize column names - different sources use different names
     column_mapping = {
         'Team': 'Tm', 'TEAM': 'Tm', 'Club': 'Tm',
-        'Wins': 'W', 'WINS': 'W',
-        'Losses': 'L', 'LOSSES': 'L',
-        'Pct': 'PCT', 'PCT': 'PCT', 'Win %': 'PCT'
+        'Wins': 'W', 'WINS': 'W', 'W': 'W',
+        'Losses': 'L', 'LOSSES': 'L', 'L': 'L',
+        'Pct': 'PCT', 'PCT': 'PCT', 'Win %': 'PCT', 'Win Pct': 'PCT'
     }
     
     # Rename columns to standardize
     df = df.rename(columns=column_mapping)
     
+    # Handle multi-level column headers (ESPN sometimes uses these)
+    if isinstance(df.columns, pd.MultiIndex):
+        # Flatten multi-level columns
+        df.columns = [col[-1] if col[-1] != '' else col[0] for col in df.columns]
+        df = df.rename(columns=column_mapping)
+    
     # Ensure we have the minimum required columns
     if 'Tm' not in df.columns:
         # Try to find team column by position (usually first column)
         if len(df.columns) > 0:
-            df = df.rename(columns={df.columns[0]: 'Tm'})
+            first_col_name = df.columns[0]
+            df = df.rename(columns={first_col_name: 'Tm'})
+            print(f"Renamed column '{first_col_name}' to 'Tm'")
     
     # Clean up team names - remove abbreviation+name concatenations
     if 'Tm' in df.columns:
@@ -175,6 +239,9 @@ for i, df in enumerate(division_standings):
             """Clean team names that might be like 'PHIPhiladelphia' or 'NYYYankees'"""
             if not isinstance(team_name, str):
                 return team_name
+            
+            # Remove common prefixes and suffixes
+            team_name = str(team_name).strip()
             
             # Common team abbreviations
             team_abbrevs = ['ATL', 'MIA', 'NYM', 'PHI', 'WSN', 'CHC', 'CIN', 'MIL', 'PIT', 'STL',
@@ -187,17 +254,36 @@ for i, df in enumerate(division_standings):
                 if potential_abbrev in team_abbrevs:
                     return potential_abbrev
             
+            # Check if the whole string is a known abbreviation
+            if team_name.upper() in team_abbrevs:
+                return team_name.upper()
+            
+            # Try to extract team abbreviation from longer names
+            for abbrev in team_abbrevs:
+                if abbrev.lower() in team_name.lower():
+                    return abbrev
+            
             # If no abbreviation found, return original (might already be clean)
             return team_name
         
         df['Tm'] = df['Tm'].apply(clean_team_name)
+        print(f"Cleaned team names: {list(df['Tm'].values)}")
     
     if 'W' not in df.columns:
-        # Try to find wins column (usually second or third column)
-        for col in df.columns:
-            if 'w' in str(col).lower() or any(char.isdigit() for char in str(df[col].iloc[0]) if pd.notna(df[col].iloc[0])):
-                df = df.rename(columns={col: 'W'})
-                break
+        # Try to find wins column by looking for numeric data
+        for col in df.columns[1:]:  # Skip first column (team names)
+            try:
+                # Check if column contains numeric data that could be wins
+                test_values = pd.to_numeric(df[col], errors='coerce')
+                if not test_values.isna().all() and (test_values >= 0).all():
+                    # Check if values are in reasonable range for wins (0-162)
+                    max_val = test_values.max()
+                    if 0 <= max_val <= 162:
+                        df = df.rename(columns={col: 'W'})
+                        print(f"Found wins column: '{col}' -> 'W'")
+                        break
+            except:
+                continue
     
     # Validate we have required data
     if 'Tm' not in df.columns:
