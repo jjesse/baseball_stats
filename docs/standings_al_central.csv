@@ -1,6 +1,6 @@
-Tm,W,L,PCT,GB,Division
-DET,53,32,0.624,-,unknown
-CLE,40,42,0.488,11.5,unknown
-MIN,40,44,0.476,12.5,unknown
-Kansas City Royals,39,46,0.459,14.0,unknown
-Chicago White Sox,28,56,0.333,24.5,unknown
+Team,W,L,PCT,GB,Division
+DETROIT TIGERS,53,32,0.624,-,unknown
+CLEVELAND GUARDIANS,40,42,0.488,11.5,unknown
+MINNESOTA TWINS,40,44,0.476,12.5,unknown
+KANSAS CITY ROYALS,39,46,0.459,14.0,unknown
+CHICAGO WHITE SOX,28,56,0.333,24.5,unknown

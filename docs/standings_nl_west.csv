@@ -1,6 +1,6 @@
-Tm,W,L,PCT,GB,Division
-Los Angeles Dodgers,53,32,0.624,-,unknown
-San Diego Padres,45,39,0.536,7.5,unknown
-San Francisco Giants,45,40,0.529,8.0,unknown
-ARI,42,42,0.5,10.5,unknown
-COL,19,65,0.226,33.5,unknown
+Team,W,L,PCT,GB,Division
+LOS ANGELES DODGERS,53,32,0.624,-,unknown
+SAN DIEGO PADRES,45,39,0.536,7.5,unknown
+SAN FRANCISCO GIANTS,45,40,0.529,8.0,unknown
+ARIZONA DIAMONDBACKS,42,42,0.5,10.5,unknown
+COLORADO ROCKIES,19,65,0.226,33.5,unknown

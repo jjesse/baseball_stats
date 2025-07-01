@@ -1,31 +1,31 @@
-Tm,W,L,PCT,GB,Division
-New York Yankees,48,36,0.571,-,al_east
-Tampa Bay Rays,47,38,0.553,1.5,al_east
-TOR,46,38,0.548,2.0,al_east
-BOS,42,44,0.488,7.0,al_east
-BAL,37,47,0.44,11.0,al_east
-DET,53,32,0.624,-,al_central
-CLE,40,42,0.488,11.5,al_central
-MIN,40,44,0.476,12.5,al_central
-Kansas City Royals,39,46,0.459,14.0,al_central
-Chicago White Sox,28,56,0.333,24.5,al_central
-HOU,50,34,0.595,-,al_west
-SEA,44,40,0.524,6.0,al_west
-Los Angeles Angels,41,42,0.494,8.5,al_west
-TEX,41,44,0.482,9.5,al_west
-ATH,35,52,0.402,16.5,al_west
-PHI,50,35,0.588,-,nl_east
-New York Mets,48,37,0.565,2.0,nl_east
-ATL,38,45,0.458,11.0,nl_east
-MIA,37,45,0.451,11.5,nl_east
-Washington Nationals,35,49,0.417,14.5,nl_east
-Chicago Cubs,49,35,0.583,-,nl_central
-MIL,47,37,0.56,2.0,nl_central
-St. Louis Cardinals,47,39,0.547,3.0,nl_central
-CIN,44,41,0.518,5.5,nl_central
-PIT,36,50,0.419,14.0,nl_central
-Los Angeles Dodgers,53,32,0.624,-,nl_west
-San Diego Padres,45,39,0.536,7.5,nl_west
-San Francisco Giants,45,40,0.529,8.0,nl_west
-ARI,42,42,0.5,10.5,nl_west
-COL,19,65,0.226,33.5,nl_west
+Team,W,L,PCT,GB,Division
+NEW YORK YANKEES,48,36,0.571,-,al_east
+TAMPA BAY RAYS,47,38,0.553,1.5,al_east
+TORONTO BLUE JAYS,46,38,0.548,2.0,al_east
+BOSTON RED SOX,42,44,0.488,7.0,al_east
+BALTIMORE ORIOLES,37,47,0.44,11.0,al_east
+DETROIT TIGERS,53,32,0.624,-,al_central
+CLEVELAND GUARDIANS,40,42,0.488,11.5,al_central
+MINNESOTA TWINS,40,44,0.476,12.5,al_central
+KANSAS CITY ROYALS,39,46,0.459,14.0,al_central
+CHICAGO WHITE SOX,28,56,0.333,24.5,al_central
+HOUSTON ASTROS,50,34,0.595,-,al_west
+SEATTLE MARINERS,44,40,0.524,6.0,al_west
+LOS ANGELES ANGELS,41,42,0.494,8.5,al_west
+TEXAS RANGERS,41,44,0.482,9.5,al_west
+ATHLETICS,35,52,0.402,16.5,al_west
+PHILADELPHIA PHILLIES,50,35,0.588,-,nl_east
+NEW YORK METS,48,37,0.565,2.0,nl_east
+ATLANTA BRAVES,38,45,0.458,11.0,nl_east
+MIAMI MARLINS,37,45,0.451,11.5,nl_east
+WASHINGTON NATIONALS,35,49,0.417,14.5,nl_east
+CHICAGO CUBS,49,35,0.583,-,nl_central
+MILWAUKEE BREWERS,47,37,0.56,2.0,nl_central
+ST. LOUIS CARDINALS,47,39,0.547,3.0,nl_central
+CINCINNATI REDS,44,41,0.518,5.5,nl_central
+PITTSBURGH PIRATES,36,50,0.419,14.0,nl_central
+LOS ANGELES DODGERS,53,32,0.624,-,nl_west
+SAN DIEGO PADRES,45,39,0.536,7.5,nl_west
+SAN FRANCISCO GIANTS,45,40,0.529,8.0,nl_west
+ARIZONA DIAMONDBACKS,42,42,0.5,10.5,nl_west
+COLORADO ROCKIES,19,65,0.226,33.5,nl_west
