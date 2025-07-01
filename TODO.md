@@ -81,6 +81,7 @@ This project tracks, visualizes, and publishes MLB pitching and batting statisti
 - [ ] **Test the master workflow**: Run "Update All Stats (Complete Rebuild)" to verify all systems work
 - [ ] **Verify dark mode tables**: Confirm all generated tables display properly in both themes
 - [ ] **Check iframe sizing**: Ensure tables fit perfectly in their containers after regeneration
+- [ ] **Verify live standings data**: Confirm `standings_chart.py` pulls real-time 2025 standings from MLB.com/ESPN APIs, not fallback data
 
 ---
 

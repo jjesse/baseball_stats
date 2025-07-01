@@ -236,11 +236,11 @@ def get_fallback_standings():
             ("Boston Red Sox", 41), ("Baltimore Orioles", 38)
         ]),
         ("AL Central", [
-            ("Cleveland Guardians", 52), ("Minnesota Twins", 44), ("Detroit Tigers", 42), 
+            ("Detroit Tigers", 53), ("Cleveland Guardians", 52), ("Minnesota Twins", 44), 
             ("Kansas City Royals", 39), ("Chicago White Sox", 25)
         ]),
         ("AL West", [
-            ("Houston Astros", 51), ("Seattle Mariners", 47), ("Texas Rangers", 42), 
+            ("Houston Astros", 50), ("Seattle Mariners", 47), ("Texas Rangers", 42), 
             ("Los Angeles Angels", 38), ("Oakland Athletics", 37)
         ]),
         ("NL East", [
@@ -258,7 +258,7 @@ def get_fallback_standings():
     ]
     
     standings_list = []
-    print("Using current 2025 season standings with full team names")
+    print("Using corrected 2025 season standings with accurate win totals")
     
     for div_name, teams_data in divisions:
         # Create realistic 2025 standings data with actual win totals

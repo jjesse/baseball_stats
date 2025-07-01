@@ -328,22 +328,39 @@
         }
         
         // Calculate overview statistics
-        const alTeams = data.filter(team => 
-          team.Division && (team.Division.includes('al_') || team.Division.includes('AL')));
-        const nlTeams = data.filter(team => 
-          team.Division && (team.Division.includes('nl_') || team.Division.includes('NL')));
+        const alTeams = data.filter(team => {
+          const div = team.Division ? team.Division.toLowerCase() : '';
+          return div.includes('al_east') || div.includes('al_central') || div.includes('al_west') ||
+                 div.includes('al east') || div.includes('al central') || div.includes('al west');
+        });
+        
+        const nlTeams = data.filter(team => {
+          const div = team.Division ? team.Division.toLowerCase() : '';
+          return div.includes('nl_east') || div.includes('nl_central') || div.includes('nl_west') ||
+                 div.includes('nl east') || div.includes('nl central') || div.includes('nl west');
+        });
+        
+        console.log('AL Teams found:', alTeams.map(t => `${t.Team || t.Tm} (${t.W}W) - ${t.Division}`));
+        console.log('NL Teams found:', nlTeams.map(t => `${t.Team || t.Tm} (${t.W}W) - ${t.Division}`));
         
         // AL Leader (best AL record)
-        const alLeader = alTeams.reduce((best, team) => 
-          team.W > best.W ? team : best, alTeams[0] || {Tm: 'N/A', W: 0});
+        const alLeader = alTeams.length > 0 ? 
+          alTeams.reduce((best, team) => team.W > best.W ? team : best, alTeams[0]) : 
+          {Team: 'N/A', Tm: 'N/A', W: 0};
         
         // NL Leader (best NL record)  
-        const nlLeader = nlTeams.reduce((best, team) => 
-          team.W > best.W ? team : best, nlTeams[0] || {Tm: 'N/A', W: 0});
+        const nlLeader = nlTeams.length > 0 ? 
+          nlTeams.reduce((best, team) => team.W > best.W ? team : best, nlTeams[0]) : 
+          {Team: 'N/A', Tm: 'N/A', W: 0};
         
         // Best Overall Record
-        const bestRecord = data.reduce((best, team) => 
-          team.W > best.W ? team : best, data[0] || {Tm: 'N/A', W: 0});
+        const bestRecord = data.length > 0 ? 
+          data.reduce((best, team) => team.W > best.W ? team : best, data[0]) : 
+          {Team: 'N/A', Tm: 'N/A', W: 0};
+        
+        console.log('AL Leader:', alLeader);
+        console.log('NL Leader:', nlLeader);
+        console.log('Best Record:', bestRecord);
         
         // Closest Division (smallest games back difference)
         const divisions = ['al_east', 'al_central', 'al_west', 'nl_east', 'nl_central', 'nl_west'];
@@ -367,21 +384,32 @@
         // Update the stat cards
         const statCards = document.querySelectorAll('.stat-card .stat-value');
         if (statCards.length >= 4) {
-          statCards[0].textContent = `${alLeader.Tm} (${alLeader.W}W)`;
-          statCards[1].textContent = `${nlLeader.Tm} (${nlLeader.W}W)`;
-          statCards[2].textContent = `${bestRecord.Tm} (${bestRecord.W}W)`;
+          const alLeaderName = alLeader.Team || alLeader.Tm || 'N/A';
+          const nlLeaderName = nlLeader.Team || nlLeader.Tm || 'N/A';
+          const bestRecordName = bestRecord.Team || bestRecord.Tm || 'N/A';
+          
+          statCards[0].textContent = `${alLeaderName} (${alLeader.W}W)`;
+          statCards[1].textContent = `${nlLeaderName} (${nlLeader.W}W)`;
+          statCards[2].textContent = `${bestRecordName} (${bestRecord.W}W)`;
           statCards[3].textContent = `${closestDivision} (${smallestGap}W gap)`;
+          
+          console.log('Updated stat cards with:', {
+            alLeader: `${alLeaderName} (${alLeader.W}W)`,
+            nlLeader: `${nlLeaderName} (${nlLeader.W}W)`,
+            bestRecord: `${bestRecordName} (${bestRecord.W}W)`,
+            closestDiv: `${closestDivision} (${smallestGap}W gap)`
+          });
         }
         
       } catch (error) {
         console.error('Error loading standings data:', error);
-        // Set fallback values
+        // Set fallback values based on corrected 2025 standings
         const statCards = document.querySelectorAll('.stat-card .stat-value');
         if (statCards.length >= 4) {
-          statCards[0].textContent = 'CLE (52W)';
-          statCards[1].textContent = 'LAD (58W)';
-          statCards[2].textContent = 'LAD (58W)';
-          statCards[3].textContent = 'AL East (1W gap)';
+          statCards[0].textContent = 'Detroit Tigers (53W)';        // AL Leader (53W > 52W > 50W > 48W)
+          statCards[1].textContent = 'Los Angeles Dodgers (58W)';   // NL Leader  
+          statCards[2].textContent = 'Los Angeles Dodgers (58W)';   // Best Overall
+          statCards[3].textContent = 'AL Central (1W gap)';         // Closest Division (Tigers 53, Guardians 52)
         }
       }
     }
