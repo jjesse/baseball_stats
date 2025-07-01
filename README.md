@@ -13,6 +13,11 @@ A comprehensive MLB statistics dashboard that automatically tracks pitching, bat
 ### 🎨 User Experience
 - **Responsive Design**: Works seamlessly on desktop and mobile
 - **Dark/Light Themes**: Full dark mode support with readable tables, user preference saved in localStorage
+- **Interactive Tables**: Search, sort, and filter all statistical data in real-time
+- **Advanced Search**: Find specific players instantly across all stats
+- **Smart Filtering**: Filter by team, performance level, or custom criteria
+- **Column Sorting**: Click any column header to sort data ascending/descending
+- **Pagination**: Efficiently browse through large datasets
 - **Educational Tooltips**: Hover over "?" icons for detailed stat explanations
 - **Performance Benchmarks**: Learn what constitutes excellent/good/average performance
 - **Comprehensive Glossary**: Complete explanation of all tracked metrics
@@ -38,8 +43,11 @@ baseball_stats/
 │   ├── pitching.html              # Pitching stats dashboard
 │   ├── batting.html               # Batting stats dashboard
 │   ├── standings.html             # Team standings
+│   ├── interactive-demo.html      # Interactive tables demo
+│   ├── interactive-table.js       # Interactive table functionality
+│   ├── interactive-table.css      # Interactive table styles
 │   ├── *.png                      # Generated charts
-│   ├── *.html                     # Generated data tables
+│   ├── *.html                     # Generated data tables (with search/sort)
 │   └── last_updated_*.txt         # Timestamp files
 ├── archive/                       # Historical data for trends
 │   ├── batting_*.csv             # Daily batting archives
@@ -54,6 +62,7 @@ baseball_stats/
 ├── standings_chart.py            # Standings data processor
 ├── trend_pitching.py             # Pitching trend analyzer
 ├── trend_batting.py              # Batting trend analyzer
+├── requirements.txt              # Python dependencies
 └── README.md                     # This file
 ```
 
@@ -143,6 +152,17 @@ Historical tracking shows:
 - Consistent navigation across all pages
 - Dark/light theme with user preference storage and readable table text
 - Professional chart styling with proper centering
+
+### Interactive Data Tables
+
+- **Real-time Search**: Instantly find players by name, team, or any stat value
+- **Smart Column Sorting**: Click any header to sort data (numeric or alphabetical)
+- **Advanced Filtering**: Filter by team, performance level, or custom criteria
+- **Pagination**: Browse large datasets efficiently with page controls
+- **Performance Indicators**: Visual cues for excellent/good/average performance
+- **Cross-platform**: Works seamlessly on desktop, tablet, and mobile
+- **Theme Integration**: All interactive features adapt to light/dark mode
+- **Demo Available**: Visit `/interactive-demo.html` to try all features
 
 ## 🤝 Contributing
 
