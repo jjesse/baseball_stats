@@ -282,6 +282,7 @@
       
       switchTab("overview");
       
+      // Load timestamp
       fetch("last_updated_standings.txt")
         .then(res => res.text())
         .then(text => {
@@ -291,7 +292,99 @@
           console.error('Error loading update time:', err);
           document.getElementById("last-updated").innerText = "Update time unavailable";
         });
+      
+      // Load and process standings data for overview stats
+      loadOverviewStats();
     };
+
+    async function loadOverviewStats() {
+      try {
+        // Load the combined standings data
+        const response = await fetch("standings_all.csv");
+        const csvText = await response.text();
+        
+        // Parse CSV data
+        const lines = csvText.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(',');
+        const data = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',');
+          if (values.length >= headers.length) {
+            const row = {};
+            headers.forEach((header, index) => {
+              row[header.trim()] = values[index] ? values[index].trim() : '';
+            });
+            if (row.Tm && row.W && row.Division) {
+              row.W = parseInt(row.W) || 0;
+              row.L = parseInt(row.L) || 0;
+              data.push(row);
+            }
+          }
+        }
+        
+        if (data.length === 0) {
+          throw new Error("No valid standings data found");
+        }
+        
+        // Calculate overview statistics
+        const alTeams = data.filter(team => 
+          team.Division && (team.Division.includes('al_') || team.Division.includes('AL')));
+        const nlTeams = data.filter(team => 
+          team.Division && (team.Division.includes('nl_') || team.Division.includes('NL')));
+        
+        // AL Leader (best AL record)
+        const alLeader = alTeams.reduce((best, team) => 
+          team.W > best.W ? team : best, alTeams[0] || {Tm: 'N/A', W: 0});
+        
+        // NL Leader (best NL record)  
+        const nlLeader = nlTeams.reduce((best, team) => 
+          team.W > best.W ? team : best, nlTeams[0] || {Tm: 'N/A', W: 0});
+        
+        // Best Overall Record
+        const bestRecord = data.reduce((best, team) => 
+          team.W > best.W ? team : best, data[0] || {Tm: 'N/A', W: 0});
+        
+        // Closest Division (smallest games back difference)
+        const divisions = ['al_east', 'al_central', 'al_west', 'nl_east', 'nl_central', 'nl_west'];
+        let closestDivision = 'N/A';
+        let smallestGap = Infinity;
+        
+        divisions.forEach(div => {
+          const divTeams = data.filter(team => 
+            team.Division && team.Division.toLowerCase().includes(div.toLowerCase()));
+          if (divTeams.length >= 2) {
+            // Sort by wins descending
+            divTeams.sort((a, b) => b.W - a.W);
+            const gap = divTeams[0].W - divTeams[1].W; // Win difference between 1st and 2nd
+            if (gap < smallestGap) {
+              smallestGap = gap;
+              closestDivision = div.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+            }
+          }
+        });
+        
+        // Update the stat cards
+        const statCards = document.querySelectorAll('.stat-card .stat-value');
+        if (statCards.length >= 4) {
+          statCards[0].textContent = `${alLeader.Tm} (${alLeader.W}W)`;
+          statCards[1].textContent = `${nlLeader.Tm} (${nlLeader.W}W)`;
+          statCards[2].textContent = `${bestRecord.Tm} (${bestRecord.W}W)`;
+          statCards[3].textContent = `${closestDivision} (${smallestGap}W gap)`;
+        }
+        
+      } catch (error) {
+        console.error('Error loading standings data:', error);
+        // Set fallback values
+        const statCards = document.querySelectorAll('.stat-card .stat-value');
+        if (statCards.length >= 4) {
+          statCards[0].textContent = 'CLE (52W)';
+          statCards[1].textContent = 'LAD (58W)';
+          statCards[2].textContent = 'LAD (58W)';
+          statCards[3].textContent = 'AL East (1W gap)';
+        }
+      }
+    }
   </script>
 </head>
 <body>

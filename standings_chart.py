@@ -232,27 +232,33 @@ def get_fallback_standings():
     """Create fallback standings for 2025 season using current actual standings"""
     divisions = [
         ("AL East", [
-            ("NYY", 48), ("TBR", 47), ("TOR", 45), ("BOS", 41), ("BAL", 38)
+            ("New York Yankees", 48), ("Tampa Bay Rays", 47), ("Toronto Blue Jays", 45), 
+            ("Boston Red Sox", 41), ("Baltimore Orioles", 38)
         ]),
         ("AL Central", [
-            ("CLE", 52), ("MIN", 44), ("DET", 42), ("KCR", 39), ("CHW", 25)
+            ("Cleveland Guardians", 52), ("Minnesota Twins", 44), ("Detroit Tigers", 42), 
+            ("Kansas City Royals", 39), ("Chicago White Sox", 25)
         ]),
         ("AL West", [
-            ("HOU", 51), ("SEA", 47), ("TEX", 42), ("LAA", 38), ("ATH", 37)
+            ("Houston Astros", 51), ("Seattle Mariners", 47), ("Texas Rangers", 42), 
+            ("Los Angeles Angels", 38), ("Oakland Athletics", 37)
         ]),
         ("NL East", [
-            ("PHI", 54), ("ATL", 49), ("NYM", 45), ("WSN", 40), ("MIA", 34)
+            ("Philadelphia Phillies", 54), ("Atlanta Braves", 49), ("New York Mets", 45), 
+            ("Washington Nationals", 40), ("Miami Marlins", 34)
         ]),
         ("NL Central", [
-            ("MIL", 53), ("CHC", 47), ("STL", 45), ("CIN", 42), ("PIT", 41)
+            ("Milwaukee Brewers", 53), ("Chicago Cubs", 47), ("St. Louis Cardinals", 45), 
+            ("Cincinnati Reds", 42), ("Pittsburgh Pirates", 41)
         ]),
         ("NL West", [
-            ("LAD", 58), ("SDP", 48), ("ARI", 47), ("SFG", 44), ("COL", 35)
+            ("Los Angeles Dodgers", 58), ("San Diego Padres", 48), ("Arizona Diamondbacks", 47), 
+            ("San Francisco Giants", 44), ("Colorado Rockies", 35)
         ])
     ]
     
     standings_list = []
-    print("Using current 2025 season standings (as of current date)")
+    print("Using current 2025 season standings with full team names")
     
     for div_name, teams_data in divisions:
         # Create realistic 2025 standings data with actual win totals
@@ -264,7 +270,7 @@ def get_fallback_standings():
             games_back = 0 if i == 0 else round((leader_wins - wins) / 2, 1)
             
             data.append({
-                'Tm': team,
+                'Team': team,
                 'W': wins,
                 'L': losses,
                 'PCT': round(wins / (wins + losses), 3),
@@ -431,41 +437,75 @@ for i, df in enumerate(division_standings):
             df = df.rename(columns={first_col_name: 'Tm'})
             print(f"Renamed column '{first_col_name}' to 'Tm'")
     
-    # Clean up team names - remove abbreviation+name concatenations
+    # Clean up team names - convert abbreviations to full names
     if 'Tm' in df.columns:
-        def clean_team_name(team_name):
-            """Clean team names that might be like 'PHIPhiladelphia' or 'NYYYankees'"""
-            if not isinstance(team_name, str):
-                return team_name
+        def expand_team_name(team_abbrev):
+            """Convert team abbreviations to full team names"""
+            if not isinstance(team_abbrev, str):
+                return team_abbrev
             
-            # Remove common prefixes and suffixes
-            team_name = str(team_name).strip()
+            # Team abbreviation to full name mapping
+            team_names = {
+                # American League East
+                'NYY': 'New York Yankees',
+                'BOS': 'Boston Red Sox', 
+                'TBR': 'Tampa Bay Rays',
+                'TOR': 'Toronto Blue Jays',
+                'BAL': 'Baltimore Orioles',
+                
+                # American League Central
+                'CLE': 'Cleveland Guardians',
+                'CHW': 'Chicago White Sox',
+                'DET': 'Detroit Tigers',
+                'MIN': 'Minnesota Twins',
+                'KCR': 'Kansas City Royals',
+                
+                # American League West
+                'HOU': 'Houston Astros',
+                'SEA': 'Seattle Mariners',
+                'TEX': 'Texas Rangers',
+                'LAA': 'Los Angeles Angels',
+                'ATH': 'Oakland Athletics',
+                
+                # National League East
+                'ATL': 'Atlanta Braves',
+                'NYM': 'New York Mets',
+                'PHI': 'Philadelphia Phillies',
+                'WSN': 'Washington Nationals',
+                'MIA': 'Miami Marlins',
+                
+                # National League Central
+                'MIL': 'Milwaukee Brewers',
+                'CHC': 'Chicago Cubs',
+                'STL': 'St. Louis Cardinals',
+                'CIN': 'Cincinnati Reds',
+                'PIT': 'Pittsburgh Pirates',
+                
+                # National League West
+                'LAD': 'Los Angeles Dodgers',
+                'SDP': 'San Diego Padres',
+                'SFG': 'San Francisco Giants',
+                'COL': 'Colorado Rockies',
+                'ARI': 'Arizona Diamondbacks'
+            }
             
-            # Common team abbreviations
-            team_abbrevs = ['ATL', 'MIA', 'NYM', 'PHI', 'WSN', 'CHC', 'CIN', 'MIL', 'PIT', 'STL',
-                          'ARI', 'COL', 'LAD', 'SDP', 'SFG', 'BAL', 'BOS', 'NYY', 'TBR', 'TOR',
-                          'CHW', 'CLE', 'DET', 'KCR', 'MIN', 'HOU', 'LAA', 'ATH', 'SEA', 'TEX']
+            # Clean up input
+            team_abbrev = str(team_abbrev).strip().upper()
             
-            # Check if string starts with a 3-letter abbreviation
-            if len(team_name) > 3:
-                potential_abbrev = team_name[:3].upper()
-                if potential_abbrev in team_abbrevs:
-                    return potential_abbrev
-            
-            # Check if the whole string is a known abbreviation
-            if team_name.upper() in team_abbrevs:
-                return team_name.upper()
-            
-            # Try to extract team abbreviation from longer names
-            for abbrev in team_abbrevs:
-                if abbrev.lower() in team_name.lower():
-                    return abbrev
-            
-            # If no abbreviation found, return original (might already be clean)
-            return team_name
+            # Return full name if abbreviation exists, otherwise return original
+            return team_names.get(team_abbrev, team_abbrev)
         
-        df['Tm'] = df['Tm'].apply(clean_team_name)
-        print(f"Cleaned team names: {list(df['Tm'].values)}")
+        df['Team'] = df['Tm'].apply(expand_team_name)
+        # Remove the old Tm column
+        df = df.drop('Tm', axis=1)
+        # Reorder columns to put Team first
+        cols = ['Team'] + [col for col in df.columns if col != 'Team']
+        df = df[cols]
+        print(f"Expanded team names: {list(df['Team'].values)}")
+    
+    # Rename Tm column to Team for display
+    if 'Tm' in df.columns:
+        df = df.rename(columns={'Tm': 'Team'})
     
     if 'W' not in df.columns:
         # Try to find wins column by looking for numeric data
@@ -484,9 +524,12 @@ for i, df in enumerate(division_standings):
                 continue
     
     # Validate we have required data
-    if 'Tm' not in df.columns:
+    if 'Team' not in df.columns and 'Tm' not in df.columns:
         print(f"Warning: Cannot find team names in {name}. Columns: {list(df.columns)}")
         continue
+    
+    # Ensure we have Team column (handle both Tm and Team)
+    team_col = 'Team' if 'Team' in df.columns else 'Tm'
         
     if 'W' not in df.columns:
         print(f"Warning: Cannot find wins in {name}. Adding placeholder data.")
@@ -503,9 +546,10 @@ for i, df in enumerate(division_standings):
         
         # Clean up the dataframe - remove any rows with all zeros or NaN values
         # Remove rows where team name is empty, NaN, or looks like a header/footer
-        df = df.dropna(subset=['Tm'])  # Remove rows with no team name
-        df = df[df['Tm'].astype(str).str.len() > 0]  # Remove empty team names
-        df = df[~df['Tm'].astype(str).str.contains('Total|Average|League|Division|Conference|Tm', case=False, na=False)]  # Remove summary rows
+        team_col = 'Team' if 'Team' in df.columns else 'Tm'
+        df = df.dropna(subset=[team_col])  # Remove rows with no team name
+        df = df[df[team_col].astype(str).str.len() > 0]  # Remove empty team names
+        df = df[~df[team_col].astype(str).str.contains('Total|Average|League|Division|Conference|Team|Tm', case=False, na=False)]  # Remove summary rows
         
         # Remove rows where all numeric columns are 0 (likely footer/summary rows)
         numeric_cols = ['W', 'L'] if 'L' in df.columns else ['W']
@@ -680,7 +724,8 @@ except Exception as e:
 
 # Create wins chart if we have the required columns
 try:
-    if 'Tm' in combined.columns and 'W' in combined.columns:
+    team_col = 'Team' if 'Team' in combined.columns else 'Tm'
+    if team_col in combined.columns and 'W' in combined.columns:
         # Clean the combined data for charting
         plot_data = combined.copy()
         
@@ -689,20 +734,20 @@ try:
         
         # Remove any problematic rows
         plot_data = plot_data[plot_data['W'] > 0]  # Only teams with wins
-        plot_data = plot_data[plot_data['Tm'].astype(str).str.len() >= 2]  # Valid team names
-        plot_data = plot_data.dropna(subset=['Tm'])  # No missing team names
+        plot_data = plot_data[plot_data[team_col].astype(str).str.len() >= 2]  # Valid team names
+        plot_data = plot_data.dropna(subset=[team_col])  # No missing team names
         
         # Sort by wins for better visualization
         plot_data = plot_data.sort_values('W', ascending=True)
         
         if not plot_data.empty:
             # Create overall wins chart
-            plt.figure(figsize=(15, 8))
+            plt.figure(figsize=(15, 10))
             
             # Create color map by division
             colors = plt.cm.Set3(range(len(plot_data)))
             
-            bars = plt.barh(plot_data["Tm"], plot_data["W"], color=colors)
+            bars = plt.barh(plot_data[team_col], plot_data["W"], color=colors)
             plt.title("MLB Team Wins by Division", fontsize=16, fontweight='bold')
             plt.xlabel("Wins", fontsize=12)
             plt.ylabel("Team", fontsize=12)
@@ -726,7 +771,8 @@ try:
                     
                 div_name = division_names[i]
                 
-                if 'Tm' in df.columns and 'W' in df.columns and not df.empty:
+                team_col_div = 'Team' if 'Team' in df.columns else 'Tm'
+                if team_col_div in df.columns and 'W' in df.columns and not df.empty:
                     try:
                         # Additional cleaning for chart data
                         chart_data = df.copy()
@@ -736,30 +782,32 @@ try:
                         
                         # Remove any remaining problematic rows
                         chart_data = chart_data[chart_data['W'] > 0]  # Only teams with wins
-                        chart_data = chart_data[chart_data['Tm'].astype(str).str.len() >= 2]  # Valid team names
+                        chart_data = chart_data[chart_data[team_col_div].astype(str).str.len() >= 2]  # Valid team names
                         
                         # Limit to 5 teams per division (normal division size)
                         chart_data = chart_data.head(5)
                         
                         if not chart_data.empty:
-                            plt.figure(figsize=(10, 6))
+                            plt.figure(figsize=(12, 8))
                             
                             # Sort by wins for the division
                             chart_data = chart_data.sort_values('W', ascending=False)
                             
                             # Create bars with team colors
                             colors = plt.cm.Set2(range(len(chart_data)))
-                            bars = plt.bar(chart_data["Tm"], chart_data["W"], color=colors)
+                            bars = plt.bar(range(len(chart_data)), chart_data["W"], color=colors)
                             
                             # Format division name for title
                             title_name = div_name.replace('_', ' ').title()
                             plt.title(f"{title_name} - Team Wins", fontsize=14, fontweight='bold')
                             plt.xlabel("Team", fontsize=12)
                             plt.ylabel("Wins", fontsize=12)
-                            plt.xticks(rotation=45)
+                            
+                            # Use team names as x-axis labels, rotated for readability
+                            plt.xticks(range(len(chart_data)), chart_data[team_col_div], rotation=45, ha='right')
                             
                             # Add value labels on bars
-                            for bar in bars:
+                            for j, bar in enumerate(bars):
                                 height = bar.get_height()
                                 if height > 0:  # Only show labels for non-zero values
                                     plt.text(bar.get_x() + bar.get_width()/2., height + 0.5,
