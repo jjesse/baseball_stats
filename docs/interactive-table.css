@@ -1,0 +1,294 @@
+/* Interactive Table Styles for MLB Stats Dashboard */
+
+.interactive-controls {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 2px 4px var(--link-shadow);
+    border: 1px solid #ddd;
+}
+
+[data-theme='dark'] .interactive-controls {
+    border: 1px solid #555;
+}
+
+.table-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.search-container {
+    position: relative;
+    flex: 1;
+    min-width: 200px;
+}
+
+.table-search {
+    width: 100%;
+    padding: 0.5rem 2rem 0.5rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: var(--card-bg);
+    color: var(--text);
+    font-size: 14px;
+}
+
+[data-theme='dark'] .table-search {
+    border: 1px solid #555;
+    background-color: var(--card-bg);
+}
+
+.table-search:focus {
+    outline: none;
+    border-color: #007acc;
+    box-shadow: 0 0 4px rgba(0, 122, 204, 0.3);
+}
+
+.search-icon {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+}
+
+.filter-container {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.table-filter {
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: var(--card-bg);
+    color: var(--text);
+    font-size: 14px;
+    min-width: 120px;
+}
+
+[data-theme='dark'] .table-filter {
+    border: 1px solid #555;
+    background-color: var(--card-bg);
+}
+
+.table-filter:focus {
+    outline: none;
+    border-color: #007acc;
+}
+
+.results-info {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.page-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: var(--card-bg);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+[data-theme='dark'] .page-btn {
+    border: 1px solid #555;
+}
+
+.page-btn:hover:not(:disabled) {
+    background-color: #007acc;
+    color: white;
+    border-color: #007acc;
+}
+
+.page-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.page-info {
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Enhanced table styling for interactive features */
+.interactive-table {
+    margin-top: 1rem;
+}
+
+.interactive-table th {
+    position: relative;
+    user-select: none;
+}
+
+.interactive-table th:hover {
+    background-color: rgba(0, 122, 204, 0.1) !important;
+}
+
+.sort-indicator {
+    font-size: 12px;
+    margin-left: 4px;
+    opacity: 0.7;
+}
+
+.interactive-table th:hover .sort-indicator {
+    opacity: 1;
+}
+
+/* Highlight search results */
+.search-highlight {
+    background-color: rgba(255, 255, 0, 0.3);
+    padding: 0 2px;
+    border-radius: 2px;
+}
+
+[data-theme='dark'] .search-highlight {
+    background-color: rgba(255, 255, 0, 0.2);
+}
+
+/* Performance badges for stat filters */
+.performance-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
+.performance-elite {
+    background-color: #28a745;
+    color: white;
+}
+
+.performance-good {
+    background-color: #17a2b8;
+    color: white;
+}
+
+.performance-average {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.performance-below {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .search-container {
+        min-width: auto;
+    }
+    
+    .filter-container {
+        justify-content: space-between;
+    }
+    
+    .table-filter {
+        flex: 1;
+        min-width: auto;
+    }
+    
+    .pagination-controls {
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+/* Loading states */
+.table-loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text);
+    font-style: italic;
+}
+
+.table-loading::after {
+    content: "...";
+    animation: loading-dots 1.5s infinite;
+}
+
+@keyframes loading-dots {
+    0%, 20% { color: transparent; }
+    40% { color: var(--text); }
+    100% { color: transparent; }
+}
+
+/* Empty state */
+.table-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+    font-style: italic;
+}
+
+.table-empty::before {
+    content: "📊 ";
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Quick stats summary */
+.table-summary {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: var(--card-bg);
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    flex-wrap: wrap;
+}
+
+[data-theme='dark'] .table-summary {
+    border: 1px solid #555;
+}
+
+.summary-stat {
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+}
+
+.summary-stat .label {
+    font-size: 12px;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.summary-stat .value {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text);
+}
+
+.summary-stat .value.highlight {
+    color: #007acc;
+}

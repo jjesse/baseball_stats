@@ -38,17 +38,20 @@ def create_chart_and_table(df, stat, title, color, ascending=False):
     plt.savefig(chart_path)
     plt.close()
 
-    # Table HTML with dark mode support
+    # Table HTML with dark mode support and interactive features
     html_content = f"""
     <!DOCTYPE html>
     <html>
     <head>
+        <link rel="stylesheet" href="interactive-table.css">
         <style>
             :root {{
                 --bg: #ffffff;
                 --text: #333333;
                 --border: #dddddd;
                 --header-bg: #f8f9fa;
+                --card-bg: #ffffff;
+                --link-shadow: rgba(0, 0, 0, 0.1);
             }}
             
             [data-theme='dark'] {{
@@ -57,6 +60,8 @@ def create_chart_and_table(df, stat, title, color, ascending=False):
                 --border: #555555;
                 --header-bg: #2d2d2d;
                 --row-even: #2a2a2a;
+                --card-bg: #1f1f1f;
+                --link-shadow: rgba(255, 255, 255, 0.1);
             }}
             
             body {{ 
@@ -65,7 +70,7 @@ def create_chart_and_table(df, stat, title, color, ascending=False):
                 padding: 10px;
                 background-color: var(--bg);
                 color: var(--text);
-                overflow: hidden;
+                overflow: auto;
             }}
             
             .table-container {{
@@ -105,6 +110,7 @@ def create_chart_and_table(df, stat, title, color, ascending=False):
                 color: var(--text) !important;
             }}
         </style>
+        <script src="interactive-table.js"></script>
         <script>
             // Inherit theme from parent window
             window.onload = function() {{
@@ -113,15 +119,26 @@ def create_chart_and_table(df, stat, title, color, ascending=False):
                     if (parentTheme) {{
                         document.documentElement.setAttribute('data-theme', parentTheme);
                     }}
+                    
+                    // Initialize interactive table
+                    const table = document.querySelector('table');
+                    if (table) {{
+                        table.id = 'batting_{stat.lower().replace('%', 'pct')}_table';
+                        table.className = 'stats-table interactive-table';
+                        new InteractiveTable(table.id, {{
+                            itemsPerPage: 15,
+                            searchPlaceholder: "Search {stat} leaders..."
+                        }});
+                    }}
                 }} catch(e) {{
-                    // Cross-origin issues, use default
+                    console.log('Could not initialize interactive features:', e);
                 }}
             }};
         </script>
     </head>
     <body>
         <div class="table-container">
-            {top.to_html(index=False, classes='stats-table', escape=False)}
+            {top.to_html(index=False, classes='stats-table', escape=False, table_id=f'batting_{stat.lower().replace("%", "pct")}_table')}
         </div>
     </body>
     </html>
