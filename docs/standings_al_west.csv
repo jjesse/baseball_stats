@@ -1,16 +1,6 @@
-Tm,W
-East,15
-PHI,14
-NYM,13
-ATL,12
-MIA,11
-WSHWashington Nationals,10
-Central,9
-CHC,8
-MIL,7
-STL,6
-CIN,5
-PIT,4
-West,3
-LAD,2
-SDSan Diego Padres,1
+Tm,W,L,PCT,GB,Division
+HOU,51,44,0.537,-,al_west
+SEA,47,48,0.495,2.0,al_west
+TEX,42,53,0.442,4.5,al_west
+LAA,38,57,0.4,6.5,al_west
+ATH,37,58,0.389,7.0,al_west

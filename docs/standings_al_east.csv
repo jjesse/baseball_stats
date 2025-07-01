@@ -1,16 +1,6 @@
-Tm,W
-East,15
-NYY,14
-TBTampa Bay Rays,13
-TOR,12
-BOS,11
-BAL,10
-Central,9
-DET,8
-CLE,7
-MIN,6
-KCKansas City Royals,5
-CHW,4
-West,3
-HOU,2
-SEA,1
+Tm,W,L,PCT,GB,Division
+NYY,48,47,0.505,-,al_east
+TBR,47,48,0.495,0.5,al_east
+TOR,45,50,0.474,1.5,al_east
+BOS,41,54,0.432,3.5,al_east
+BAL,38,57,0.4,5.0,al_east
