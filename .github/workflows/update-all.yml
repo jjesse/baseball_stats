@@ -56,14 +56,28 @@ jobs:
             });
             console.log('Triggered standings update');
 
+      - name: Trigger MVP & Cy Young Predictions Update
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'update-mvp-cy-young.yml',
+              ref: 'main'
+            });
+            console.log('Triggered MVP & Cy Young predictions update');
+
       - name: Summary
         run: |
           echo "🚀 Complete rebuild initiated!"
           echo "✅ Triggered batting stats update"
           echo "✅ Triggered pitching stats update" 
           echo "✅ Triggered standings update"
+          echo "✅ Triggered MVP & Cy Young predictions update"
           echo ""
           echo "📝 Reason: ${{ github.event.inputs.reason }}"
           echo ""
-          echo "⏳ Check the Actions tab to monitor progress of all three workflows."
-          echo "💡 Workflows will run in parallel and may take 10-15 minutes total."
+          echo "⏳ Check the Actions tab to monitor progress of all four workflows."
+          echo "💡 Workflows will run in parallel and may take 15-20 minutes total."
