@@ -3,57 +3,409 @@
     {
       "Name": "Aaron Judge",
       "Team": "NYY",
-      "MVP_Probability": 85.2,
-      "Key_Stats": "37HR/96RBI/.311AVG"
+      "MVP_Probability": 67.2,
+      "Offensive_Score": 78.5,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "31HR/70RBI/.364AVG",
+      "wRC+": 227
     },
     {
-      "Name": "Mike Trout",
-      "Team": "LAA",
-      "MVP_Probability": 72.8,
-      "Key_Stats": "40HR/104RBI/.283AVG"
+      "Name": "Jeremy Pena",
+      "Team": "HOU",
+      "MVP_Probability": 56.4,
+      "Offensive_Score": 58.8,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "11HR/40RBI/.322AVG",
+      "wRC+": 146
+    },
+    {
+      "Name": "Jose Ramirez",
+      "Team": "CLE",
+      "MVP_Probability": 53.2,
+      "Offensive_Score": 53.1,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "13HR/38RBI/.297AVG",
+      "wRC+": 132
+    },
+    {
+      "Name": "Isaac Paredes",
+      "Team": "HOU",
+      "MVP_Probability": 51.8,
+      "Offensive_Score": 50.6,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "17HR/47RBI/.256AVG",
+      "wRC+": 133
+    },
+    {
+      "Name": "Cody Bellinger",
+      "Team": "NYY",
+      "MVP_Probability": 48.0,
+      "Offensive_Score": 43.6,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "12HR/44RBI/.269AVG",
+      "wRC+": 118
+    },
+    {
+      "Name": "Gunnar Henderson",
+      "Team": "BAL",
+      "MVP_Probability": 47.9,
+      "Offensive_Score": 43.4,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "10HR/29RBI/.276AVG",
+      "wRC+": 123
+    },
+    {
+      "Name": "Cal Raleigh",
+      "Team": "SEA",
+      "MVP_Probability": 47.7,
+      "Offensive_Score": 70.4,
+      "Team_Bonus": 30.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "33HR/71RBI/.268AVG",
+      "wRC+": 180
+    },
+    {
+      "Name": "Steven Kwan",
+      "Team": "CLE",
+      "MVP_Probability": 46.2,
+      "Offensive_Score": 40.3,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "6HR/26RBI/.295AVG",
+      "wRC+": 120
+    },
+    {
+      "Name": "Paul Goldschmidt",
+      "Team": "NYY",
+      "MVP_Probability": 46.2,
+      "Offensive_Score": 40.4,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "8HR/32RBI/.286AVG",
+      "wRC+": 118
+    },
+    {
+      "Name": "Jake Meyers",
+      "Team": "HOU",
+      "MVP_Probability": 45.2,
+      "Offensive_Score": 38.5,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "3HR/21RBI/.304AVG",
+      "wRC+": 119
     }
   ],
   "nl_mvp": [
     {
-      "Name": "Ronald Acu\u00f1a Jr.",
-      "Team": "ATL",
-      "MVP_Probability": 89.3,
-      "Key_Stats": "41HR/106RBI/.304AVG"
+      "Name": "Shohei Ohtani",
+      "Team": "LAD",
+      "MVP_Probability": 61.9,
+      "Offensive_Score": 68.9,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "30HR/56RBI/.284AVG",
+      "wRC+": 173
+    },
+    {
+      "Name": "Kyle Schwarber",
+      "Team": "PHI",
+      "MVP_Probability": 59.4,
+      "Offensive_Score": 64.4,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "26HR/58RBI/.247AVG",
+      "wRC+": 150
     },
     {
       "Name": "Freddie Freeman",
       "Team": "LAD",
-      "MVP_Probability": 71.5,
-      "Key_Stats": "22HR/89RBI/.298AVG"
+      "MVP_Probability": 55.5,
+      "Offensive_Score": 57.3,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "10HR/47RBI/.312AVG",
+      "wRC+": 145
+    },
+    {
+      "Name": "Matt Olson",
+      "Team": "ATL",
+      "MVP_Probability": 54.0,
+      "Offensive_Score": 54.5,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "16HR/56RBI/.267AVG",
+      "wRC+": 137
+    },
+    {
+      "Name": "Andy Pages",
+      "Team": "LAD",
+      "MVP_Probability": 53.5,
+      "Offensive_Score": 53.7,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "17HR/58RBI/.289AVG",
+      "wRC+": 129
+    },
+    {
+      "Name": "Max Muncy",
+      "Team": "LAD",
+      "MVP_Probability": 51.9,
+      "Offensive_Score": 50.7,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "13HR/55RBI/.250AVG",
+      "wRC+": 134
+    },
+    {
+      "Name": "Christian Yelich",
+      "Team": "MIL",
+      "MVP_Probability": 51.4,
+      "Offensive_Score": 49.9,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "17HR/61RBI/.261AVG",
+      "wRC+": 123
+    },
+    {
+      "Name": "Trea Turner",
+      "Team": "PHI",
+      "MVP_Probability": 50.1,
+      "Offensive_Score": 47.5,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "11HR/39RBI/.297AVG",
+      "wRC+": 122
+    },
+    {
+      "Name": "James Wood",
+      "Team": "WSN",
+      "MVP_Probability": 46.3,
+      "Offensive_Score": 67.9,
+      "Team_Bonus": 30.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "23HR/67RBI/.294AVG",
+      "wRC+": 162
+    },
+    {
+      "Name": "Nick Castellanos",
+      "Team": "PHI",
+      "MVP_Probability": 45.8,
+      "Offensive_Score": 39.7,
+      "Team_Bonus": 80.0,
+      "Narrative_Bonus": 0,
+      "Key_Stats": "10HR/46RBI/.279AVG",
+      "wRC+": 111
     }
   ],
   "al_cy_young": [
     {
-      "Name": "Gerrit Cole",
-      "Team": "NYY",
-      "CyYoung_Probability": 78.4,
-      "Key_Stats": "13W/3.50ERA/222K"
+      "Name": "Hunter Brown",
+      "Team": "HOU",
+      "CyYoung_Probability": 78.1,
+      "Pitching_Score": 78.6,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "9W/1.82ERA/126K",
+      "ERA": 1.82,
+      "WHIP": 0.9
     },
     {
-      "Name": "Shane Bieber",
-      "Team": "CLE",
-      "CyYoung_Probability": 71.2,
-      "Key_Stats": "13W/2.88ERA/198K"
+      "Name": "Max Fried",
+      "Team": "NYY",
+      "CyYoung_Probability": 76.8,
+      "Pitching_Score": 76.7,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "10W/2.13ERA/106K",
+      "ERA": 2.13,
+      "WHIP": 0.94
+    },
+    {
+      "Name": "Framber Valdez",
+      "Team": "HOU",
+      "CyYoung_Probability": 70.0,
+      "Pitching_Score": 66.2,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "9W/2.72ERA/108K",
+      "ERA": 2.72,
+      "WHIP": 1.13
+    },
+    {
+      "Name": "Carlos Rodon",
+      "Team": "NYY",
+      "CyYoung_Probability": 69.1,
+      "Pitching_Score": 64.7,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "9W/2.95ERA/123K",
+      "ERA": 2.95,
+      "WHIP": 1.0
+    },
+    {
+      "Name": "Tarik Skubal",
+      "Team": "DET",
+      "CyYoung_Probability": 68.6,
+      "Pitching_Score": 83.3,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "10W/2.15ERA/138K",
+      "ERA": 2.15,
+      "WHIP": 0.83
+    },
+    {
+      "Name": "Garrett Crochet",
+      "Team": "BOS",
+      "CyYoung_Probability": 66.0,
+      "Pitching_Score": 79.3,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "8W/2.34ERA/144K",
+      "ERA": 2.34,
+      "WHIP": 1.04
+    },
+    {
+      "Name": "Jacob deGrom",
+      "Team": "TEX",
+      "CyYoung_Probability": 63.4,
+      "Pitching_Score": 75.2,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "9W/2.13ERA/100K",
+      "ERA": 2.13,
+      "WHIP": 0.89
+    },
+    {
+      "Name": "Joe Ryan",
+      "Team": "MIN",
+      "CyYoung_Probability": 60.4,
+      "Pitching_Score": 70.7,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "8W/2.75ERA/108K",
+      "ERA": 2.75,
+      "WHIP": 0.87
+    },
+    {
+      "Name": "Kris Bubic",
+      "Team": "KCR",
+      "CyYoung_Probability": 59.7,
+      "Pitching_Score": 69.6,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "6W/2.25ERA/101K",
+      "ERA": 2.25,
+      "WHIP": 1.13
+    },
+    {
+      "Name": "Bryan Woo",
+      "Team": "SEA",
+      "CyYoung_Probability": 56.3,
+      "Pitching_Score": 64.3,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "7W/2.93ERA/96K",
+      "ERA": 2.93,
+      "WHIP": 0.97
     }
   ],
   "nl_cy_young": [
     {
-      "Name": "Spencer Strider",
-      "Team": "ATL",
-      "CyYoung_Probability": 92.1,
-      "Key_Stats": "20W/2.67ERA/281K"
+      "Name": "Zack Wheeler",
+      "Team": "PHI",
+      "CyYoung_Probability": 79.5,
+      "Pitching_Score": 80.8,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "8W/2.27ERA/136K",
+      "ERA": 2.27,
+      "WHIP": 0.91
     },
     {
-      "Name": "Sandy Alcantara",
-      "Team": "MIA",
-      "CyYoung_Probability": 76.8,
-      "Key_Stats": "14W/2.28ERA/207K"
+      "Name": "Yoshinobu Yamamoto",
+      "Team": "LAD",
+      "CyYoung_Probability": 73.5,
+      "Pitching_Score": 71.5,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "8W/2.51ERA/109K",
+      "ERA": 2.51,
+      "WHIP": 1.01
+    },
+    {
+      "Name": "Chris Sale",
+      "Team": "ATL",
+      "CyYoung_Probability": 72.5,
+      "Pitching_Score": 70.1,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "5W/2.52ERA/114K",
+      "ERA": 2.52,
+      "WHIP": 1.16
+    },
+    {
+      "Name": "Cristopher Sanchez",
+      "Team": "PHI",
+      "CyYoung_Probability": 71.2,
+      "Pitching_Score": 68.0,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "7W/2.68ERA/108K",
+      "ERA": 2.68,
+      "WHIP": 1.13
+    },
+    {
+      "Name": "Spencer Schwellenbach",
+      "Team": "ATL",
+      "CyYoung_Probability": 69.8,
+      "Pitching_Score": 65.8,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "7W/3.09ERA/108K",
+      "ERA": 3.09,
+      "WHIP": 0.97
+    },
+    {
+      "Name": "Freddy Peralta",
+      "Team": "MIL",
+      "CyYoung_Probability": 65.2,
+      "Pitching_Score": 58.8,
+      "Team_Bonus": 80.0,
+      "Key_Stats": "9W/2.91ERA/104K",
+      "ERA": 2.91,
+      "WHIP": 1.09
+    },
+    {
+      "Name": "Logan Webb",
+      "Team": "SFG",
+      "CyYoung_Probability": 63.1,
+      "Pitching_Score": 74.7,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "7W/2.61ERA/127K",
+      "ERA": 2.61,
+      "WHIP": 1.14
+    },
+    {
+      "Name": "Paul Skenes",
+      "Team": "PIT",
+      "CyYoung_Probability": 62.3,
+      "Pitching_Score": 73.6,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "4W/2.03ERA/115K",
+      "ERA": 2.03,
+      "WHIP": 0.92
+    },
+    {
+      "Name": "Robbie Ray",
+      "Team": "SFG",
+      "CyYoung_Probability": 57.0,
+      "Pitching_Score": 65.4,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "9W/2.68ERA/117K",
+      "ERA": 2.68,
+      "WHIP": 1.09
+    },
+    {
+      "Name": "Matthew Boyd",
+      "Team": "CHC",
+      "CyYoung_Probability": 56.7,
+      "Pitching_Score": 65.0,
+      "Team_Bonus": 30.0,
+      "Key_Stats": "8W/2.65ERA/87K",
+      "ERA": 2.65,
+      "WHIP": 1.08
     }
   ],
-  "last_updated": "2025-01-17 14:30:00"
+  "last_updated": "2025-07-04 14:02:57"
 }
