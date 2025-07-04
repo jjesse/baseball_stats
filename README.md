@@ -1,6 +1,6 @@
 # MLB Stats Dashboard ⚾
 
-A comprehensive MLB statistics dashboard that automatically tracks pitching, batting, and team standings for the 2025 season using the `pybaseball` library. Features interactive charts, educational tooltips, and automated data updates via GitHub Actions.
+A comprehensive MLB statistics dashboard that automatically tracks pitching, batting, and team standings for the 2025 season using the `pybaseball` library. Features interactive charts, educational tooltips, award prediction algorithms, and automated data updates via GitHub Actions.
 
 ## 🌟 Features
 
@@ -8,6 +8,7 @@ A comprehensive MLB statistics dashboard that automatically tracks pitching, bat
 - **Pitching Stats**: WHIP, ERA, Strikeouts, K/BB Ratio, HR/9, FIP
 - **Batting Stats**: AVG, HR, RBI, OBP, SLG, SB, wOBA, wRC+, BABIP, ISO, K%, BB%
 - **Team Standings**: Live standings by division with win trend charts
+- **MVP & Cy Young Tracker**: Real-time award probability calculator based on historical voting patterns
 - **Trend Analysis**: Historical performance tracking for all key metrics
 
 ### 🎨 User Experience
@@ -38,7 +39,10 @@ baseball_stats/
 │   ├── pitching.html              # Pitching stats dashboard
 │   ├── batting.html               # Batting stats dashboard
 │   ├── standings.html             # Team standings
-│   ├── *.png                      # Generated charts
+│   ├── mvp-cy-young.html          # MVP & Cy Young award predictions
+│   ├── award_predictions.json     # Award prediction data
+│   ├── *_predictions.csv          # Award prediction CSV files
+│   ├── *.png                      # Generated charts & award race charts
 │   ├── *.html                     # Generated data tables
 │   └── last_updated_*.txt         # Timestamp files
 ├── archive/                       # Historical data for trends
@@ -48,12 +52,16 @@ baseball_stats/
 │   ├── update-batting.yml        # Daily batting updates
 │   ├── update-pitching.yml       # Weekly pitching updates
 │   ├── update-standings.yml      # Daily standings updates
+│   ├── update-mvp-cy-young.yml   # Daily award predictions
 │   └── update-all.yml            # Master workflow (complete rebuild)
 ├── pitching_chart.py             # Pitching data processor
 ├── batting_chart.py              # Batting data processor
 ├── standings_chart.py            # Standings data processor
+├── mvp_cy_young_calculator.py    # Award prediction engine
+├── create_award_charts.py        # Award visualization generator
 ├── trend_pitching.py             # Pitching trend analyzer
 ├── trend_batting.py              # Batting trend analyzer
+├── requirements.txt              # Python dependencies
 └── README.md                     # This file
 ```
 
@@ -111,6 +119,7 @@ python -m http.server 8000 --directory docs
 - **Batting Stats**: Daily at 12:00 UTC
 - **Pitching Stats**: Weekly (Mondays) at 3:00 UTC  
 - **Standings**: Daily at 13:00 UTC
+- **MVP & Cy Young Predictions**: Daily at 14:00 UTC
 - **Trend Analysis**: Generated with each update
 - **Complete Rebuild**: Manual trigger via "Update All Stats" workflow
 
@@ -118,11 +127,20 @@ python -m http.server 8000 --directory docs
 
 ### Complete Site Rebuild
 The "Update All Stats (Complete Rebuild)" workflow allows you to:
-- Trigger all three workflows simultaneously from the GitHub Actions UI
+- Trigger all four workflows simultaneously from the GitHub Actions UI
 - Perfect for testing after code changes or fixing data issues
 - Includes optional reason field for documentation
 - Runs all updates in parallel for faster completion
 - Ideal for regenerating tables after styling fixes
+
+### MVP & Cy Young Award Predictions
+Real-time award probability calculator featuring:
+- **Historical Accuracy**: Based on 20+ years of BBWAA voting patterns
+- **Multi-factor Analysis**: Combines performance, team success, and narrative factors
+- **League Separation**: Separate predictions for AL/NL MVP and Cy Young
+- **Daily Updates**: Probabilities adjust with each game and stat change
+- **Transparent Methodology**: Complete explanation of calculation factors
+- **Visual Probability Tracking**: Color-coded probability bars and race charts
 
 ### Educational Tooltips
 Each stat includes hover tooltips with:
