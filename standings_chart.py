@@ -690,6 +690,10 @@ if not all_dfs:
 # Combine all into a master CSV
 try:
     combined = pd.concat(all_dfs, ignore_index=True)
+    
+    # Sort by wins (descending) for proper standings order
+    combined = combined.sort_values('W', ascending=False)
+    
     combined.to_csv("docs/standings_all.csv", index=False)
     
     # Also create a combined HTML file as fallback
@@ -700,25 +704,84 @@ try:
         <html>
         <head>
             <style>
-                body {{ font-family: Arial, sans-serif; margin: 20px; }}
-                .standings-table {{ width: 100%; border-collapse: collapse; }}
-                .standings-table th, .standings-table td {{ 
-                    border: 1px solid #ddd; 
-                    padding: 8px; 
-                    text-align: left; 
+                :root {{
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
                 }}
-                .standings-table th {{ background-color: #f2f2f2; }}
-                .standings-table tr:nth-child(even) {{ background-color: #f9f9f9; }}
+                
+                [data-theme='dark'] {{
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }}
+                
+                body {{ 
+                    font-family: Arial, sans-serif; 
+                    margin: 20px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                }}
+                
+                .standings-table {{ 
+                    width: 100%; 
+                    border-collapse: collapse;
+                    background-color: var(--bg);
+                }}
+                
+                .standings-table th, .standings-table td {{ 
+                    border: 1px solid var(--border); 
+                    padding: 8px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }}
+                
+                .standings-table th {{ 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }}
+                
+                .standings-table tr:nth-child(even) td {{ 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }}
+                
+                .standings-table tr:nth-child(odd) td {{ 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }}
+                
+                h2 {{
+                    color: var(--text);
+                    text-align: center;
+                }}
             </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {{
+                    try {{
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {{
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }}
+                    }} catch(e) {{
+                        // Cross-origin issues, use default
+                    }}
+                }};
+            </script>
         </head>
         <body>
-            <h2>All MLB Teams Standings</h2>
+            <h2>All MLB Teams Standings (Sorted by Wins)</h2>
             {combined_html}
         </body>
         </html>
         """)
     
-    print(f"✓ Created combined standings with {len(combined)} teams")
+    print(f"✓ Created combined standings with {len(combined)} teams (sorted by wins)")
 except Exception as e:
     print(f"Error creating combined standings: {e}")
 
