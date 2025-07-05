@@ -744,13 +744,33 @@ try:
             # Create overall wins chart
             plt.figure(figsize=(15, 10))
             
-            # Create color map by division
-            colors = plt.cm.Set3(range(len(plot_data)))
+            # Create color mapping by league
+            al_color = '#1f77b4'  # Blue for American League
+            nl_color = '#ff7f0e'  # Orange for National League
+            
+            # Determine league for each team based on division
+            colors = []
+            for _, team in plot_data.iterrows():
+                division = team.get('Division', '').lower()
+                if any(al_div in division for al_div in ['al_east', 'al_central', 'al_west']):
+                    colors.append(al_color)
+                elif any(nl_div in division for nl_div in ['nl_east', 'nl_central', 'nl_west']):
+                    colors.append(nl_color)
+                else:
+                    colors.append('#gray')  # Fallback color
             
             bars = plt.barh(plot_data[team_col], plot_data["W"], color=colors)
             plt.title("MLB Team Wins by Division", fontsize=16, fontweight='bold')
             plt.xlabel("Wins", fontsize=12)
             plt.ylabel("Team", fontsize=12)
+            
+            # Add legend to explain color coding
+            from matplotlib.patches import Patch
+            legend_elements = [
+                Patch(facecolor=al_color, label='American League'),
+                Patch(facecolor=nl_color, label='National League')
+            ]
+            plt.legend(handles=legend_elements, loc='lower right', fontsize=10)
             
             # Add value labels on bars
             for bar in bars:
