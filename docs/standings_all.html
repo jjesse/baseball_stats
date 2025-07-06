@@ -3,19 +3,78 @@
         <html>
         <head>
             <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                .standings-table { width: 100%; border-collapse: collapse; }
-                .standings-table th, .standings-table td { 
-                    border: 1px solid #ddd; 
-                    padding: 8px; 
-                    text-align: left; 
+                :root {
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
                 }
-                .standings-table th { background-color: #f2f2f2; }
-                .standings-table tr:nth-child(even) { background-color: #f9f9f9; }
+                
+                [data-theme='dark'] {
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }
+                
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 20px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                }
+                
+                .standings-table { 
+                    width: 100%; 
+                    border-collapse: collapse;
+                    background-color: var(--bg);
+                }
+                
+                .standings-table th, .standings-table td { 
+                    border: 1px solid var(--border); 
+                    padding: 8px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table th { 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table tr:nth-child(even) td { 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table tr:nth-child(odd) td { 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }
+                
+                h2 {
+                    color: var(--text);
+                    text-align: center;
+                }
             </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {
+                    try {
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    } catch(e) {
+                        // Cross-origin issues, use default
+                    }
+                };
+            </script>
         </head>
         <body>
-            <h2>All MLB Teams Standings</h2>
+            <h2>All MLB Teams Standings (Sorted by Wins)</h2>
             <table border="1" class="dataframe standings-table">
   <thead>
     <tr style="text-align: right;">
@@ -29,12 +88,76 @@
   </thead>
   <tbody>
     <tr>
+      <td>LOS ANGELES DODGERS</td>
+      <td>56</td>
+      <td>33</td>
+      <td>0.629</td>
+      <td>-</td>
+      <td>nl_west</td>
+    </tr>
+    <tr>
+      <td>DETROIT TIGERS</td>
+      <td>55</td>
+      <td>34</td>
+      <td>0.618</td>
+      <td>-</td>
+      <td>al_central</td>
+    </tr>
+    <tr>
+      <td>CHICAGO CUBS</td>
+      <td>53</td>
+      <td>36</td>
+      <td>0.596</td>
+      <td>-</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
+      <td>HOUSTON ASTROS</td>
+      <td>53</td>
+      <td>35</td>
+      <td>0.602</td>
+      <td>-</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>PHILADELPHIA PHILLIES</td>
+      <td>52</td>
+      <td>37</td>
+      <td>0.584</td>
+      <td>-</td>
+      <td>nl_east</td>
+    </tr>
+    <tr>
+      <td>NEW YORK METS</td>
+      <td>52</td>
+      <td>38</td>
+      <td>0.578</td>
+      <td>0.5</td>
+      <td>nl_east</td>
+    </tr>
+    <tr>
       <td>TORONTO BLUE JAYS</td>
       <td>51</td>
       <td>38</td>
       <td>0.573</td>
       <td>-</td>
       <td>al_east</td>
+    </tr>
+    <tr>
+      <td>MILWAUKEE BREWERS</td>
+      <td>49</td>
+      <td>40</td>
+      <td>0.551</td>
+      <td>4.0</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
+      <td>ST. LOUIS CARDINALS</td>
+      <td>48</td>
+      <td>42</td>
+      <td>0.533</td>
+      <td>5.5</td>
+      <td>nl_central</td>
     </tr>
     <tr>
       <td>NEW YORK YANKEES</td>
@@ -53,6 +176,38 @@
       <td>al_east</td>
     </tr>
     <tr>
+      <td>SAN DIEGO PADRES</td>
+      <td>47</td>
+      <td>40</td>
+      <td>0.540</td>
+      <td>8.0</td>
+      <td>nl_west</td>
+    </tr>
+    <tr>
+      <td>SAN FRANCISCO GIANTS</td>
+      <td>47</td>
+      <td>42</td>
+      <td>0.528</td>
+      <td>9.0</td>
+      <td>nl_west</td>
+    </tr>
+    <tr>
+      <td>SEATTLE MARINERS</td>
+      <td>46</td>
+      <td>42</td>
+      <td>0.523</td>
+      <td>7.0</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>CINCINNATI REDS</td>
+      <td>46</td>
+      <td>43</td>
+      <td>0.517</td>
+      <td>7.0</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
       <td>BOSTON RED SOX</td>
       <td>45</td>
       <td>45</td>
@@ -61,20 +216,28 @@
       <td>al_east</td>
     </tr>
     <tr>
-      <td>BALTIMORE ORIOLES</td>
-      <td>39</td>
-      <td>49</td>
-      <td>0.443</td>
-      <td>11.5</td>
-      <td>al_east</td>
+      <td>ARIZONA DIAMONDBACKS</td>
+      <td>44</td>
+      <td>45</td>
+      <td>0.494</td>
+      <td>12.0</td>
+      <td>nl_west</td>
     </tr>
     <tr>
-      <td>DETROIT TIGERS</td>
-      <td>55</td>
-      <td>34</td>
-      <td>0.618</td>
-      <td>-</td>
-      <td>al_central</td>
+      <td>TEXAS RANGERS</td>
+      <td>43</td>
+      <td>45</td>
+      <td>0.489</td>
+      <td>10.0</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>LOS ANGELES ANGELS</td>
+      <td>43</td>
+      <td>45</td>
+      <td>0.489</td>
+      <td>10.0</td>
+      <td>al_west</td>
     </tr>
     <tr>
       <td>MINNESOTA TWINS</td>
@@ -101,76 +264,20 @@
       <td>al_central</td>
     </tr>
     <tr>
-      <td>CHICAGO WHITE SOX</td>
-      <td>29</td>
-      <td>59</td>
-      <td>0.330</td>
-      <td>25.5</td>
-      <td>al_central</td>
-    </tr>
-    <tr>
-      <td>HOUSTON ASTROS</td>
-      <td>53</td>
-      <td>35</td>
-      <td>0.602</td>
-      <td>-</td>
-      <td>al_west</td>
-    </tr>
-    <tr>
-      <td>SEATTLE MARINERS</td>
-      <td>46</td>
-      <td>42</td>
-      <td>0.523</td>
-      <td>7.0</td>
-      <td>al_west</td>
-    </tr>
-    <tr>
-      <td>LOS ANGELES ANGELS</td>
-      <td>43</td>
-      <td>45</td>
-      <td>0.489</td>
-      <td>10.0</td>
-      <td>al_west</td>
-    </tr>
-    <tr>
-      <td>TEXAS RANGERS</td>
-      <td>43</td>
-      <td>45</td>
-      <td>0.489</td>
-      <td>10.0</td>
-      <td>al_west</td>
-    </tr>
-    <tr>
-      <td>ATHLETICS</td>
-      <td>37</td>
-      <td>53</td>
-      <td>0.411</td>
-      <td>17.0</td>
-      <td>al_west</td>
-    </tr>
-    <tr>
-      <td>PHILADELPHIA PHILLIES</td>
-      <td>52</td>
-      <td>37</td>
-      <td>0.584</td>
-      <td>-</td>
-      <td>nl_east</td>
-    </tr>
-    <tr>
-      <td>NEW YORK METS</td>
-      <td>52</td>
-      <td>38</td>
-      <td>0.578</td>
-      <td>0.5</td>
-      <td>nl_east</td>
-    </tr>
-    <tr>
       <td>MIAMI MARLINS</td>
       <td>40</td>
       <td>47</td>
       <td>0.460</td>
       <td>11.0</td>
       <td>nl_east</td>
+    </tr>
+    <tr>
+      <td>BALTIMORE ORIOLES</td>
+      <td>39</td>
+      <td>49</td>
+      <td>0.443</td>
+      <td>11.5</td>
+      <td>al_east</td>
     </tr>
     <tr>
       <td>ATLANTA BRAVES</td>
@@ -181,46 +288,6 @@
       <td>nl_east</td>
     </tr>
     <tr>
-      <td>WASHINGTON NATIONALS</td>
-      <td>37</td>
-      <td>52</td>
-      <td>0.416</td>
-      <td>15.0</td>
-      <td>nl_east</td>
-    </tr>
-    <tr>
-      <td>CHICAGO CUBS</td>
-      <td>53</td>
-      <td>36</td>
-      <td>0.596</td>
-      <td>-</td>
-      <td>nl_central</td>
-    </tr>
-    <tr>
-      <td>MILWAUKEE BREWERS</td>
-      <td>49</td>
-      <td>40</td>
-      <td>0.551</td>
-      <td>4.0</td>
-      <td>nl_central</td>
-    </tr>
-    <tr>
-      <td>ST. LOUIS CARDINALS</td>
-      <td>48</td>
-      <td>42</td>
-      <td>0.533</td>
-      <td>5.5</td>
-      <td>nl_central</td>
-    </tr>
-    <tr>
-      <td>CINCINNATI REDS</td>
-      <td>46</td>
-      <td>43</td>
-      <td>0.517</td>
-      <td>7.0</td>
-      <td>nl_central</td>
-    </tr>
-    <tr>
       <td>PITTSBURGH PIRATES</td>
       <td>38</td>
       <td>51</td>
@@ -229,36 +296,28 @@
       <td>nl_central</td>
     </tr>
     <tr>
-      <td>LOS ANGELES DODGERS</td>
-      <td>56</td>
-      <td>33</td>
-      <td>0.629</td>
-      <td>-</td>
-      <td>nl_west</td>
+      <td>WASHINGTON NATIONALS</td>
+      <td>37</td>
+      <td>52</td>
+      <td>0.416</td>
+      <td>15.0</td>
+      <td>nl_east</td>
     </tr>
     <tr>
-      <td>SAN DIEGO PADRES</td>
-      <td>47</td>
-      <td>40</td>
-      <td>0.540</td>
-      <td>8.0</td>
-      <td>nl_west</td>
+      <td>ATHLETICS</td>
+      <td>37</td>
+      <td>53</td>
+      <td>0.411</td>
+      <td>17.0</td>
+      <td>al_west</td>
     </tr>
     <tr>
-      <td>SAN FRANCISCO GIANTS</td>
-      <td>47</td>
-      <td>42</td>
-      <td>0.528</td>
-      <td>9.0</td>
-      <td>nl_west</td>
-    </tr>
-    <tr>
-      <td>ARIZONA DIAMONDBACKS</td>
-      <td>44</td>
-      <td>45</td>
-      <td>0.494</td>
-      <td>12.0</td>
-      <td>nl_west</td>
+      <td>CHICAGO WHITE SOX</td>
+      <td>29</td>
+      <td>59</td>
+      <td>0.330</td>
+      <td>25.5</td>
+      <td>al_central</td>
     </tr>
     <tr>
       <td>COLORADO ROCKIES</td>
