@@ -657,7 +657,7 @@ for i, df in enumerate(division_standings):
         </head>
         <body>
             <div class="table-container">
-                {df.to_html(index=False, classes='standings-table', escape=False)}
+                {df.drop('Division', axis=1, errors='ignore').to_html(index=False, classes='standings-table', escape=False)}
             </div>
         </body>
         </html>
