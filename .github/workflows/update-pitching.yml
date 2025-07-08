@@ -40,6 +40,14 @@ jobs:
       timeout-minutes: 5
       continue-on-error: false
 
+    - name: Archive current pitching stats
+      run: |
+        mkdir -p archive
+        if [ -f "docs/season_stats.csv" ]; then
+          cp docs/season_stats.csv archive/pitching_$(date +%F).csv
+        fi
+      timeout-minutes: 2
+
     - name: Commit and push changes
       run: |
         if [[ -n $(git status --porcelain) ]]; then
@@ -54,8 +62,15 @@ jobs:
           python pitching_chart.py || exit 1
           python trend_pitching.py || exit 1
           
-          # Try commit and push again - using consistent pattern with batting workflow
-          git add docs/pitching_*.png docs/pitching_*.html docs/last_updated_pitching.txt archive/pitching_*.csv
+          # Archive again after reset
+          mkdir -p archive
+          if [ -f "docs/season_stats.csv" ]; then
+            cp docs/season_stats.csv archive/pitching_$(date +%F).csv
+          fi
+          
+          # Add files that exist
+          git add docs/
+          git add archive/
           git commit -m "Update pitching stats and trends [skip ci]"
           git push origin main
         else

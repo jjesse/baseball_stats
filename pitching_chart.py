@@ -24,7 +24,7 @@ def create_chart_and_table(df, stat, title, color):
 
     # Chart
     plt.figure(figsize=(10, 6))
-    sns.barplot(data=top, x=stat, y='Name', palette=color)
+    sns.barplot(data=top, x=stat, y='Name', hue='Name', palette=color, legend=False)
     plt.title(title)
     plt.tight_layout()
     chart_path = f"docs/{stat.lower().replace('/', '_')}_chart.png"
