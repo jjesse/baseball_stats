@@ -2,13 +2,15 @@ name: Update MVP and Cy Young Predictions
 
 on:
   schedule:
-    - cron: '0 14 * * *'  # Runs daily at 14:00 UTC (after batting stats)
+    - cron: '0 14 * * *'  # Runs daily at 14:00 UTC (main branch only)
   workflow_dispatch:      # Allow manual trigger
 
 jobs:
   update-award-predictions:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Skip scheduled runs on preview branch
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repository
@@ -30,6 +32,13 @@ jobs:
 
       - name: Generate award predictions
         run: |
+          # Set output path based on branch
+          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+            export OUTPUT_PATH="docs/preview"
+            mkdir -p docs/preview
+          else
+            export OUTPUT_PATH="docs"
+          fi
           python mvp_cy_young_calculator.py || exit 1
         timeout-minutes: 10
         continue-on-error: false
@@ -41,16 +50,28 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             
             # Handle potential conflicts
-            git fetch origin main
-            git reset --hard origin/main
+            git fetch origin ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }}
+            
+            # Set output path based on branch
+            if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+              export OUTPUT_PATH="docs/preview"
+              mkdir -p docs/preview
+              COMMIT_MSG="Update MVP and Cy Young award predictions (preview) [skip ci]"
+              FILE_PATTERN="docs/preview/award_predictions.json docs/preview/al_mvp_predictions.csv docs/preview/nl_mvp_predictions.csv docs/preview/al_cy_young_predictions.csv docs/preview/nl_cy_young_predictions.csv"
+            else
+              export OUTPUT_PATH="docs"
+              COMMIT_MSG="Update MVP and Cy Young award predictions [skip ci]"
+              FILE_PATTERN="docs/award_predictions.json docs/al_mvp_predictions.csv docs/nl_mvp_predictions.csv docs/al_cy_young_predictions.csv docs/nl_cy_young_predictions.csv"
+            fi
             
             # Re-run the script after reset
             python mvp_cy_young_calculator.py || exit 1
             
             # Commit changes
-            git add docs/award_predictions.json docs/al_mvp_predictions.csv docs/nl_mvp_predictions.csv docs/al_cy_young_predictions.csv docs/nl_cy_young_predictions.csv
-            git commit -m "Update MVP and Cy Young award predictions [skip ci]"
-            git push origin main
+            git add $FILE_PATTERN
+            git commit -m "$COMMIT_MSG"
+            git push origin ${{ github.ref_name }}
           else
             echo "No changes to commit"
           fi

@@ -2,13 +2,15 @@ name: Update Batting Stats
 
 on:
   schedule:
-    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC (adjust if needed)
+    - cron: '0 12 * * *'  # Runs daily at 12:00 UTC (main branch only)
   workflow_dispatch:      # Allows manual trigger from GitHub UI
 
 jobs:
   update-batting:
     runs-on: ubuntu-latest
     timeout-minutes: 15  # Add timeout
+    # Skip scheduled runs on preview branch
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
 
     steps:
     - name: Checkout repo
@@ -30,6 +32,13 @@ jobs:
 
     - name: Run batting chart script
       run: |
+        # Set output path based on branch
+        if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+          export OUTPUT_PATH="docs/preview"
+          mkdir -p docs/preview
+        else
+          export OUTPUT_PATH="docs"
+        fi
         python batting_chart.py || exit 1
       timeout-minutes: 5
       continue-on-error: false
@@ -37,11 +46,22 @@ jobs:
     - name: Archive current batting stats
       run: |
         mkdir -p archive
-        cp docs/batting_stats.csv archive/batting_$(date +%F).csv
+        if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+          cp docs/preview/batting_stats.csv archive/batting_$(date +%F).csv
+        else
+          cp docs/batting_stats.csv archive/batting_$(date +%F).csv
+        fi
       timeout-minutes: 2
 
     - name: Run batting trend chart script
       run: |
+        # Set output path based on branch
+        if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+          export OUTPUT_PATH="docs/preview"
+          mkdir -p docs/preview
+        else
+          export OUTPUT_PATH="docs"
+        fi
         python trend_batting.py || exit 1
       timeout-minutes: 5
       continue-on-error: false
@@ -53,17 +73,29 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
           # Handle potential conflicts
-          git fetch origin main
-          git reset --hard origin/main
+          git fetch origin ${{ github.ref_name }}
+          git reset --hard origin/${{ github.ref_name }}
+          
+          # Set output path based on branch
+          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+            export OUTPUT_PATH="docs/preview"
+            mkdir -p docs/preview
+            COMMIT_MSG="Update batting stats and trends (preview) [skip ci]"
+            FILE_PATTERN="docs/preview/batting_*.png docs/preview/batting_*.html docs/preview/last_updated_batting.txt archive/batting_*.csv"
+          else
+            export OUTPUT_PATH="docs"
+            COMMIT_MSG="Update batting stats and trends [skip ci]"
+            FILE_PATTERN="docs/batting_*.png docs/batting_*.html docs/last_updated_batting.txt archive/batting_*.csv"
+          fi
           
           # Re-run the scripts after reset
           python batting_chart.py || exit 1
           python trend_batting.py || exit 1
           
           # Try commit and push again
-          git add docs/batting_*.png docs/batting_*.html docs/last_updated_batting.txt archive/batting_*.csv
-          git commit -m "Update batting stats and trends [skip ci]"
-          git push origin main
+          git add $FILE_PATTERN
+          git commit -m "$COMMIT_MSG"
+          git push origin ${{ github.ref_name }}
         else
           echo "No changes to commit"
         fi

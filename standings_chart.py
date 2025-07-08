@@ -6,7 +6,8 @@ import requests
 from bs4 import BeautifulSoup
 
 # Make sure output folder exists
-os.makedirs("docs", exist_ok=True)
+output_path = os.environ.get('OUTPUT_PATH', 'docs')
+os.makedirs(output_path, exist_ok=True)
 
 def get_mlb_com_standings():
     """Get standings from MLB.com API - most accurate source for current 2025 season"""
@@ -537,8 +538,8 @@ for i, df in enumerate(division_standings):
     
     try:
         # Clean and save individual division files
-        csv_path = f"docs/standings_{name}.csv"
-        html_path = f"docs/standings_{name}.html"
+        csv_path = f"{output_path}/standings_{name}.csv"
+        html_path = f"{output_path}/standings_{name}.html"
         
         # Ensure wins are numeric
         if 'W' in df.columns:
@@ -694,11 +695,11 @@ try:
     # Sort by wins (descending) for proper standings order
     combined = combined.sort_values('W', ascending=False)
     
-    combined.to_csv("docs/standings_all.csv", index=False)
+    combined.to_csv(f"{output_path}/standings_all.csv", index=False)
     
     # Also create a combined HTML file as fallback
     combined_html = combined.to_html(index=False, classes='standings-table', escape=False)
-    with open("docs/standings_all.html", "w") as f:
+    with open(f"{output_path}/standings_all.html", "w") as f:
         f.write(f"""
         <!DOCTYPE html>
         <html>
@@ -843,7 +844,7 @@ try:
                             f'{int(width)}', ha='left', va='center', fontsize=9)
             
             plt.tight_layout()
-            plt.savefig("docs/standings_wins_chart.png", dpi=150, bbox_inches='tight')
+            plt.savefig(f"{output_path}/standings_wins_chart.png", dpi=150, bbox_inches='tight')
             plt.close()
             print(f"✓ Created overall wins chart with {len(plot_data)} teams")
 
@@ -897,7 +898,7 @@ try:
                                             f'{int(height)}', ha='center', va='bottom', fontsize=10)
                             
                             plt.tight_layout()
-                            chart_filename = f"docs/standings_{div_name}_wins_chart.png"
+                            chart_filename = f"{output_path}/standings_{div_name}_wins_chart.png"
                             plt.savefig(chart_filename, dpi=150, bbox_inches='tight')
                             plt.close()
                             print(f"✓ Created {div_name} wins chart with {len(chart_data)} teams")
@@ -919,7 +920,7 @@ except Exception as e:
 
 # Save success timestamp
 try:
-    with open("docs/last_updated_standings.txt", "w") as f:
+    with open(f"{output_path}/last_updated_standings.txt", "w") as f:
         f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("✓ Updated timestamp file")
 except Exception as e:
