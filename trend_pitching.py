@@ -48,6 +48,11 @@ for stat in tracked_stats:
     valid_players = stat_df.count()[stat_df.count() >= min_appearances].index
     filtered = stat_df[valid_players]
     
+    # Skip if no valid players for this stat
+    if filtered.empty or len(filtered.columns) == 0:
+        print(f"No valid data for {stat}, skipping chart generation")
+        continue
+    
     # For ERA, WHIP, HR/9, FIP lower is better, so sort ascending; others descending
     if stat in ['ERA', 'WHIP', 'HR/9', 'FIP']:
         top_players = filtered.mean().sort_values().head(5).index
@@ -55,16 +60,30 @@ for stat in tracked_stats:
         top_players = filtered.mean().sort_values(ascending=False).head(5).index
     
     trend = filtered[top_players]
+    
+    # Skip if no trend data
+    if trend.empty or len(trend.columns) == 0:
+        print(f"No trend data for {stat}, skipping chart generation")
+        continue
 
     plt.figure(figsize=(12, 6))
+    lines_plotted = False
     for player in trend.columns:
-        plt.plot(trend.index, trend[player], marker='o', label=player)
-    plt.title(f"{stat} Trends Over Time")
-    plt.xlabel("Date")
-    plt.ylabel(stat)
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.tight_layout()
-    filename = f"docs/trend_{stat.lower().replace('/', '_')}.png"
-    plt.savefig(filename)
+        if not trend[player].dropna().empty:
+            plt.plot(trend.index, trend[player], marker='o', label=player)
+            lines_plotted = True
+    
+    if lines_plotted:
+        plt.title(f"{stat} Trends Over Time")
+        plt.xlabel("Date")
+        plt.ylabel(stat)
+        plt.legend()
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        filename = f"docs/trend_{stat.lower().replace('/', '_')}.png"
+        plt.savefig(filename)
+        print(f"Generated chart for {stat}")
+    else:
+        print(f"No valid trend lines for {stat}, skipping chart generation")
+    
     plt.close()

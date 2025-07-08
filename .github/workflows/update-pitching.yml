@@ -54,29 +54,44 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Handle potential conflicts
-          git fetch origin main
-          git reset --hard origin/main
-          
-          # Re-run the scripts after reset
-          python pitching_chart.py || exit 1
-          python trend_pitching.py || exit 1
-          
-          # Archive again after reset
-          mkdir -p archive
-          if [ -f "docs/season_stats.csv" ]; then
-            cp docs/season_stats.csv archive/pitching_$(date +%F).csv
-          fi
-          
-          # Add files that exist
-          git add docs/
-          git add archive/
-          git commit -m "Update pitching stats and trends [skip ci]"
-          git push origin main
+          # Handle potential conflicts with retry logic
+          for i in {1..3}; do
+            git fetch origin main
+            git reset --hard origin/main
+            
+            # Re-run the scripts after reset
+            python pitching_chart.py || exit 1
+            python trend_pitching.py || exit 1
+            
+            # Archive again after reset
+            mkdir -p archive
+            if [ -f "docs/season_stats.csv" ]; then
+              cp docs/season_stats.csv archive/pitching_$(date +%F).csv
+            fi
+            
+            # Add files that exist
+            git add docs/
+            git add archive/
+            git commit -m "Update pitching stats and trends [skip ci]"
+            
+            # Try to push with retry
+            if git push origin main; then
+              echo "Push successful on attempt $i"
+              break
+            else
+              echo "Push failed on attempt $i, retrying..."
+              sleep 5
+            fi
+            
+            if [ $i -eq 3 ]; then
+              echo "All push attempts failed"
+              exit 1
+            fi
+          done
         else
           echo "No changes to commit"
         fi
-      timeout-minutes: 2
+      timeout-minutes: 5
 
     - name: Check for failures
       if: failure()
