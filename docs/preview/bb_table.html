@@ -1,0 +1,235 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            :root {
+                --bg: #ffffff;
+                --text: #333333;
+                --border: #dddddd;
+                --header-bg: #f8f9fa;
+            }
+            
+            [data-theme='dark'] {
+                --bg: #1f1f1f;
+                --text: #ffffff;
+                --border: #555555;
+                --header-bg: #2d2d2d;
+                --row-even: #2a2a2a;
+            }
+            
+            body { 
+                font-family: Arial, sans-serif; 
+                margin: 0; 
+                padding: 10px;
+                background-color: var(--bg);
+                color: var(--text);
+                overflow: hidden;
+            }
+            
+            .table-container {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
+            }
+            
+            table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                background-color: var(--bg);
+                margin: 0 auto;
+                font-size: 14px;
+            }
+            
+            th, td { 
+                border: 1px solid var(--border); 
+                padding: 6px; 
+                text-align: center;
+                color: var(--text) !important;
+            }
+            
+            th { 
+                background-color: var(--header-bg) !important;
+                font-weight: bold;
+                color: var(--text) !important;
+            }
+            
+            tr:nth-child(even) td { 
+                background-color: var(--row-even, #f9f9f9) !important;
+                color: var(--text) !important;
+            }
+            
+            tr:nth-child(odd) td { 
+                background-color: var(--bg) !important;
+                color: var(--text) !important;
+            }
+        </style>
+        <script>
+            // Inherit theme from parent window
+            window.onload = function() {
+                try {
+                    const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                    if (parentTheme) {
+                        document.documentElement.setAttribute('data-theme', parentTheme);
+                    }
+                } catch(e) {
+                    // Cross-origin issues, use default
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <div class="table-container">
+            <table border="1" class="dataframe stats-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Name</th>
+      <th>Team</th>
+      <th>W</th>
+      <th>L</th>
+      <th>ERA</th>
+      <th>SO</th>
+      <th>BB</th>
+      <th>WHIP</th>
+      <th>K/BB</th>
+      <th>HR/9</th>
+      <th>FIP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Tarik Skubal</td>
+      <td>DET</td>
+      <td>10</td>
+      <td>2</td>
+      <td>2.02</td>
+      <td>148</td>
+      <td>14</td>
+      <td>0.81</td>
+      <td>10.57</td>
+      <td>0.62</td>
+      <td>1.87</td>
+    </tr>
+    <tr>
+      <td>Zack Littell</td>
+      <td>TBR</td>
+      <td>7</td>
+      <td>7</td>
+      <td>3.50</td>
+      <td>76</td>
+      <td>15</td>
+      <td>1.07</td>
+      <td>5.07</td>
+      <td>1.95</td>
+      <td>5.07</td>
+    </tr>
+    <tr>
+      <td>Spencer Schwellenbach</td>
+      <td>ATL</td>
+      <td>7</td>
+      <td>4</td>
+      <td>3.09</td>
+      <td>108</td>
+      <td>18</td>
+      <td>0.97</td>
+      <td>6.00</td>
+      <td>1.06</td>
+      <td>3.20</td>
+    </tr>
+    <tr>
+      <td>Sonny Gray</td>
+      <td>STL</td>
+      <td>8</td>
+      <td>3</td>
+      <td>3.51</td>
+      <td>107</td>
+      <td>18</td>
+      <td>1.08</td>
+      <td>5.94</td>
+      <td>0.90</td>
+      <td>2.88</td>
+    </tr>
+    <tr>
+      <td>Bryan Woo</td>
+      <td>SEA</td>
+      <td>8</td>
+      <td>4</td>
+      <td>2.77</td>
+      <td>104</td>
+      <td>19</td>
+      <td>0.96</td>
+      <td>5.47</td>
+      <td>1.17</td>
+      <td>3.46</td>
+    </tr>
+    <tr>
+      <td>Tomoyuki Sugano</td>
+      <td>BAL</td>
+      <td>6</td>
+      <td>5</td>
+      <td>4.44</td>
+      <td>57</td>
+      <td>19</td>
+      <td>1.31</td>
+      <td>3.00</td>
+      <td>1.83</td>
+      <td>5.25</td>
+    </tr>
+    <tr>
+      <td>Jameson Taillon</td>
+      <td>CHC</td>
+      <td>7</td>
+      <td>6</td>
+      <td>4.44</td>
+      <td>74</td>
+      <td>20</td>
+      <td>1.11</td>
+      <td>3.70</td>
+      <td>2.08</td>
+      <td>5.16</td>
+    </tr>
+    <tr>
+      <td>Matthew Liberatore</td>
+      <td>STL</td>
+      <td>6</td>
+      <td>6</td>
+      <td>3.70</td>
+      <td>80</td>
+      <td>21</td>
+      <td>1.18</td>
+      <td>3.81</td>
+      <td>0.74</td>
+      <td>3.22</td>
+    </tr>
+    <tr>
+      <td>Jacob deGrom</td>
+      <td>TEX</td>
+      <td>9</td>
+      <td>2</td>
+      <td>2.13</td>
+      <td>100</td>
+      <td>21</td>
+      <td>0.89</td>
+      <td>4.76</td>
+      <td>0.89</td>
+      <td>3.08</td>
+    </tr>
+    <tr>
+      <td>Nick Martinez</td>
+      <td>CIN</td>
+      <td>6</td>
+      <td>8</td>
+      <td>4.20</td>
+      <td>71</td>
+      <td>21</td>
+      <td>1.17</td>
+      <td>3.38</td>
+      <td>1.25</td>
+      <td>4.23</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+    </body>
+    </html>
+    

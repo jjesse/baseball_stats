@@ -1,0 +1,134 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                :root {
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
+                }
+                
+                [data-theme='dark'] {
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }
+                
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 10px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                    overflow: hidden;
+                }
+                
+                .table-container {
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: auto;
+                }
+                
+                .standings-table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    background-color: var(--bg);
+                    margin: 0 auto;
+                    font-size: 14px;
+                }
+                
+                .standings-table th, .standings-table td { 
+                    border: 1px solid var(--border); 
+                    padding: 6px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table th { 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table tr:nth-child(even) td { 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table tr:nth-child(odd) td { 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }
+            </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {
+                    try {
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    } catch(e) {
+                        // Cross-origin issues, use default
+                    }
+                };
+            </script>
+        </head>
+        <body>
+            <div class="table-container">
+                <table border="1" class="dataframe standings-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Team</th>
+      <th>W</th>
+      <th>L</th>
+      <th>PCT</th>
+      <th>GB</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>LOS ANGELES DODGERS</td>
+      <td>56</td>
+      <td>35</td>
+      <td>0.615</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>SAN DIEGO PADRES</td>
+      <td>48</td>
+      <td>41</td>
+      <td>0.539</td>
+      <td>7.0</td>
+    </tr>
+    <tr>
+      <td>SAN FRANCISCO GIANTS</td>
+      <td>49</td>
+      <td>42</td>
+      <td>0.538</td>
+      <td>7.0</td>
+    </tr>
+    <tr>
+      <td>ARIZONA DIAMONDBACKS</td>
+      <td>44</td>
+      <td>46</td>
+      <td>0.489</td>
+      <td>11.5</td>
+    </tr>
+    <tr>
+      <td>COLORADO ROCKIES</td>
+      <td>21</td>
+      <td>69</td>
+      <td>0.233</td>
+      <td>34.5</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </body>
+        </html>
+        

@@ -1,0 +1,279 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            :root {
+                --bg: #ffffff;
+                --text: #333333;
+                --border: #dddddd;
+                --header-bg: #f8f9fa;
+            }
+            
+            [data-theme='dark'] {
+                --bg: #1f1f1f;
+                --text: #ffffff;
+                --border: #555555;
+                --header-bg: #2d2d2d;
+                --row-even: #2a2a2a;
+            }
+            
+            body { 
+                font-family: Arial, sans-serif; 
+                margin: 0; 
+                padding: 10px;
+                background-color: var(--bg);
+                color: var(--text);
+                overflow: hidden;
+            }
+            
+            .table-container {
+                width: 100%;
+                max-width: 100%;
+                overflow-x: auto;
+            }
+            
+            table { 
+                width: 100%; 
+                border-collapse: collapse; 
+                background-color: var(--bg);
+                margin: 0 auto;
+                font-size: 14px;
+            }
+            
+            th, td { 
+                border: 1px solid var(--border); 
+                padding: 6px; 
+                text-align: center;
+                color: var(--text) !important;
+            }
+            
+            th { 
+                background-color: var(--header-bg) !important;
+                font-weight: bold;
+                color: var(--text) !important;
+            }
+            
+            tr:nth-child(even) td { 
+                background-color: var(--row-even, #f9f9f9) !important;
+                color: var(--text) !important;
+            }
+            
+            tr:nth-child(odd) td { 
+                background-color: var(--bg) !important;
+                color: var(--text) !important;
+            }
+        </style>
+        <script>
+            // Inherit theme from parent window
+            window.onload = function() {
+                try {
+                    const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                    if (parentTheme) {
+                        document.documentElement.setAttribute('data-theme', parentTheme);
+                    }
+                } catch(e) {
+                    // Cross-origin issues, use default
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <div class="table-container">
+            <table border="1" class="dataframe stats-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Name</th>
+      <th>Team</th>
+      <th>PA</th>
+      <th>AVG</th>
+      <th>HR</th>
+      <th>RBI</th>
+      <th>OBP</th>
+      <th>SLG</th>
+      <th>SB</th>
+      <th>wOBA</th>
+      <th>wRC+</th>
+      <th>BABIP</th>
+      <th>ISO</th>
+      <th>K%</th>
+      <th>BB%</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Aaron Judge</td>
+      <td>NYY</td>
+      <td>402</td>
+      <td>0.360</td>
+      <td>33</td>
+      <td>74</td>
+      <td>0.468</td>
+      <td>0.734</td>
+      <td>6</td>
+      <td>0.490</td>
+      <td>224</td>
+      <td>0.432</td>
+      <td>0.374</td>
+      <td>0.251244</td>
+      <td>0.161692</td>
+    </tr>
+    <tr>
+      <td>Cal Raleigh</td>
+      <td>SEA</td>
+      <td>388</td>
+      <td>0.268</td>
+      <td>35</td>
+      <td>74</td>
+      <td>0.381</td>
+      <td>0.640</td>
+      <td>9</td>
+      <td>0.422</td>
+      <td>183</td>
+      <td>0.267</td>
+      <td>0.372</td>
+      <td>0.250000</td>
+      <td>0.144330</td>
+    </tr>
+    <tr>
+      <td>Shohei Ohtani</td>
+      <td>LAD</td>
+      <td>411</td>
+      <td>0.278</td>
+      <td>30</td>
+      <td>56</td>
+      <td>0.380</td>
+      <td>0.610</td>
+      <td>12</td>
+      <td>0.412</td>
+      <td>168</td>
+      <td>0.307</td>
+      <td>0.332</td>
+      <td>0.250608</td>
+      <td>0.136253</td>
+    </tr>
+    <tr>
+      <td>Michael Busch</td>
+      <td>CHC</td>
+      <td>318</td>
+      <td>0.297</td>
+      <td>18</td>
+      <td>56</td>
+      <td>0.384</td>
+      <td>0.566</td>
+      <td>4</td>
+      <td>0.407</td>
+      <td>166</td>
+      <td>0.344</td>
+      <td>0.269</td>
+      <td>0.226415</td>
+      <td>0.103774</td>
+    </tr>
+    <tr>
+      <td>Eugenio Suarez</td>
+      <td>ARI</td>
+      <td>361</td>
+      <td>0.252</td>
+      <td>28</td>
+      <td>73</td>
+      <td>0.319</td>
+      <td>0.562</td>
+      <td>1</td>
+      <td>0.372</td>
+      <td>139</td>
+      <td>0.264</td>
+      <td>0.310</td>
+      <td>0.271468</td>
+      <td>0.060942</td>
+    </tr>
+    <tr>
+      <td>Seiya Suzuki</td>
+      <td>CHC</td>
+      <td>382</td>
+      <td>0.263</td>
+      <td>25</td>
+      <td>77</td>
+      <td>0.319</td>
+      <td>0.561</td>
+      <td>2</td>
+      <td>0.371</td>
+      <td>141</td>
+      <td>0.295</td>
+      <td>0.298</td>
+      <td>0.267016</td>
+      <td>0.081152</td>
+    </tr>
+    <tr>
+      <td>Will Smith</td>
+      <td>LAD</td>
+      <td>282</td>
+      <td>0.332</td>
+      <td>12</td>
+      <td>45</td>
+      <td>0.433</td>
+      <td>0.560</td>
+      <td>2</td>
+      <td>0.426</td>
+      <td>177</td>
+      <td>0.374</td>
+      <td>0.228</td>
+      <td>0.180851</td>
+      <td>0.148936</td>
+    </tr>
+    <tr>
+      <td>Corbin Carroll</td>
+      <td>ARI</td>
+      <td>332</td>
+      <td>0.247</td>
+      <td>20</td>
+      <td>44</td>
+      <td>0.331</td>
+      <td>0.556</td>
+      <td>10</td>
+      <td>0.377</td>
+      <td>142</td>
+      <td>0.279</td>
+      <td>0.309</td>
+      <td>0.256024</td>
+      <td>0.090361</td>
+    </tr>
+    <tr>
+      <td>Pete Crow-Armstrong</td>
+      <td>CHC</td>
+      <td>376</td>
+      <td>0.272</td>
+      <td>23</td>
+      <td>67</td>
+      <td>0.309</td>
+      <td>0.550</td>
+      <td>27</td>
+      <td>0.364</td>
+      <td>136</td>
+      <td>0.298</td>
+      <td>0.278</td>
+      <td>0.231383</td>
+      <td>0.045213</td>
+    </tr>
+    <tr>
+      <td>James Wood</td>
+      <td>WSN</td>
+      <td>399</td>
+      <td>0.288</td>
+      <td>23</td>
+      <td>67</td>
+      <td>0.391</td>
+      <td>0.549</td>
+      <td>12</td>
+      <td>0.398</td>
+      <td>158</td>
+      <td>0.347</td>
+      <td>0.261</td>
+      <td>0.260652</td>
+      <td>0.142857</td>
+    </tr>
+  </tbody>
+</table>
+        </div>
+    </body>
+    </html>
+    

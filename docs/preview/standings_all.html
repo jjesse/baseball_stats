@@ -1,0 +1,334 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                :root {
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
+                }
+                
+                [data-theme='dark'] {
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }
+                
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 20px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                }
+                
+                .standings-table { 
+                    width: 100%; 
+                    border-collapse: collapse;
+                    background-color: var(--bg);
+                }
+                
+                .standings-table th, .standings-table td { 
+                    border: 1px solid var(--border); 
+                    padding: 8px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table th { 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table tr:nth-child(even) td { 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }
+                
+                .standings-table tr:nth-child(odd) td { 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }
+                
+                h2 {
+                    color: var(--text);
+                    text-align: center;
+                }
+            </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {
+                    try {
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    } catch(e) {
+                        // Cross-origin issues, use default
+                    }
+                };
+            </script>
+        </head>
+        <body>
+            <h2>All MLB Teams Standings (Sorted by Wins)</h2>
+            <table border="1" class="dataframe standings-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Team</th>
+      <th>W</th>
+      <th>L</th>
+      <th>PCT</th>
+      <th>GB</th>
+      <th>Division</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>DETROIT TIGERS</td>
+      <td>57</td>
+      <td>34</td>
+      <td>0.626</td>
+      <td>-</td>
+      <td>al_central</td>
+    </tr>
+    <tr>
+      <td>LOS ANGELES DODGERS</td>
+      <td>56</td>
+      <td>35</td>
+      <td>0.615</td>
+      <td>-</td>
+      <td>nl_west</td>
+    </tr>
+    <tr>
+      <td>HOUSTON ASTROS</td>
+      <td>55</td>
+      <td>35</td>
+      <td>0.611</td>
+      <td>-</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>CHICAGO CUBS</td>
+      <td>54</td>
+      <td>36</td>
+      <td>0.600</td>
+      <td>-</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
+      <td>PHILADELPHIA PHILLIES</td>
+      <td>53</td>
+      <td>37</td>
+      <td>0.589</td>
+      <td>-</td>
+      <td>nl_east</td>
+    </tr>
+    <tr>
+      <td>TORONTO BLUE JAYS</td>
+      <td>52</td>
+      <td>38</td>
+      <td>0.578</td>
+      <td>-</td>
+      <td>al_east</td>
+    </tr>
+    <tr>
+      <td>NEW YORK METS</td>
+      <td>52</td>
+      <td>39</td>
+      <td>0.571</td>
+      <td>1.5</td>
+      <td>nl_east</td>
+    </tr>
+    <tr>
+      <td>MILWAUKEE BREWERS</td>
+      <td>50</td>
+      <td>40</td>
+      <td>0.556</td>
+      <td>4.0</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
+      <td>SAN FRANCISCO GIANTS</td>
+      <td>49</td>
+      <td>42</td>
+      <td>0.538</td>
+      <td>7.0</td>
+      <td>nl_west</td>
+    </tr>
+    <tr>
+      <td>NEW YORK YANKEES</td>
+      <td>49</td>
+      <td>41</td>
+      <td>0.544</td>
+      <td>3.0</td>
+      <td>al_east</td>
+    </tr>
+    <tr>
+      <td>TAMPA BAY RAYS</td>
+      <td>49</td>
+      <td>41</td>
+      <td>0.544</td>
+      <td>3.0</td>
+      <td>al_east</td>
+    </tr>
+    <tr>
+      <td>ST. LOUIS CARDINALS</td>
+      <td>48</td>
+      <td>43</td>
+      <td>0.527</td>
+      <td>6.5</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
+      <td>SAN DIEGO PADRES</td>
+      <td>48</td>
+      <td>41</td>
+      <td>0.539</td>
+      <td>7.0</td>
+      <td>nl_west</td>
+    </tr>
+    <tr>
+      <td>SEATTLE MARINERS</td>
+      <td>48</td>
+      <td>42</td>
+      <td>0.533</td>
+      <td>7.0</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>CINCINNATI REDS</td>
+      <td>46</td>
+      <td>44</td>
+      <td>0.511</td>
+      <td>8.0</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
+      <td>BOSTON RED SOX</td>
+      <td>46</td>
+      <td>45</td>
+      <td>0.505</td>
+      <td>6.5</td>
+      <td>al_east</td>
+    </tr>
+    <tr>
+      <td>TEXAS RANGERS</td>
+      <td>44</td>
+      <td>46</td>
+      <td>0.489</td>
+      <td>11.0</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>ARIZONA DIAMONDBACKS</td>
+      <td>44</td>
+      <td>46</td>
+      <td>0.489</td>
+      <td>11.5</td>
+      <td>nl_west</td>
+    </tr>
+    <tr>
+      <td>MINNESOTA TWINS</td>
+      <td>43</td>
+      <td>47</td>
+      <td>0.478</td>
+      <td>13.5</td>
+      <td>al_central</td>
+    </tr>
+    <tr>
+      <td>KANSAS CITY ROYALS</td>
+      <td>43</td>
+      <td>48</td>
+      <td>0.473</td>
+      <td>14.0</td>
+      <td>al_central</td>
+    </tr>
+    <tr>
+      <td>LOS ANGELES ANGELS</td>
+      <td>43</td>
+      <td>46</td>
+      <td>0.483</td>
+      <td>11.5</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>BALTIMORE ORIOLES</td>
+      <td>40</td>
+      <td>49</td>
+      <td>0.449</td>
+      <td>11.5</td>
+      <td>al_east</td>
+    </tr>
+    <tr>
+      <td>MIAMI MARLINS</td>
+      <td>40</td>
+      <td>48</td>
+      <td>0.455</td>
+      <td>12.0</td>
+      <td>nl_east</td>
+    </tr>
+    <tr>
+      <td>CLEVELAND GUARDIANS</td>
+      <td>40</td>
+      <td>48</td>
+      <td>0.455</td>
+      <td>15.5</td>
+      <td>al_central</td>
+    </tr>
+    <tr>
+      <td>ATLANTA BRAVES</td>
+      <td>39</td>
+      <td>50</td>
+      <td>0.438</td>
+      <td>13.5</td>
+      <td>nl_east</td>
+    </tr>
+    <tr>
+      <td>PITTSBURGH PIRATES</td>
+      <td>38</td>
+      <td>53</td>
+      <td>0.418</td>
+      <td>16.5</td>
+      <td>nl_central</td>
+    </tr>
+    <tr>
+      <td>WASHINGTON NATIONALS</td>
+      <td>37</td>
+      <td>53</td>
+      <td>0.411</td>
+      <td>16.0</td>
+      <td>nl_east</td>
+    </tr>
+    <tr>
+      <td>ATHLETICS</td>
+      <td>37</td>
+      <td>55</td>
+      <td>0.402</td>
+      <td>19.0</td>
+      <td>al_west</td>
+    </tr>
+    <tr>
+      <td>CHICAGO WHITE SOX</td>
+      <td>30</td>
+      <td>60</td>
+      <td>0.333</td>
+      <td>26.5</td>
+      <td>al_central</td>
+    </tr>
+    <tr>
+      <td>COLORADO ROCKIES</td>
+      <td>21</td>
+      <td>69</td>
+      <td>0.233</td>
+      <td>34.5</td>
+      <td>nl_west</td>
+    </tr>
+  </tbody>
+</table>
+        </body>
+        </html>
+        
