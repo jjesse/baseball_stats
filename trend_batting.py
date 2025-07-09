@@ -4,19 +4,22 @@ import seaborn as sns
 import os
 from glob import glob
 
+# Set up style and output path
 sns.set(style="whitegrid")
-os.makedirs("docs", exist_ok=True)
+output_path = os.environ.get('OUTPUT_PATH', 'docs')
+os.makedirs(output_path, exist_ok=True)
 
-# Load historical batting data archives
+# Load historical data files
 archive_files = sorted(glob("archive/batting_*.csv"))
 if not archive_files:
     print("No batting archive files found.")
     exit()
 
 # Stats to track trends for
-tracked_stats = ['AVG', 'OBP', 'SLG', 'wOBA', 'K%', 'BB%']
+tracked_stats = ['AVG', 'HR', 'RBI', 'OBP', 'SLG', 'wOBA']
 min_appearances = 3
 
+# Combine valid CSVs
 dfs = []
 for file in archive_files:
     try:
@@ -36,36 +39,49 @@ if not dfs:
     print("No valid batting data found in archive.")
     exit()
 
+# Combine into full dataset
 all_data = pd.concat(dfs)
 all_data['Date'] = pd.to_datetime(all_data['Date'])
 
+# Create charts for each stat
 for stat in tracked_stats:
-    if stat not in all_data.columns:
-        print(f"Stat {stat} not found in data, skipping...")
-        continue
-        
     stat_df = all_data.pivot_table(index='Date', columns='Name', values=stat)
     valid_players = stat_df.count()[stat_df.count() >= min_appearances].index
     filtered = stat_df[valid_players]
-
-    # For K% lower is better, so sort ascending; others descending
-    if stat == 'K%':
-        top_players = filtered.mean().sort_values().head(5).index
-    else:
-        top_players = filtered.mean().sort_values(ascending=False).head(5).index
-
+    
+    # Skip if no valid players for this stat
+    if filtered.empty or len(filtered.columns) == 0:
+        print(f"No valid data for {stat}, skipping chart generation")
+        continue
+    
+    # For batting stats, higher is generally better
+    top_players = filtered.mean().sort_values(ascending=False).head(5).index
+    
     trend = filtered[top_players]
+    
+    # Skip if no trend data
+    if trend.empty or len(trend.columns) == 0:
+        print(f"No trend data for {stat}, skipping chart generation")
+        continue
 
     plt.figure(figsize=(12, 6))
+    lines_plotted = False
     for player in trend.columns:
-        plt.plot(trend.index, trend[player], marker='o', label=player, linewidth=2)
-    plt.title(f"{stat} Trends Over Time")
-    plt.xlabel("Date")
-    plt.ylabel(stat)
-    plt.xticks(rotation=45)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.tight_layout()
-    filename = f"docs/batting_{stat.lower().replace('%', 'pct')}_trend.png"
-    plt.savefig(filename, dpi=150, bbox_inches='tight')
+        if not trend[player].dropna().empty:
+            plt.plot(trend.index, trend[player], marker='o', label=player)
+            lines_plotted = True
+    
+    if lines_plotted:
+        plt.title(f"{stat} Trends Over Time")
+        plt.xlabel("Date")
+        plt.ylabel(stat)
+        plt.legend()
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        filename = f"{output_path}/trend_{stat.lower().replace('/', '_').replace('%', '_pct')}.png"
+        plt.savefig(filename)
+        print(f"Generated chart for {stat}")
+    else:
+        print(f"No valid trend lines for {stat}, skipping chart generation")
+    
     plt.close()
-    print(f"Created trend chart: {filename}")

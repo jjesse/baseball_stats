@@ -6,7 +6,8 @@ from datetime import datetime
 import os
 
 # Ensure output directory exists
-os.makedirs("docs", exist_ok=True)
+output_path = os.environ.get('OUTPUT_PATH', 'docs')
+os.makedirs(output_path, exist_ok=True)
 
 # Fetch current season data
 df = pitching_stats(2025)
@@ -15,7 +16,7 @@ df = pitching_stats(2025)
 df = df[['Name', 'Team', 'W', 'L', 'ERA', 'SO', 'BB', 'WHIP', 'K/BB', 'HR/9', 'FIP']]
 
 # Save CSV backup (optional)
-df.to_csv("docs/season_stats.csv", index=False)
+df.to_csv(f"{output_path}/season_stats.csv", index=False)
 
 # Define chart creation
 
@@ -27,7 +28,7 @@ def create_chart_and_table(df, stat, title, color):
     sns.barplot(data=top, x=stat, y='Name', hue='Name', palette=color, legend=False)
     plt.title(title)
     plt.tight_layout()
-    chart_path = f"docs/{stat.lower().replace('/', '_')}_chart.png"
+    chart_path = f"{output_path}/{stat.lower().replace('/', '_')}_chart.png"
     plt.savefig(chart_path)
     plt.close()
 
@@ -120,7 +121,7 @@ def create_chart_and_table(df, stat, title, color):
     </html>
     """
     
-    table_path = f"docs/{stat.lower().replace('/', '_')}_table.html"
+    table_path = f"{output_path}/{stat.lower().replace('/', '_')}_table.html"
     with open(table_path, "w") as f:
         f.write(html_content)
 
@@ -140,5 +141,5 @@ for stat, title, color in stats_to_plot:
     create_chart_and_table(df, stat, title, color)
 
 # Write last updated timestamp with proper format
-with open("docs/last_updated_pitching.txt", "w") as f:
+with open(f"{output_path}/last_updated_pitching.txt", "w") as f:
     f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

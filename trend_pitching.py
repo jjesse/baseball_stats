@@ -6,7 +6,8 @@ from glob import glob
 
 # Set up style and output path
 sns.set(style="whitegrid")
-os.makedirs("docs", exist_ok=True)
+output_path = os.environ.get('OUTPUT_PATH', 'docs')
+os.makedirs(output_path, exist_ok=True)
 
 # Load historical data files
 archive_files = sorted(glob("archive/pitching_*.csv"))
@@ -80,7 +81,7 @@ for stat in tracked_stats:
         plt.legend()
         plt.xticks(rotation=45)
         plt.tight_layout()
-        filename = f"docs/trend_{stat.lower().replace('/', '_')}.png"
+        filename = f"{output_path}/trend_{stat.lower().replace('/', '_')}.png"
         plt.savefig(filename)
         print(f"Generated chart for {stat}")
     else:

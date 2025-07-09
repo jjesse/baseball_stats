@@ -2,13 +2,15 @@ name: Update Standings
 
 on:
   schedule:
-    - cron: '0 13 * * *'  # Runs daily at 13:00 UTC
+    - cron: '0 13 * * *'  # Runs daily at 13:00 UTC (main branch only)
   workflow_dispatch:      # Allow manual trigger from GitHub UI
 
 jobs:
   update-standings:
     runs-on: ubuntu-latest
     timeout-minutes: 15  # Prevent hung jobs
+    # Skip scheduled runs on preview branch
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
 
     steps:
       - name: Checkout repo
@@ -27,7 +29,15 @@ jobs:
         timeout-minutes: 5
 
       - name: Run standings script
-        run: python standings_chart.py
+        run: |
+          # Set output path based on branch
+          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+            export OUTPUT_PATH="docs/preview"
+            mkdir -p docs/preview
+          else
+            export OUTPUT_PATH="docs"
+          fi
+          python standings_chart.py
         timeout-minutes: 10
         continue-on-error: false
 
@@ -38,16 +48,28 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             
             # Handle potential conflicts
-            git fetch origin main
-            git reset --hard origin/main
+            git fetch origin ${{ github.ref_name }}
+            git reset --hard origin/${{ github.ref_name }}
+            
+            # Set output path based on branch
+            if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+              export OUTPUT_PATH="docs/preview"
+              mkdir -p docs/preview
+              COMMIT_MSG="Update standings (preview) [skip ci]"
+              FILE_PATTERN="docs/preview/standings_*.csv docs/preview/standings_*.html docs/preview/standings_*_wins_chart.png docs/preview/standings_wins_chart.png docs/preview/last_updated_standings.txt"
+            else
+              export OUTPUT_PATH="docs"
+              COMMIT_MSG="Update standings [skip ci]"
+              FILE_PATTERN="docs/standings_*.csv docs/standings_*.html docs/standings_*_wins_chart.png docs/standings_wins_chart.png docs/last_updated_standings.txt"
+            fi
             
             # Re-run the script after reset
             python standings_chart.py || exit 1
             
             # Try commit and push again
-            git add docs/standings_*.csv docs/standings_*.html docs/standings_*_wins_chart.png docs/standings_wins_chart.png docs/last_updated_standings.txt
-            git commit -m "Update standings [skip ci]"
-            git push origin main
+            git add $FILE_PATTERN
+            git commit -m "$COMMIT_MSG"
+            git push origin ${{ github.ref_name }}
           else
             echo "No changes to commit"
           fi

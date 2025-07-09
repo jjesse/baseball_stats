@@ -6,35 +6,31 @@ from datetime import datetime
 import os
 
 # Ensure output directory exists
-os.makedirs("docs", exist_ok=True)
+output_path = os.environ.get('OUTPUT_PATH', 'docs')
+os.makedirs(output_path, exist_ok=True)
 
-# Fetch current season batting stats
+# Fetch current season data
 df = batting_stats(2025)
 
-# Filter players with at least 100 PA
-df = df[df['PA'] >= 100]
-
-# Compute additional stats
-df['ISO'] = df['SLG'] - df['AVG']
-df['K%'] = df['SO'] / df['PA']
-df['BB%'] = df['BB'] / df['PA']
-
 # Select relevant stats
-df = df[['Name', 'Team', 'PA', 'AVG', 'HR', 'RBI', 'OBP', 'SLG', 'SB', 'wOBA', 'wRC+', 'BABIP', 'ISO', 'K%', 'BB%']]
+df = df[['Name', 'Team', 'AVG', 'HR', 'RBI', 'OBP', 'SLG', 'SB', 'wOBA', 'wRC+', 'BABIP', 'ISO', 'K%', 'BB%']]
 
 # Save CSV backup
-df.to_csv("docs/batting_stats.csv", index=False)
+df.to_csv(f"{output_path}/batting_stats.csv", index=False)
 
-# Define chart creation
+# Define chart creation function
 def create_chart_and_table(df, stat, title, color, ascending=False):
+    # For most stats, higher is better, but for K% lower is better
+    if stat in ['K%']:
+        ascending = not ascending
     top = df.sort_values(stat, ascending=ascending).head(10)
 
     # Chart
     plt.figure(figsize=(10, 6))
-    sns.barplot(data=top, x=stat, y='Name', palette=color)
+    sns.barplot(data=top, x=stat, y='Name', hue='Name', palette=color, legend=False)
     plt.title(title)
     plt.tight_layout()
-    chart_path = f"docs/batting_{stat.lower().replace('%', 'pct')}_chart.png"
+    chart_path = f"{output_path}/{stat.lower().replace('/', '_').replace('%', '_pct')}_chart.png"
     plt.savefig(chart_path)
     plt.close()
 
@@ -127,28 +123,32 @@ def create_chart_and_table(df, stat, title, color, ascending=False):
     </html>
     """
     
-    table_path = f"docs/batting_{stat.lower().replace('%', 'pct')}_table.html"
+    table_path = f"{output_path}/{stat.lower().replace('/', '_').replace('%', '_pct')}_table.html"
     with open(table_path, "w") as f:
         f.write(html_content)
 
 # List of stats to chart
 stats_to_plot = [
-    ("AVG", "Top 10 Batters by AVG", "Blues"),
-    ("HR", "Top 10 Batters by HR", "Reds"),
-    ("RBI", "Top 10 Batters by RBI", "Purples"),
-    ("OBP", "Top 10 Batters by OBP", "Greens"),
-    ("SLG", "Top 10 Batters by SLG", "Oranges"),
-    ("SB", "Top 10 Batters by SB", "BuPu"),
-    ("wOBA", "Top 10 Batters by wOBA", "YlGn"),
-    ("wRC+", "Top 10 Batters by wRC+", "PuRd"),
-    ("BABIP", "Top 10 Batters by BABIP", "GnBu"),
-    ("ISO", "Top 10 Batters by ISO", "OrRd"),
-    ("K%", "Top 10 Batters by K% (Lowest is Best)", "Greys", True),
-    ("BB%", "Top 10 Batters by BB%", "PuBu")
+    ("AVG", "Top 10 Hitters by Batting Average", "Blues"),
+    ("HR", "Top 10 Hitters by Home Runs", "Reds"),
+    ("RBI", "Top 10 Hitters by RBIs", "Greens"),
+    ("OBP", "Top 10 Hitters by On-Base Percentage", "Purples"),
+    ("SLG", "Top 10 Hitters by Slugging Percentage", "Oranges"),
+    ("SB", "Top 10 Hitters by Stolen Bases", "Greys"),
+    ("wOBA", "Top 10 Hitters by wOBA", "BuGn"),
+    ("wRC+", "Top 10 Hitters by wRC+", "YlOrRd"),
+    ("BABIP", "Top 10 Hitters by BABIP", "viridis"),
+    ("ISO", "Top 10 Hitters by ISO", "plasma"),
+    ("K%", "Top 10 Hitters by Strikeout Rate (Lower is Better)", "Reds_r"),
+    ("BB%", "Top 10 Hitters by Walk Rate", "Blues"),
 ]
 
-for entry in stats_to_plot:
-    if len(entry) == 4:
+for stat, title, color in stats_to_plot:
+    create_chart_and_table(df, stat, title, color)
+
+# Write last updated timestamp
+with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+    f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         stat, title, color, asc = entry
     else:
         stat, title, color = entry
