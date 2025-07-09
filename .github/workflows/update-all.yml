@@ -11,7 +11,7 @@ on:
 jobs:
   trigger-all-updates:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
 
     steps:
       - name: Checkout repository
@@ -65,6 +65,22 @@ jobs:
       - name: Wait between triggers
         run: sleep 45
 
+      - name: Trigger Playoff Predictions Update
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'update-playoffs.yml',
+              ref: 'main'
+            });
+            console.log('Triggered playoff predictions update');
+
+      - name: Wait between triggers
+        run: sleep 45
+
       - name: Trigger MVP & Cy Young Predictions Update
         uses: actions/github-script@v7
         with:
@@ -100,18 +116,20 @@ jobs:
           echo "✅ Triggered batting stats update"
           echo "✅ Triggered pitching stats update" 
           echo "✅ Triggered standings update"
+          echo "✅ Triggered playoff predictions update"
           echo "✅ Triggered MVP & Cy Young predictions update"
           echo "✅ Triggered prediction tracking update (after 2-minute delay)"
           echo ""
           echo "📝 Reason: ${{ github.event.inputs.reason }}"
           echo ""
           echo "⏳ Workflows triggered with proper delays to prevent conflicts."
-          echo "💡 Check the Actions tab to monitor progress of all five workflows."
-          echo "🕐 Total estimated time: 25-30 minutes with sequential execution."
+          echo "💡 Check the Actions tab to monitor progress of all six workflows."
+          echo "🕐 Total estimated time: 30-35 minutes with sequential execution."
           echo ""
           echo "📋 Execution Order:"
           echo "1. Batting Stats (immediate)"
           echo "2. Pitching Stats (45s delay)"
           echo "3. Standings (90s delay)"
-          echo "4. MVP & Cy Young (135s delay)"
-          echo "5. Prediction Tracking (255s delay - waits for MVP/Cy Young completion)"
+          echo "4. Playoff Predictions (135s delay)"
+          echo "5. MVP & Cy Young (180s delay)"
+          echo "6. Prediction Tracking (300s delay - waits for MVP/Cy Young completion)"

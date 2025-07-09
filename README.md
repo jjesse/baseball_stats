@@ -1,6 +1,6 @@
 # MLB Stats Dashboard ⚾
 
-A comprehensive MLB statistics dashboard that automatically tracks pitching, batting, team standings, and award predictions for the 2025 season. Features interactive charts, educational tooltips, real-time MVP & Cy Young predictions with accuracy tracking, and automated data updates via GitHub Actions.
+A comprehensive MLB statistics dashboard that automatically tracks pitching, batting, team standings, award predictions, and playoff probabilities for the 2025 season. Features interactive charts, educational tooltips, real-time MVP & Cy Young predictions with accuracy tracking, playoff race analysis, and automated data updates via GitHub Actions.
 
 ## 🌟 Features
 
@@ -9,7 +9,16 @@ A comprehensive MLB statistics dashboard that automatically tracks pitching, bat
 - **Batting Stats**: AVG, HR, RBI, OBP, SLG, SB, wOBA, wRC+, BABIP, ISO, K%, BB% with trends
 - **Team Standings**: Live standings by division with enhanced visualizations and league comparison
 - **MVP & Cy Young Tracker**: Real-time award probability calculator with accuracy tracking
+- **Playoff Picture**: Comprehensive playoff probability tracker with wild card races and World Series predictions
 - **Trend Analysis**: Historical performance tracking for all key metrics
+
+### 🏆 Playoff Prediction System
+- **Division Winner Probabilities**: Real-time odds for all 6 MLB divisions
+- **Wild Card Race Tracking**: AL and NL wild card probability calculations
+- **World Series Championship Odds**: Complete championship probability rankings
+- **Playoff Scenario Analysis**: Detailed breakdown of playoff paths and scenarios
+- **Team Strength Metrics**: Advanced analytics combining current performance and projections
+- **Visual Playoff Dashboard**: Interactive charts showing all playoff probabilities
 
 ### 🎯 Award Prediction Accuracy System
 - **Daily Prediction Tracking**: Saves every daily prediction with probabilities for end-of-season evaluation
@@ -44,9 +53,9 @@ A comprehensive MLB statistics dashboard that automatically tracks pitching, bat
 - **Multiple Data Sources**: Robust data fetching from MLB.com, ESPN, and Baseball Reference
 
 ### 🤖 Automation
-- **Daily Updates**: Batting stats, standings, and award predictions refresh automatically
+- **Daily Updates**: Batting stats, standings, award predictions, and playoff probabilities refresh automatically
 - **Weekly Pitching**: Pitching stats update every Monday for comprehensive analysis
-- **Prediction Tracking**: Daily archiving of award predictions for accuracy analysis
+- **Prediction Tracking**: Daily archiving of award and playoff predictions for accuracy analysis
 - **Trend Tracking**: Historical data archived for detailed trend analysis
 - **Complete Rebuild**: Master workflow for full site regeneration
 - **Error Handling**: Robust fallback systems and comprehensive logging
@@ -65,8 +74,10 @@ baseball_stats/
 │   ├── batting.html               # Batting stats dashboard with trends  
 │   ├── standings.html             # Enhanced team standings with league tabs
 │   ├── mvp-cy-young.html          # MVP & Cy Young award predictions
+│   ├── playoffs.html              # Playoff picture and World Series predictions
 │   ├── prediction_accuracy.html   # Award prediction accuracy dashboard
 │   ├── award_predictions.json     # Real-time award prediction data
+│   ├── playoff_predictions.json   # Real-time playoff probability data
 │   ├── prediction_accuracy_report.json # Prediction accuracy analysis
 │   ├── actual_winners.json        # Actual award winners (updated at season end)
 │   ├── prediction_history/        # Daily prediction snapshots
@@ -83,6 +94,7 @@ baseball_stats/
 │   ├── update-batting.yml        # Daily batting updates
 │   ├── update-pitching.yml       # Weekly pitching updates
 │   ├── update-standings.yml      # Daily standings with multiple sources
+│   ├── update-playoffs.yml       # Daily playoff probability updates
 │   ├── update-mvp-cy-young.yml   # Daily award predictions with tracking
 │   ├── update-prediction-tracking.yml # Daily prediction accuracy updates
 │   └── update-all.yml            # Master workflow (complete rebuild)
@@ -90,6 +102,7 @@ baseball_stats/
 ├── batting_chart.py              # Batting data processor with dark mode tables
 ├── standings_chart.py            # Enhanced standings processor with multiple sources
 ├── mvp_cy_young_calculator.py    # Award prediction engine
+├── playoff_predictor.py          # Playoff probability calculator and World Series odds
 ├── prediction_tracker.py         # Prediction accuracy tracking system
 ├── create_award_charts.py        # Award visualization generator
 ├── trend_pitching.py             # Pitching trend analyzer (6 stats)
@@ -120,6 +133,7 @@ python pitching_chart.py
 python batting_chart.py
 python standings_chart.py
 python mvp_cy_young_calculator.py
+python playoff_predictor.py
 python prediction_tracker.py
 
 # Serve locally (optional)
@@ -131,6 +145,39 @@ python -m http.server 8000 --directory docs
 2. Set source to "GitHub Actions" 
 3. The workflows will automatically update the site
 4. Manual triggers available for testing and debugging
+
+## 🏆 Playoff Predictions
+
+### How We Calculate Playoff Probabilities
+Our playoff prediction system uses advanced analytics to forecast postseason scenarios:
+
+- **Team Strength Metrics**: Current record, projected wins, and performance analytics
+- **Division Race Analysis**: Real-time calculation of division winner probabilities
+- **Wild Card Projections**: AL and NL wild card probability calculations
+- **World Series Odds**: Championship probability based on overall team strength
+
+### Playoff Picture Features
+- **Division Winner Odds**: Probability calculations for all 6 MLB divisions
+- **Wild Card Tracker**: Live odds for 3 wild card spots per league
+- **Championship Predictions**: World Series winner probability rankings
+- **Playoff Scenarios**: Visual breakdown of different postseason paths
+- **Race Analysis**: Identification of closest division races and wild card battles
+
+### Sample Playoff Report
+```json
+{
+  "al_division_winners": {
+    "Houston Astros": 78.4,
+    "Detroit Tigers": 89.2,
+    "Los Angeles Dodgers": 95.1
+  },
+  "world_series_odds": {
+    "Los Angeles Dodgers": 18.7,
+    "Philadelphia Phillies": 14.2,
+    "Houston Astros": 12.8
+  }
+}
+```
 
 ## 📊 Award Prediction Accuracy
 
@@ -168,6 +215,12 @@ Once the 2025 MLB awards are announced in November, our system will provide:
 
 ## 📈 Data Sources & Metrics
 
+### Playoff Prediction Factors
+- **Current Performance**: Win-loss record, recent performance trends
+- **Team Strength**: Advanced metrics combining offense, defense, and pitching
+- **Schedule Analysis**: Remaining games and strength of schedule
+- **Historical Patterns**: Playoff qualification thresholds and team performance
+
 ### Award Prediction Factors
 - **Individual Performance**: Core statistical metrics and advanced analytics
 - **Team Success**: Win-loss record, playoff positioning, division standings
@@ -185,12 +238,21 @@ Once the 2025 MLB awards are announced in November, our system will provide:
 - **Batting Stats**: Daily at 12:00 UTC
 - **Pitching Stats**: Weekly (Mondays) at 3:00 UTC
 - **Standings**: Daily at 13:00 UTC with multiple source fallbacks
+- **Playoff Predictions**: Daily at 13:30 UTC (after standings update)
 - **MVP & Cy Young Predictions**: Daily at 14:00 UTC
 - **Prediction Accuracy Tracking**: Daily at 15:00 UTC
 - **Trend Analysis**: Generated with each respective update
 - **Complete Rebuild**: Manual trigger for full site regeneration
 
 ## 🎯 Key Features Explained
+
+### Playoff Prediction System
+Our comprehensive playoff tracker includes:
+- **Real-time Probabilities**: Updated daily based on current standings
+- **Multiple Scenarios**: Division winners, wild cards, and championship odds
+- **Visual Analytics**: Charts showing probability distributions and trends
+- **Race Analysis**: Identification of closest competitions and key matchups
+- **Scenario Modeling**: What-if analysis for different playoff outcomes
 
 ### Award Prediction Accuracy System
 Our comprehensive accuracy tracking includes:
@@ -203,12 +265,18 @@ Our comprehensive accuracy tracking includes:
 ### Complete Site Rebuild
 The "Update All Stats (Complete Rebuild)" workflow:
 - Triggers all workflows simultaneously from GitHub Actions UI
-- Includes the new prediction tracking workflow
+- Includes the new playoff and prediction tracking workflows
 - Perfect for testing after code changes or data source issues
 - Includes optional reason field for documentation and debugging
-- Runs updates in parallel for faster completion
+- Runs updates in proper sequence for faster completion
 
 ## 🏗️ Architecture Highlights
+
+### Playoff Prediction Pipeline
+- **Team Strength Calculation**: Advanced metrics combining multiple performance factors
+- **Probability Modeling**: Statistical analysis of playoff scenarios and outcomes
+- **Visual Generation**: Automated chart creation for playoff probability displays
+- **Race Analysis**: Real-time identification of competitive divisions and wild card battles
 
 ### Prediction Tracking Pipeline
 - **Daily Archiving**: Automatic saving of predictions with timestamps
@@ -233,6 +301,7 @@ The "Update All Stats (Complete Rebuild)" workflow:
 
 ## 🚀 Recent Major Updates
 
+- ✅ **Playoff Prediction System**: Complete playoff probability tracker with World Series odds
 - ✅ **Award Prediction Accuracy Tracking**: Complete system for evaluating prediction performance
 - ✅ **Daily Prediction Archiving**: Automatic saving of predictions for end-of-season analysis
 - ✅ **Enhanced Prediction Workflows**: Integrated tracking into existing MVP/Cy Young updates
@@ -241,4 +310,4 @@ The "Update All Stats (Complete Rebuild)" workflow:
 
 ---
 
-**Last Updated**: January 2025 | **Status**: Actively Maintained ✅ | **Features**: Complete with Accuracy Tracking 🎯
+**Last Updated**: January 2025 | **Status**: Actively Maintained ✅ | **Features**: Complete with Playoff Predictions & Accuracy Tracking 🏆
