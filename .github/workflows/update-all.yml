@@ -69,6 +69,19 @@ jobs:
             });
             console.log('Triggered MVP & Cy Young predictions update');
 
+      - name: Trigger Prediction Tracking Update
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'update-prediction-tracking.yml',
+              ref: 'main'
+            });
+            console.log('Triggered prediction tracking update');
+
       - name: Summary
         run: |
           echo "🚀 Complete rebuild initiated!"
@@ -76,8 +89,9 @@ jobs:
           echo "✅ Triggered pitching stats update" 
           echo "✅ Triggered standings update"
           echo "✅ Triggered MVP & Cy Young predictions update"
+          echo "✅ Triggered prediction tracking update"
           echo ""
           echo "📝 Reason: ${{ github.event.inputs.reason }}"
           echo ""
-          echo "⏳ Check the Actions tab to monitor progress of all four workflows."
+          echo "⏳ Check the Actions tab to monitor progress of all five workflows."
           echo "💡 Workflows will run in parallel and may take 15-20 minutes total."
