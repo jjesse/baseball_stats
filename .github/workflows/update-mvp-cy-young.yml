@@ -43,52 +43,78 @@ jobs:
         timeout-minutes: 10
         continue-on-error: false
 
-      - name: Run prediction tracking
-        run: |
-          # Set output path based on branch
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
-          else
-            export OUTPUT_PATH="docs"
-          fi
-          python prediction_tracker.py || exit 1
-        timeout-minutes: 5
-
-      - name: Commit and push changes
+      - name: Commit and push changes with retry
         run: |
           if [[ -n $(git status --porcelain) ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             
-            # Handle potential conflicts
-            git fetch origin ${{ github.ref_name }}
-            git reset --hard origin/${{ github.ref_name }}
-            
             # Set output path based on branch
             if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
               export OUTPUT_PATH="docs/preview"
               mkdir -p docs/preview
-              COMMIT_MSG="Update MVP and Cy Young predictions with tracking (preview) [skip ci]"
-              FILE_PATTERN="docs/preview/award_predictions.json docs/preview/al_mvp_predictions.csv docs/preview/nl_mvp_predictions.csv docs/preview/al_cy_young_predictions.csv docs/preview/nl_cy_young_predictions.csv docs/preview/prediction_history/ docs/preview/prediction_accuracy*"
+              COMMIT_MSG="Update MVP and Cy Young predictions (preview) [skip ci]"
+              FILE_PATTERN="docs/preview/award_predictions.json docs/preview/al_mvp_predictions.csv docs/preview/nl_mvp_predictions.csv docs/preview/al_cy_young_predictions.csv docs/preview/nl_cy_young_predictions.csv"
             else
               export OUTPUT_PATH="docs"
-              COMMIT_MSG="Update MVP and Cy Young predictions with tracking [skip ci]"
-              FILE_PATTERN="docs/award_predictions.json docs/al_mvp_predictions.csv docs/nl_mvp_predictions.csv docs/al_cy_young_predictions.csv docs/nl_cy_young_predictions.csv docs/prediction_history/ docs/prediction_accuracy*"
+              COMMIT_MSG="Update MVP and Cy Young predictions [skip ci]"
+              FILE_PATTERN="docs/award_predictions.json docs/al_mvp_predictions.csv docs/nl_mvp_predictions.csv docs/al_cy_young_predictions.csv docs/nl_cy_young_predictions.csv"
             fi
             
-            # Re-run the script after reset
-            python mvp_cy_young_calculator.py || exit 1
-            python prediction_tracker.py || exit 1
+            # Retry logic with proper conflict resolution
+            for attempt in {1..5}; do
+              echo "Attempt $attempt to push changes..."
+              
+              # Fetch latest changes
+              git fetch origin ${{ github.ref_name }}
+              
+              # Check if we're behind
+              BEHIND=$(git rev-list --count HEAD..origin/${{ github.ref_name }})
+              if [ "$BEHIND" -gt 0 ]; then
+                echo "Local branch is $BEHIND commits behind. Attempting to rebase..."
+                
+                # Reset to origin
+                git reset --hard origin/${{ github.ref_name }}
+                
+                # Re-run the scripts to ensure fresh data
+                python mvp_cy_young_calculator.py || exit 1
+                
+                # Stage the new files
+                git add $FILE_PATTERN
+                
+                # Check if there are actually changes after re-running
+                if [[ -z $(git diff --cached) ]]; then
+                  echo "No changes after re-running scripts. Exiting."
+                  exit 0
+                fi
+              else
+                # We're up to date, just add our changes
+                git add $FILE_PATTERN
+              fi
+              
+              # Commit changes
+              git commit -m "$COMMIT_MSG" || {
+                echo "Nothing to commit on attempt $attempt"
+                exit 0
+              }
+              
+              # Try to push
+              if git push origin ${{ github.ref_name }}; then
+                echo "Successfully pushed on attempt $attempt"
+                exit 0
+              else
+                echo "Push failed on attempt $attempt. Retrying in 10 seconds..."
+                sleep 10
+              fi
+            done
             
-            # Commit changes
-            git add $FILE_PATTERN
-            git commit -m "$COMMIT_MSG"
-            git push origin ${{ github.ref_name }}
+            # If all attempts failed
+            echo "Failed to push after 5 attempts"
+            exit 1
           else
             echo "No changes to commit"
           fi
-        timeout-minutes: 2
+        timeout-minutes: 5
 
       - name: Check for failures
         if: failure()

@@ -91,12 +91,4 @@ summary = {
 with open(f"{output_path}/award_predictions.json", "w") as f:
     json.dump(summary, f, indent=2)
 
-# Auto-trigger prediction tracking
-try:
-    from prediction_tracker import save_daily_predictions
-    save_daily_predictions()
-    print("✓ Daily predictions saved to tracking system")
-except Exception as e:
-    print(f"Warning: Could not save to tracking system: {e}")
-
 print("MVP and Cy Young predictions calculated successfully!")

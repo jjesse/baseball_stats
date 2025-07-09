@@ -11,7 +11,7 @@ on:
 jobs:
   trigger-all-updates:
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 10
 
     steps:
       - name: Checkout repository
@@ -30,6 +30,9 @@ jobs:
             });
             console.log('Triggered batting stats update');
 
+      - name: Wait between triggers
+        run: sleep 45
+
       - name: Trigger Pitching Stats Update
         uses: actions/github-script@v7
         with:
@@ -42,6 +45,9 @@ jobs:
               ref: 'main'
             });
             console.log('Triggered pitching stats update');
+
+      - name: Wait between triggers
+        run: sleep 45
 
       - name: Trigger Standings Update
         uses: actions/github-script@v7
@@ -56,6 +62,9 @@ jobs:
             });
             console.log('Triggered standings update');
 
+      - name: Wait between triggers
+        run: sleep 45
+
       - name: Trigger MVP & Cy Young Predictions Update
         uses: actions/github-script@v7
         with:
@@ -68,6 +77,9 @@ jobs:
               ref: 'main'
             });
             console.log('Triggered MVP & Cy Young predictions update');
+
+      - name: Wait for MVP/Cy Young to complete before triggering tracking
+        run: sleep 120
 
       - name: Trigger Prediction Tracking Update
         uses: actions/github-script@v7
@@ -84,14 +96,22 @@ jobs:
 
       - name: Summary
         run: |
-          echo "🚀 Complete rebuild initiated!"
+          echo "🚀 Complete rebuild initiated with proper sequencing!"
           echo "✅ Triggered batting stats update"
           echo "✅ Triggered pitching stats update" 
           echo "✅ Triggered standings update"
           echo "✅ Triggered MVP & Cy Young predictions update"
-          echo "✅ Triggered prediction tracking update"
+          echo "✅ Triggered prediction tracking update (after 2-minute delay)"
           echo ""
           echo "📝 Reason: ${{ github.event.inputs.reason }}"
           echo ""
-          echo "⏳ Check the Actions tab to monitor progress of all five workflows."
-          echo "💡 Workflows will run in parallel and may take 15-20 minutes total."
+          echo "⏳ Workflows triggered with proper delays to prevent conflicts."
+          echo "💡 Check the Actions tab to monitor progress of all five workflows."
+          echo "🕐 Total estimated time: 25-30 minutes with sequential execution."
+          echo ""
+          echo "📋 Execution Order:"
+          echo "1. Batting Stats (immediate)"
+          echo "2. Pitching Stats (45s delay)"
+          echo "3. Standings (90s delay)"
+          echo "4. MVP & Cy Young (135s delay)"
+          echo "5. Prediction Tracking (255s delay - waits for MVP/Cy Young completion)"
