@@ -1,0 +1,65 @@
+{
+  "total_predictions": 1,
+  "awards": [
+    "al_mvp",
+    "nl_mvp",
+    "al_cy",
+    "nl_cy"
+  ],
+  "accuracy_by_award": {
+    "al_mvp": {
+      "correct_predictions": 0,
+      "total_days": 1,
+      "accuracy_percentage": 0,
+      "prediction_history": [
+        {
+          "date": "2025-07-09",
+          "predicted_leader": "Aaron Judge",
+          "correct": null
+        }
+      ],
+      "final_accuracy": "TBD"
+    },
+    "nl_mvp": {
+      "correct_predictions": 0,
+      "total_days": 1,
+      "accuracy_percentage": 0,
+      "prediction_history": [
+        {
+          "date": "2025-07-09",
+          "predicted_leader": "Shohei Ohtani",
+          "correct": null
+        }
+      ],
+      "final_accuracy": "TBD"
+    },
+    "al_cy": {
+      "correct_predictions": 0,
+      "total_days": 1,
+      "accuracy_percentage": 0,
+      "prediction_history": [
+        {
+          "date": "2025-07-09",
+          "predicted_leader": "Tarik Skubal",
+          "correct": null
+        }
+      ],
+      "final_accuracy": "TBD"
+    },
+    "nl_cy": {
+      "correct_predictions": 0,
+      "total_days": 1,
+      "accuracy_percentage": 0,
+      "prediction_history": [
+        {
+          "date": "2025-07-09",
+          "predicted_leader": "Zack Wheeler",
+          "correct": null
+        }
+      ],
+      "final_accuracy": "TBD"
+    }
+  },
+  "prediction_timeline": [],
+  "top_predicted_players": {}
+}
