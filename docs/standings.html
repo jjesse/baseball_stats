@@ -118,6 +118,98 @@
       display: block;
     }
 
+    .chart-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .chart-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px var(--link-shadow);
+    }
+
+    .overview-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px var(--link-shadow);
+      text-align: center;
+    }
+
+    .stat-card h3 {
+      margin: 0 0 1rem 0;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .stat-value {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .info-icon {
+      background-color: #007bff;
+      color: white;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: 12px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: help;
+    }
+
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 280px;
+      background-color: var(--card-bg);
+      color: var(--text);
+      text-align: left;
+      border-radius: 6px;
+      padding: 1rem;
+      position: absolute;
+      z-index: 1000;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -140px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 1px solid #ccc;
+    }
+
+    [data-theme='dark'] .tooltip .tooltiptext {
+      border: 1px solid #555;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .division-section {
+      margin: 2rem 0;
+    }
+
     iframe {
       width: 90%;
       max-width: 800px;
@@ -150,46 +242,161 @@
       <a href="standings.html" class="active">Standings</a>
       <a href="mvp-cy-young.html">MVP & Cy Young</a>
     </div>
-    <h1>MLB Team Standings</h1>
-    <p id="last-updated">Loading standings...</p>
+    <h1>MLB Standings Dashboard</h1>
+    <p id="last-updated">Loading update time...</p>
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
   <div class="tabs">
     <button id="overview-btn" onclick="switchTab('overview')">Overview</button>
-    <button id="al-btn" onclick="switchTab('al')">American League</button>
-    <button id="nl-btn" onclick="switchTab('nl')">National League</button>
+    <button id="american-btn" onclick="switchTab('american')">American League</button>
+    <button id="national-btn" onclick="switchTab('national')">National League</button>
     <button id="glossary-btn" onclick="switchTab('glossary')">Glossary</button>
   </div>
 
   <div id="overview" class="content">
-    <h2>League Overview</h2>
-    <iframe src="standings_all.html"></iframe>
+    <div class="chart-container">
+      <h2>League-Wide Team Wins Comparison</h2>
+      <img src="standings_wins_chart.png" alt="MLB Team Wins Chart">
+      <p style="text-align: center; font-size: 0.9rem; color: var(--text); margin-top: 0.5rem;">
+        <span style="color: #1f77b4; font-weight: bold;">■</span> American League teams &nbsp;&nbsp;
+        <span style="color: #ff7f0e; font-weight: bold;">■</span> National League teams
+      </p>
+    </div>
+
+    <div class="overview-stats">
+      <div class="stat-card">
+        <h3>AL Leader
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>American League Leader</strong><br>
+              Team with the best record in the AL.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
+      </div>
+      <div class="stat-card">
+        <h3>NL Leader
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>National League Leader</strong><br>
+              Team with the best record in the NL.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
+      </div>
+      <div class="stat-card">
+        <h3>Best Record
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>Best Overall Record</strong><br>
+              Team with the most wins in MLB.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
+      </div>
+      <div class="stat-card">
+        <h3>Closest Division
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>Tightest Division Race</strong><br>
+              Division with smallest lead margin.
+            </span>
+          </div>
+        </h3>
+        <div class="stat-value">Loading...</div>
+      </div>
+    </div>
+
+    <div class="division-section">
+      <h2>All Teams by Wins (League-Wide Standings)</h2>
+      <iframe src="standings_all.html"></iframe>
+    </div>
   </div>
 
-  <div id="al" class="content">
-    <h2>American League Standings</h2>
-    <iframe src="standings_al_east.html"></iframe>
-    <iframe src="standings_al_central.html"></iframe>
-    <iframe src="standings_al_west.html"></iframe>
+  <div id="american" class="content">
+    <div class="division-section">
+      <h2>AL East</h2>
+      <iframe src="standings_al_east.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_al_east_wins_chart.png" alt="AL East Wins Chart">
+      </div>
+    </div>
+
+    <div class="division-section">
+      <h2>AL Central</h2>
+      <iframe src="standings_al_central.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_al_central_wins_chart.png" alt="AL Central Wins Chart">
+      </div>
+    </div>
+
+    <div class="division-section">
+      <h2>AL West</h2>
+      <iframe src="standings_al_west.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_al_west_wins_chart.png" alt="AL West Wins Chart">
+      </div>
+    </div>
   </div>
 
-  <div id="nl" class="content">
-    <h2>National League Standings</h2>
-    <iframe src="standings_nl_east.html"></iframe>
-    <iframe src="standings_nl_central.html"></iframe>
-    <iframe src="standings_nl_west.html"></iframe>
+  <div id="national" class="content">
+    <div class="division-section">
+      <h2>NL East</h2>
+      <iframe src="standings_nl_east.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_nl_east_wins_chart.png" alt="NL East Wins Chart">
+      </div>
+    </div>
+
+    <div class="division-section">
+      <h2>NL Central</h2>
+      <iframe src="standings_nl_central.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_nl_central_wins_chart.png" alt="NL Central Wins Chart">
+      </div>
+    </div>
+
+    <div class="division-section">
+      <h2>NL West</h2>
+      <iframe src="standings_nl_west.html"></iframe>
+      <div class="chart-container">
+        <img src="standings_nl_west_wins_chart.png" alt="NL West Wins Chart">
+      </div>
+    </div>
   </div>
 
   <div id="glossary" class="content">
     <div style="max-width: 600px; margin: 0 auto; text-align: left;">
       <h2 style="text-align: center;">Standings Glossary</h2>
+      
       <div style="margin-bottom: 1.5rem;">
         <h3>Basic Terms</h3>
-        <p><strong>W (Wins):</strong> Games won by the team.</p>
-        <p><strong>L (Losses):</strong> Games lost by the team.</p>
+        <p><strong>W (Wins):</strong> Total games won by the team.</p>
+        <p><strong>L (Losses):</strong> Total games lost by the team.</p>
         <p><strong>PCT (Winning Percentage):</strong> Wins divided by total games played.</p>
-        <p><strong>GB (Games Behind):</strong> Games behind the division leader.</p>
+        <p><strong>GB (Games Behind):</strong> How many games behind the division leader.</p>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <h3>Playoff Structure</h3>
+        <p><strong>Division Winners:</strong> First place team in each of the 6 divisions automatically qualify for playoffs.</p>
+        <p><strong>Wild Card:</strong> Next 3 best records in each league (6 total) qualify for Wild Card round.</p>
+        <p><strong>Playoff Format:</strong> Wild Card → Division Series → Championship Series → World Series</p>
+      </div>
+
+      <div>
+        <h3>Understanding the Race</h3>
+        <p><strong>Magic Number:</strong> Wins needed (or competitor losses) to clinch playoff spot.</p>
+        <p><strong>Elimination Number:</strong> Losses that would eliminate team from playoffs.</p>
+        <p><strong>Strength of Schedule:</strong> Difficulty of remaining games affects playoff chances.</p>
       </div>
     </div>
   </div>
@@ -198,65 +405,6 @@
     &copy; 2025 MLB Stats Dashboard by jjesse
   </div>
 
-  <script>
-    function switchTab(tabName) {
-      const tabs = document.querySelectorAll(".tabs button");
-      const contents = document.querySelectorAll(".content");
-      tabs.forEach(tab => tab.classList.remove("active"));
-      contents.forEach(content => content.classList.remove("active"));
-      document.getElementById(tabName).classList.add("active");
-      document.getElementById(tabName + "-btn").classList.add("active");
-    }
-
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
-    }
-
-    window.onload = () => {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      }
-      switchTab("overview");
-    };
-  </script>
-</body>
-</html>
-      position: relative;
-      display: inline-block;
-    }
-
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 280px;
-      background-color: var(--card-bg);
-      color: var(--text);
-      text-align: left;
-      border-radius: 6px;
-      padding: 1rem;
-      position: absolute;
-      z-index: 1000;
-      bottom: 125%;
-      left: 50%;
-      margin-left: -140px;
-      opacity: 0;
-      transition: opacity 0.3s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      border: 1px solid #ccc;
-    }
-
-    [data-theme='dark'] .tooltip .tooltiptext {
-      border: 1px solid #555;
-    }
-
-    .tooltip:hover .tooltiptext {
-      visibility: visible;
-      opacity: 1;
-    }
-  </style>
   <script>
     function switchTab(tabName) {
       const tabs = document.querySelectorAll(".tabs button");
@@ -414,156 +562,8 @@
       }
     }
   </script>
-</head>
-<body>
-  <header>
-    <div class="nav-bar">
-      <a href="index.html">Home</a>
-      <a href="pitching.html">Pitching Stats</a>
-      <a href="batting.html">Batting Stats</a>
-      <a href="standings.html" class="active">Standings</a>
-      <a href="mvp-cy-young.html">MVP & Cy Young</a>
-    </div>
-    <h1>MLB Standings Dashboard</h1>
-    <p id="last-updated">Loading update time...</p>
-    <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
-  </header>
-
-  <div class="tabs">
-    <button id="overview-btn" onclick="switchTab('overview')">Overview</button>
-    <button id="american-btn" onclick="switchTab('american')">American League</button>
-    <button id="national-btn" onclick="switchTab('national')">National League</button>
-    <button id="glossary-btn" onclick="switchTab('glossary')">Glossary</button>
-  </div>
-
-  <div id="overview" class="content">
-    <div class="chart-container">
-      <h2>League-Wide Team Wins Comparison</h2>
-      <img src="standings_wins_chart.png" alt="MLB Team Wins Chart">
-      <p style="text-align: center; font-size: 0.9rem; color: var(--text); margin-top: 0.5rem;">
-        <span style="color: #1f77b4; font-weight: bold;">■</span> American League teams &nbsp;&nbsp;
-        <span style="color: #ff7f0e; font-weight: bold;">■</span> National League teams
-      </p>
-    </div>
-
-    <div class="overview-stats">
-      <div class="stat-card">
-        <h3>AL Leader
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>American League Leader</strong><br>
-              Team with the best record in the AL.
-            </span>
-          </div>
-        </h3>
-        <div class="stat-value">Loading...</div>
-      </div>
-      <div class="stat-card">
-        <h3>NL Leader
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>National League Leader</strong><br>
-              Team with the best record in the NL.
-            </span>
-          </div>
-        </h3>
-        <div class="stat-value">Loading...</div>
-      </div>
-      <div class="stat-card">
-        <h3>Best Record
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>Best Overall Record</strong><br>
-              Team with the most wins in MLB.
-            </span>
-          </div>
-        </h3>
-        <div class="stat-value">Loading...</div>
-      </div>
-      <div class="stat-card">
-        <h3>Closest Division
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>Tightest Division Race</strong><br>
-              Division with smallest lead margin.
-            </span>
-          </div>
-        </h3>
-        <div class="stat-value">Loading...</div>
-      </div>
-    </div>
-
-    <!-- Fallback combined table -->
-    <div class="division-section">
-      <h2>All Teams by Wins (League-Wide Standings)</h2>
-      <iframe src="standings_all.html"></iframe>
-    </div>
-  </div>
-
-  <div id="american" class="content">
-    <div class="division-section">
-      <h2>AL East</h2>
-      <iframe src="standings_al_east.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_al_east_wins_chart.png" alt="AL East Wins Chart">
-      </div>
-    </div>
-
-    <div class="division-section">
-      <h2>AL Central</h2>
-      <iframe src="standings_al_central.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_al_central_wins_chart.png" alt="AL Central Wins Chart">
-      </div>
-    </div>
-
-    <div class="division-section">
-      <h2>AL West</h2>
-      <iframe src="standings_al_west.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_al_west_wins_chart.png" alt="AL West Wins Chart">
-      </div>
-    </div>
-  </div>
-
-  <div id="national" class="content">
-    <div class="division-section">
-      <h2>NL East</h2>
-      <iframe src="standings_nl_east.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_nl_east_wins_chart.png" alt="NL East Wins Chart">
-      </div>
-    </div>
-
-    <div class="division-section">
-      <h2>NL Central</h2>
-      <iframe src="standings_nl_central.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_nl_central_wins_chart.png" alt="NL Central Wins Chart">
-      </div>
-    </div>
-
-    <div class="division-section">
-      <h2>NL West</h2>
-      <iframe src="standings_nl_west.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_nl_west_wins_chart.png" alt="NL West Wins Chart">
-      </div>
-    </div>
-  </div>
-
-  <div id="glossary" class="content">
-    <div style="max-width: 600px; margin: 0 auto; text-align: left;">
-      <h2 style="text-align: center;">Standings Glossary</h2>
-      
-      <div style="margin-bottom: 1.5rem;">
-        <h3>Basic Terms</h3>
-        <p><strong>W (Wins):</strong> Total games won by the team.</p>
-        <p><strong>L (Losses):</strong> Total games lost by the team.</p>
+</body>
+</html>
         <p><strong>PCT (Winning Percentage):</strong> Wins divided by total games played.</p>
         <p><strong>GB (Games Behind):</strong> How many games behind the division leader.</p>
       </div>
