@@ -43,6 +43,18 @@ jobs:
         timeout-minutes: 10
         continue-on-error: false
 
+      - name: Run prediction tracking
+        run: |
+          # Set output path based on branch
+          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+            export OUTPUT_PATH="docs/preview"
+            mkdir -p docs/preview
+          else
+            export OUTPUT_PATH="docs"
+          fi
+          python prediction_tracker.py || exit 1
+        timeout-minutes: 5
+
       - name: Commit and push changes
         run: |
           if [[ -n $(git status --porcelain) ]]; then
@@ -57,16 +69,17 @@ jobs:
             if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
               export OUTPUT_PATH="docs/preview"
               mkdir -p docs/preview
-              COMMIT_MSG="Update MVP and Cy Young award predictions (preview) [skip ci]"
-              FILE_PATTERN="docs/preview/award_predictions.json docs/preview/al_mvp_predictions.csv docs/preview/nl_mvp_predictions.csv docs/preview/al_cy_young_predictions.csv docs/preview/nl_cy_young_predictions.csv"
+              COMMIT_MSG="Update MVP and Cy Young predictions with tracking (preview) [skip ci]"
+              FILE_PATTERN="docs/preview/award_predictions.json docs/preview/al_mvp_predictions.csv docs/preview/nl_mvp_predictions.csv docs/preview/al_cy_young_predictions.csv docs/preview/nl_cy_young_predictions.csv docs/preview/prediction_history/ docs/preview/prediction_accuracy*"
             else
               export OUTPUT_PATH="docs"
-              COMMIT_MSG="Update MVP and Cy Young award predictions [skip ci]"
-              FILE_PATTERN="docs/award_predictions.json docs/al_mvp_predictions.csv docs/nl_mvp_predictions.csv docs/al_cy_young_predictions.csv docs/nl_cy_young_predictions.csv"
+              COMMIT_MSG="Update MVP and Cy Young predictions with tracking [skip ci]"
+              FILE_PATTERN="docs/award_predictions.json docs/al_mvp_predictions.csv docs/nl_mvp_predictions.csv docs/al_cy_young_predictions.csv docs/nl_cy_young_predictions.csv docs/prediction_history/ docs/prediction_accuracy*"
             fi
             
             # Re-run the script after reset
             python mvp_cy_young_calculator.py || exit 1
+            python prediction_tracker.py || exit 1
             
             # Commit changes
             git add $FILE_PATTERN

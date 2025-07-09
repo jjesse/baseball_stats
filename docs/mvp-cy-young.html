@@ -322,6 +322,38 @@
       border: 1px solid #dc3545;
     }
 
+    .accuracy-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-top: 1rem;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    [data-theme='dark'] .stat-card {
+      border: 1px solid #555;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: bold;
+      color: var(--text);
+      margin: 0.5rem 0;
+    }
+
+    .chart-container {
+      margin-top: 1rem;
+      border: 1px solid var(--text);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
     @media (max-width: 768px) {
       .prediction-card {
         flex-direction: column;
@@ -336,6 +368,10 @@
       
       .nav-bar {
         justify-content: center;
+      }
+
+      .accuracy-info {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -355,12 +391,29 @@
   </header>
 
   <div class="tabs">
-    <button id="mvp-btn" onclick="switchTab('mvp')">MVP Race</button>
-    <button id="cy-young-btn" onclick="switchTab('cy-young')">Cy Young Race</button>
-    <button id="methodology-btn" onclick="switchTab('methodology')">How It Works</button>
+    <button id="overview-btn" onclick="switchTab('overview')">Overview</button>
+    <button id="al-mvp-btn" onclick="switchTab('al-mvp')">AL MVP</button>
+    <button id="nl-mvp-btn" onclick="switchTab('nl-mvp')">NL MVP</button>
+    <button id="al-cy-btn" onclick="switchTab('al-cy')">AL Cy Young</button>
+    <button id="nl-cy-btn" onclick="switchTab('nl-cy')">NL Cy Young</button>
+    <button id="accuracy-btn" onclick="switchTab('accuracy')">Accuracy</button>
+    <button id="methodology-btn" onclick="switchTab('methodology')">Methodology</button>
   </div>
 
-  <div id="mvp" class="content">
+  <div id="overview" class="content active">
+    <h2>🏁 Season Overview</h2>
+    <p>Welcome to the MVP & Cy Young Award Tracker! Here you can find the latest predictions for the MVP and Cy Young awards in the American and National Leagues.</p>
+    <p>Use the tabs above to navigate between different sections, including detailed predictions, accuracy tracking, and our methodology.</p>
+    <div class="update-info">
+      <h3>🕒 Update Schedule</h3>
+      <p><strong>Daily Updates:</strong> Predictions refresh daily with the latest stats</p>
+      <p><strong>Historical Accuracy:</strong> Based on 20+ years of BBWAA voting patterns</p>
+      <p><strong>Live Season:</strong> Calculations adjust as season progresses</p>
+      <p id="last-updated">Last Updated: Loading...</p>
+    </div>
+  </div>
+
+  <div id="al-mvp" class="content">
     <div class="award-section">
       <div class="award-header">
         <div class="award-title">American League MVP</div>
@@ -370,7 +423,9 @@
         <div class="loading">Loading AL MVP predictions...</div>
       </div>
     </div>
+  </div>
 
+  <div id="nl-mvp" class="content">
     <div class="award-section">
       <div class="award-header">
         <div class="award-title">National League MVP</div>
@@ -382,7 +437,7 @@
     </div>
   </div>
 
-  <div id="cy-young" class="content">
+  <div id="al-cy" class="content">
     <div class="award-section">
       <div class="award-header">
         <div class="award-title">American League Cy Young</div>
@@ -392,7 +447,9 @@
         <div class="loading">Loading AL Cy Young predictions...</div>
       </div>
     </div>
+  </div>
 
+  <div id="nl-cy" class="content">
     <div class="award-section">
       <div class="award-header">
         <div class="award-title">National League Cy Young</div>
@@ -400,6 +457,43 @@
       </div>
       <div id="nl-cy-predictions" class="predictions-grid">
         <div class="loading">Loading NL Cy Young predictions...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="accuracy" class="content">
+    <h2>Prediction Accuracy Tracking</h2>
+    
+    <div class="accuracy-info">
+      <div class="stat-card">
+        <h3>How We Track Accuracy</h3>
+        <p>We save our predictions daily throughout the season and compare them to the actual award winners announced in November.</p>
+        <ul>
+          <li><strong>Daily Accuracy:</strong> % of days we correctly predicted the eventual winner</li>
+          <li><strong>Final Accuracy:</strong> Whether our final prediction was correct</li>
+          <li><strong>Prediction Timeline:</strong> How our predictions changed over time</li>
+        </ul>
+      </div>
+      
+      <div class="stat-card">
+        <h3>2025 Season Status</h3>
+        <div class="stat-value">Tracking In Progress</div>
+        <p>Awards will be announced in November 2025. Check back then for accuracy results!</p>
+      </div>
+    </div>
+    
+    <div class="accuracy-preview">
+      <h3>Prediction Accuracy Dashboard</h3>
+      <p>Once the 2025 awards are announced, this section will show:</p>
+      <ul>
+        <li>Daily accuracy percentage for each award</li>
+        <li>Timeline of prediction changes</li>
+        <li>Comparison of our algorithm vs. actual voting results</li>
+        <li>Analysis of what factors led to correct/incorrect predictions</li>
+      </ul>
+      
+      <div class="chart-container">
+        <iframe src="prediction_accuracy.html" style="width: 100%; height: 600px; border: 1px solid var(--text); border-radius: 8px;"></iframe>
       </div>
     </div>
   </div>
@@ -448,14 +542,6 @@
           <div class="factor-description">Innings pitched and games started - durability matters to voters</div>
         </div>
       </div>
-    </div>
-
-    <div class="update-info">
-      <h3>🕒 Update Schedule</h3>
-      <p><strong>Daily Updates:</strong> Predictions refresh daily with the latest stats</p>
-      <p><strong>Historical Accuracy:</strong> Based on 20+ years of BBWAA voting patterns</p>
-      <p><strong>Live Season:</strong> Calculations adjust as season progresses</p>
-      <p id="last-updated">Last Updated: Loading...</p>
     </div>
   </div>
 
@@ -595,7 +681,7 @@
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
       
-      switchTab("mvp");
+      switchTab("overview");
       loadPredictions();
     };
   </script>
