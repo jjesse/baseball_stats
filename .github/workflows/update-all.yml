@@ -124,7 +124,7 @@ jobs:
           echo ""
           echo "⏳ Workflows triggered with proper delays to prevent conflicts."
           echo "💡 Check the Actions tab to monitor progress of all six workflows."
-          echo "🕐 Total estimated time: 30-35 minutes with sequential execution."
+          echo "🕐 Total estimated time: 25-30 minutes with sequential execution."
           echo ""
           echo "📋 Execution Order:"
           echo "1. Batting Stats (immediate)"

@@ -138,7 +138,6 @@ def evaluate_playoff_prediction_accuracy():
                     elif category == 'division_winners':
                         # Get division winner with highest probability
                         div_winners = daily_data.get('playoff_scenarios', {}).get(f"{subcategory.split('_')[0]}_division_winners", {})
-                        # Filter to teams actually in this division
                         predicted_leader = max(div_winners, key=div_winners.get) if div_winners else "N/A"
                     else:
                         # Wild card - get top wild card contender
@@ -409,4 +408,5 @@ if __name__ == "__main__":
     if accuracy_metrics:
         create_playoff_accuracy_html_report()
     
+    print("✓ Playoff prediction accuracy tracking completed successfully!")
     print("✓ Playoff prediction accuracy tracking completed successfully!")
