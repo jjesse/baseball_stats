@@ -478,14 +478,14 @@
       
       <div class="stat-card">
         <h3>2025 Season Status</h3>
-        <div class="stat-value">Tracking In Progress</div>
-        <p>Awards will be announced in November 2025. Check back then for accuracy results!</p>
+        <div class="stat-value">Tracking Starting Soon</div>
+        <p>Prediction tracking begins with the first MVP/Cy Young workflow run. Historical data will accumulate over time.</p>
       </div>
     </div>
     
     <div class="accuracy-preview">
       <h3>Prediction Accuracy Dashboard</h3>
-      <p>Once the 2025 awards are announced, this section will show:</p>
+      <p>Once prediction tracking begins and accumulates data, this section will show:</p>
       <ul>
         <li>Daily accuracy percentage for each award</li>
         <li>Timeline of prediction changes</li>
@@ -493,8 +493,19 @@
         <li>Analysis of what factors led to correct/incorrect predictions</li>
       </ul>
       
-      <div class="chart-container">
-        <iframe src="prediction_accuracy.html" style="width: 100%; height: 600px; border: 1px solid var(--text); border-radius: 8px;"></iframe>
+      <div class="accuracy-status" id="accuracy-status">
+        <div style="text-align: center; padding: 2rem; background-color: rgba(0, 122, 204, 0.1); border-radius: 8px; border: 1px solid #007acc;">
+          <h4>🚀 Starting Prediction Tracking</h4>
+          <p>The accuracy tracking system will begin collecting data once the MVP/Cy Young prediction workflow runs.</p>
+          <p><strong>Expected features:</strong></p>
+          <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
+            <li>Daily prediction snapshots</li>
+            <li>Historical accuracy charts</li>
+            <li>Prediction timeline visualization</li>
+            <li>End-of-season performance analysis</li>
+          </ul>
+          <p style="margin-top: 1rem;"><em>Check back after the first few prediction updates to see accuracy data!</em></p>
+        </div>
       </div>
     </div>
   </div>
@@ -626,6 +637,23 @@
       });
     }
 
+    async function checkAccuracyData() {
+      try {
+        const response = await fetch('prediction_accuracy.html');
+        if (response.ok) {
+          // If accuracy HTML exists, show the iframe
+          document.getElementById('accuracy-status').innerHTML = `
+            <div class="chart-container">
+              <iframe src="prediction_accuracy.html" style="width: 100%; height: 600px; border: 1px solid var(--text); border-radius: 8px;"></iframe>
+            </div>
+          `;
+        }
+      } catch (error) {
+        // Keep the default "Starting Prediction Tracking" message
+        console.log('Accuracy data not yet available - this is expected for new installations');
+      }
+    }
+
     async function loadPredictions() {
       try {
         const response = await fetch('award_predictions.json');
@@ -684,6 +712,7 @@
       
       switchTab("overview");
       loadPredictions();
+      checkAccuracyData(); // Check if accuracy data is available
     };
   </script>
 </body>

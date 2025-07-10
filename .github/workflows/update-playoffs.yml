@@ -1,0 +1,118 @@
+name: Update Playoff Predictions
+
+on:
+  schedule:
+    - cron: '30 13 * * *'  # Runs daily at 13:30 UTC - after standings update
+  workflow_dispatch:      # Allow manual trigger
+
+jobs:
+  update-playoff-predictions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas matplotlib seaborn numpy requests
+        timeout-minutes: 5
+
+      - name: Wait for standings data
+        run: |
+          # Wait up to 3 minutes for standings data to be available
+          max_attempts=18
+          attempt=0
+          
+          while [ $attempt -lt $max_attempts ]; do
+            if [ -f "docs/standings_all.csv" ]; then
+              if [ "$(find docs/standings_all.csv -mmin -60)" ]; then
+                echo "Fresh standings data found, proceeding with playoff predictions..."
+                break
+              fi
+            fi
+            
+            echo "Waiting for standings data... (attempt $((attempt+1))/$max_attempts)"
+            sleep 10
+            attempt=$((attempt+1))
+            
+            git fetch origin main
+            git reset --hard origin/main
+          done
+          
+          if [ $attempt -eq $max_attempts ]; then
+            echo "Warning: Fresh standings data not found, continuing anyway..."
+          fi
+        timeout-minutes: 3
+
+      - name: Generate playoff predictions
+        run: |
+          export OUTPUT_PATH="docs"
+          python playoff_predictor.py || exit 1
+        timeout-minutes: 8
+
+      - name: Commit and push changes
+        run: |
+          # Add files
+          git add docs/playoff_predictions.json docs/playoff_probabilities_chart.png docs/world_series_odds_chart.png
+          
+          # Commit
+          git commit -m "Update playoff predictions and World Series odds [skip ci]"
+        timeout-minutes: 3
+
+      - name: Check for failures
+        if: failure()
+        run: |
+          echo "::error::Playoff predictions workflow failed! Check the logs for details."
+          exit 1
+              # Re-run script after reset
+              python playoff_predictor.py || exit 1
+              
+              # Add files
+              git add docs/playoff_predictions.json docs/playoff_probabilities_chart.png docs/world_series_odds_chart.png
+              
+              # Check if there are changes
+              if [[ -z $(git diff --cached) ]]; then
+                echo "No changes after re-running script. Exiting."
+                exit 0
+              fi
+              
+              # Commit
+              git commit -m "Update playoff predictions and World Series odds [skip ci]" || {
+                echo "Nothing to commit on attempt $attempt"
+                exit 0
+              }
+              
+              # Try to push
+              if git push origin main; then
+                echo "Successfully pushed playoff predictions on attempt $attempt"
+                exit 0
+              else
+                echo "Push failed on attempt $attempt. Retrying in 15 seconds..."
+                sleep 15
+              fi
+            done
+            
+            echo "Failed to push after 3 attempts"
+            exit 1
+          else
+            echo "No playoff prediction changes to commit"
+          fi
+        timeout-minutes: 3
+
+      - name: Check for failures
+        if: failure()
+        run: |
+          echo "::error::Playoff predictions workflow failed! Check the logs for details."
+          exit 1

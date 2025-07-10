@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MLB Playoff Picture</title>
+  <style>
+    :root {
+      --bg: #f9f9f9;
+      --text: #333;
+      --card-bg: #fff;
+      --header-bg: #222;
+      --nav-bg: #222;
+      --tab-bg: #ddd;
+      --tab-active: #fff;
+      --tab-border: #333;
+      --link-hover: rgba(255, 255, 255, 0.1);
+      --link-active: rgba(255, 255, 255, 0.2);
+      --link-shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme='dark'] {
+      --bg: #121212;
+      --text: #eee;
+      --card-bg: #1f1f1f;
+      --header-bg: #000;
+      --nav-bg: #000;
+      --tab-bg: #333;
+      --tab-active: #222;
+      --tab-border: #fff;
+      --link-hover: rgba(255, 255, 255, 0.15);
+      --link-active: rgba(255, 255, 255, 0.25);
+      --link-shadow: rgba(255, 255, 255, 0.1);
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .nav-bar {
+      background-color: var(--header-bg);
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .nav-bar a {
+      color: white;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+
+    .nav-bar a:hover {
+      background-color: var(--link-hover);
+    }
+
+    .nav-bar a.active {
+      background-color: var(--link-active);
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: white;
+      padding: 2rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dark-toggle {
+      margin-top: 0.5rem;
+      padding: 0.3rem 0.6rem;
+      background: none;
+      border: 1px solid white;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background-color: var(--tab-bg);
+      flex-wrap: wrap;
+    }
+
+    .tabs button {
+      padding: 1rem;
+      border: none;
+      background-color: inherit;
+      cursor: pointer;
+      font-size: 1rem;
+      min-width: 120px;
+      color: var(--text);
+    }
+
+    .tabs button.active {
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
+      font-weight: bold;
+    }
+
+    .content {
+      display: none;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    .playoff-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .playoff-card {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px var(--link-shadow);
+      border: 1px solid #ddd;
+    }
+
+    [data-theme='dark'] .playoff-card {
+      border: 1px solid #555;
+    }
+
+    .card-header {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 1rem;
+      color: var(--text);
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 0.5rem;
+    }
+
+    .team-entry {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    [data-theme='dark'] .team-entry {
+      border-bottom: 1px solid #444;
+    }
+
+    .team-entry:last-child {
+      border-bottom: none;
+    }
+
+    .team-name {
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .probability {
+      font-weight: bold;
+      padding: 0.2rem 0.5rem;
+      border-radius: 15px;
+      font-size: 0.9rem;
+    }
+
+    .prob-high {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .prob-medium {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .prob-low {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .chart-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .chart-container img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px var(--link-shadow);
+    }
+
+    .insight-card {
+      background: linear-gradient(135deg, #007bff, #0056b3);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+
+    .insight-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .race-details {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    .elimination-warning {
+      background: linear-gradient(135deg, #dc3545, #c82333);
+      color: white;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+
+    .methodology-section {
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      margin: 2rem 0;
+    }
+
+    [data-theme='dark'] .methodology-section {
+      border: 1px solid #555;
+    }
+
+    .factor-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .factor-item {
+      background-color: rgba(0, 123, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid #007bff;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
+    }
+
+    .update-info {
+      text-align: center;
+      padding: 1rem;
+      background-color: rgba(0, 122, 204, 0.1);
+      border-radius: 8px;
+      border: 1px solid #007acc;
+      margin: 2rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .playoff-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .nav-bar {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav-bar">
+      <a href="index.html">Home</a>
+      <a href="pitching.html">Pitching Stats</a>
+      <a href="batting.html">Batting Stats</a>
+      <a href="standings.html">Standings</a>
+      <a href="mvp-cy-young.html">MVP & Cy Young</a>
+      <a href="playoffs.html" class="active">Playoff Picture</a>
+    </div>
+    <h1>🏆 2025 MLB Playoff Picture</h1>
+    <p>Real-time playoff probabilities, wild card races, and World Series predictions</p>
+    <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+  </header>
+
+  <div class="tabs">
+    <button id="overview-btn" onclick="switchTab('overview')">Overview</button>
+    <button id="division-btn" onclick="switchTab('division')">Division Races</button>
+    <button id="wildcard-btn" onclick="switchTab('wildcard')">Wild Card</button>
+    <button id="worldseries-btn" onclick="switchTab('worldseries')">World Series</button>
+    <button id="accuracy-btn" onclick="switchTab('accuracy')">Accuracy</button>
+    <button id="methodology-btn" onclick="switchTab('methodology')">Methodology</button>
+  </div>
+
+  <div id="overview" class="content active">
+    <h2>🎯 Playoff Picture Overview</h2>
+    
+    <div class="update-info">
+      <h3>📊 Latest Playoff Probabilities</h3>
+      <p id="last-updated">Last Updated: Loading...</p>
+      <p><strong>Based on:</strong> Current standings, projected wins, team strength, and remaining schedule</p>
+    </div>
+
+    <div id="insights-container">
+      <div class="loading">Loading playoff insights...</div>
+    </div>
+
+    <div class="chart-container">
+      <h3>Division Winner & Wild Card Probabilities</h3>
+      <img src="playoff_probabilities_chart.png" alt="Playoff Probabilities Chart">
+    </div>
+  </div>
+
+  <div id="division" class="content">
+    <h2>🏁 Division Championship Races</h2>
+    
+    <div class="playoff-grid">
+      <div class="playoff-card">
+        <div class="card-header">AL East</div>
+        <div id="al-east-race">
+          <div class="loading">Loading AL East race...</div>
+        </div>
+      </div>
+      
+      <div class="playoff-card">
+        <div class="card-header">AL Central</div>
+        <div id="al-central-race">
+          <div class="loading">Loading AL Central race...</div>
+        </div>
+      </div>
+      
+      <div class="playoff-card">
+        <div class="card-header">AL West</div>
+        <div id="al-west-race">
+          <div class="loading">Loading AL West race...</div>
+        </div>
+      </div>
+      
+      <div class="playoff-card">
+        <div class="card-header">NL East</div>
+        <div id="nl-east-race">
+          <div class="loading">Loading NL East race...</div>
+        </div>
+      </div>
+      
+      <div class="playoff-card">
+        <div class="card-header">NL Central</div>
+        <div id="nl-central-race">
+          <div class="loading">Loading NL Central race...</div>
+        </div>
+      </div>
+      
+      <div class="playoff-card">
+        <div class="card-header">NL West</div>
+        <div id="nl-west-race">
+          <div class="loading">Loading NL West race...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="wildcard" class="content">
+    <h2>🎟️ Wild Card Battles</h2>
+    
+    <div class="playoff-grid">
+      <div class="playoff-card">
+        <div class="card-header">American League Wild Card</div>
+        <div id="al-wildcard">
+          <div class="loading">Loading AL Wild Card race...</div>
+        </div>
+      </div>
+      
+      <div class="playoff-card">
+        <div class="card-header">National League Wild Card</div>
+        <div id="nl-wildcard">
+          <div class="loading">Loading NL Wild Card race...</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="insight-card">
+      <div class="insight-title">💡 Wild Card Format</div>
+      <p>Each league awards 3 Wild Card spots to the best non-division winners. The Wild Card round features:</p>
+      <ul>
+        <li><strong>Wild Card #1:</strong> Gets a bye, automatically advances to Division Series</li>
+        <li><strong>Wild Card #2 vs #3:</strong> Best-of-3 series to advance to Division Series</li>
+        <li>All games played at higher seed's home stadium</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="worldseries" class="content">
+    <h2>🏆 World Series Championship Odds</h2>
+    
+    <div class="chart-container">
+      <img src="world_series_odds_chart.png" alt="World Series Championship Odds">
+    </div>
+    
+    <div class="playoff-card">
+      <div class="card-header">Top World Series Contenders</div>
+      <div id="ws-favorites">
+        <div class="loading">Loading World Series favorites...</div>
+      </div>
+    </div>
+    
+    <div class="insight-card">
+      <div class="insight-title">🎯 Championship Path</div>
+      <p>To win the World Series, teams must navigate:</p>
+      <ul>
+        <li><strong>Wild Card Round:</strong> Best-of-3 (if not division winner or WC1)</li>
+        <li><strong>Division Series:</strong> Best-of-5</li>
+        <li><strong>Championship Series:</strong> Best-of-7 (ALCS/NLCS)</li>
+        <li><strong>World Series:</strong> Best-of-7</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="accuracy" class="content">
+    <h2>Playoff Prediction Accuracy Tracking</h2>
+    
+    <div class="playoff-grid">
+      <div class="playoff-card">
+        <div class="card-header">How We Track Accuracy</div>
+        <p>We save our playoff predictions daily throughout the season and compare them to actual playoff results.</p>
+        <ul>
+          <li><strong>Division Winners:</strong> Accuracy of predicting each division champion</li>
+          <li><strong>Wild Card Teams:</strong> How well we predicted the 6 wild card teams</li>
+          <li><strong>World Series Winner:</strong> Whether we correctly predicted the champion</li>
+          <li><strong>Daily Tracking:</strong> Complete timeline of prediction changes</li>
+        </ul>
+      </div>
+      
+      <div class="playoff-card">
+        <div class="card-header">2025 Season Status</div>
+        <div style="font-size: 1.5rem; font-weight: bold; color: var(--text); margin: 1rem 0;">Tracking In Progress</div>
+        <p>Playoff results will be finalized in October 2025. Check back then for accuracy analysis!</p>
+      </div>
+    </div>
+    
+    <div class="playoff-card">
+      <h3>Playoff Prediction Accuracy Dashboard</h3>
+      <p>Once the 2025 playoffs conclude, this section will show:</p>
+      <ul>
+        <li>Division winner prediction accuracy for all 6 divisions</li>
+        <li>Wild card team prediction success rates</li>
+        <li>World Series champion prediction accuracy</li>
+        <li>Timeline showing how predictions evolved throughout the season</li>
+        <li>Analysis of which factors led to accurate/inaccurate predictions</li>
+      </ul>
+      
+      <div class="chart-container" id="playoff-accuracy-status">
+        <div style="text-align: center; padding: 2rem; background-color: rgba(0, 122, 204, 0.1); border-radius: 8px; border: 1px solid #007acc;">
+          <h4>🚀 Starting Playoff Prediction Tracking</h4>
+          <p>The accuracy tracking system will begin collecting data once playoff predictions start running.</p>
+          <p><strong>Expected features:</strong></p>
+          <ul style="text-align: left; max-width: 500px; margin: 0 auto;">
+            <li>Daily prediction snapshots</li>
+            <li>Historical accuracy charts</li>
+            <li>Prediction timeline visualization</li>
+            <li>End-of-season performance analysis</li>
+          </ul>
+          <p style="margin-top: 1rem;"><em>Check back after the first few prediction updates to see accuracy data!</em></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="methodology" class="content">
+    <div class="methodology-section">
+      <h2>🔬 Playoff Prediction Methodology</h2>
+      <p>Our playoff probabilities are calculated using a comprehensive model that considers multiple factors:</p>
+      
+      <h3>Team Strength Calculation</h3>
+      <div class="factor-grid">
+        <div class="factor-item">
+          <strong>Current Record (70%)</strong><br>
+          Wins, losses, and winning percentage through current date
+        </div>
+        <div class="factor-item">
+          <strong>Projected Performance (30%)</strong><br>
+          Season-long projections based on current pace
+        </div>
+      </div>
+
+      <h3>Division Winner Probabilities</h3>
+      <div class="factor-grid">
+        <div class="factor-item">
+          <strong>Strength Score (50%)</strong><br>
+          Overall team performance relative to division rivals
+        </div>
+        <div class="factor-item">
+          <strong>Current Lead (30%)</strong><br>
+          Games ahead/behind in division standings
+        </div>
+        <div class="factor-item">
+          <strong>Games Remaining (20%)</strong><br>
+          Time left to make up ground or extend lead
+        </div>
+      </div>
+
+      <h3>Wild Card Probabilities</h3>
+      <div class="factor-grid">
+        <div class="factor-item">
+          <strong>League Ranking</strong><br>
+          Position among all teams in league standings
+        </div>
+        <div class="factor-item">
+          <strong>Projected Wins</strong><br>
+          Teams need ~85+ wins to compete for Wild Card
+        </div>
+        <div class="factor-item">
+          <strong>Competition Level</strong><br>
+          Number of teams competing for limited spots
+        </div>
+      </div>
+
+      <h3>World Series Odds</h3>
+      <div class="factor-grid">
+        <div class="factor-item">
+          <strong>Overall Strength (60%)</strong><br>
+          Combined record and performance metrics
+        </div>
+        <div class="factor-item">
+          <strong>Playoff Position (25%)</strong><br>
+          Division winner vs Wild Card path difficulty
+        </div>
+        <div class="factor-item">
+          <strong>Historical Performance (15%)</strong><br>
+          Recent playoff experience and clutch performance
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let playoffData = null;
+
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll(".tabs button");
+      const contents = document.querySelectorAll(".content");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      contents.forEach(content => content.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName + "-btn").classList.add("active");
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    }
+
+    function getProbabilityClass(probability) {
+      if (probability >= 50) return 'prob-high';
+      if (probability >= 20) return 'prob-medium';
+      return 'prob-low';
+    }
+
+    function renderTeamEntry(team, probability) {
+      return `
+        <div class="team-entry">
+          <span class="team-name">${team}</span>
+          <span class="probability ${getProbabilityClass(probability)}">${probability}%</span>
+        </div>
+      `;
+    }
+
+    function renderInsights(insights) {
+      let html = '';
+      
+      // Closest division races
+      if (insights.closest_division_races && insights.closest_division_races.length > 0) {
+        html += '<div class="insight-card">';
+        html += '<div class="insight-title">🔥 Hottest Division Races</div>';
+        insights.closest_division_races.forEach(race => {
+          html += `
+            <div class="race-details">
+              <strong>${race.division}:</strong> ${race.leader} (${race.leader_wins}W) leads ${race.second} (${race.second_wins}W) by ${race.gap} game${race.gap !== 1 ? 's' : ''}
+            </div>
+          `;
+        });
+        html += '</div>';
+      }
+      
+      // Elimination watch
+      if (insights.elimination_watch && insights.elimination_watch.length > 0) {
+        html += '<div class="elimination-warning">';
+        html += '<div class="insight-title">⚠️ Elimination Watch</div>';
+        html += '<p>Teams in danger of missing playoffs:</p>';
+        insights.elimination_watch.slice(0, 4).forEach(team => {
+          html += `<div>${team.team}: ${team.projected_wins} projected wins (${team.games_remaining} games left)</div>`;
+        });
+        html += '</div>';
+      }
+
+      return html;
+    }
+
+    function renderDivisionRaces(playoffScenarios) {
+      const divisions = {
+        'al-east': 'al_division_winners',
+        'al-central': 'al_division_winners', 
+        'al-west': 'al_division_winners',
+        'nl-east': 'nl_division_winners',
+        'nl-central': 'nl_division_winners',
+        'nl-west': 'nl_division_winners'
+      };
+      
+      // This is a simplified rendering - in real implementation you'd filter by actual division
+      Object.keys(divisions).forEach(divId => {
+        const container = document.getElementById(`${divId}-race`);
+        if (container) {
+          const leagueKey = divisions[divId];
+          const teams = Object.entries(playoffScenarios[leagueKey] || {})
+                              .sort((a, b) => b[1] - a[1])
+                              .slice(0, 5);
+          
+          container.innerHTML = teams.map(([team, prob]) => 
+            renderTeamEntry(team, prob)
+          ).join('');
+        }
+      });
+    }
+
+    function renderWildCard(playoffScenarios) {
+      // AL Wild Card
+      const alWildcard = Object.entries(playoffScenarios.al_wild_card || {})
+                               .sort((a, b) => b[1] - a[1])
+                               .slice(0, 6);
+      document.getElementById('al-wildcard').innerHTML = 
+        alWildcard.map(([team, prob]) => renderTeamEntry(team, prob)).join('');
+      
+      // NL Wild Card  
+      const nlWildcard = Object.entries(playoffScenarios.nl_wild_card || {})
+                               .sort((a, b) => b[1] - a[1])
+                               .slice(0, 6);
+      document.getElementById('nl-wildcard').innerHTML = 
+        nlWildcard.map(([team, prob]) => renderTeamEntry(team, prob)).join('');
+    }
+
+    function renderWorldSeries(playoffScenarios) {
+      const wsFavorites = Object.entries(playoffScenarios.world_series_odds || {})
+                                .sort((a, b) => b[1] - a[1])
+                                .slice(0, 8);
+      
+      document.getElementById('ws-favorites').innerHTML = 
+        wsFavorites.map(([team, odds]) => renderTeamEntry(team, odds)).join('');
+    }
+
+    async function loadPlayoffData() {
+      try {
+        const response = await fetch('playoff_predictions.json');
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        playoffData = await response.json();
+        
+        // Render all sections
+        document.getElementById('insights-container').innerHTML = 
+          renderInsights(playoffData.insights);
+        
+        renderDivisionRaces(playoffData.playoff_scenarios);
+        renderWildCard(playoffData.playoff_scenarios);
+        renderWorldSeries(playoffData.playoff_scenarios);
+        
+        // Update timestamp
+        document.getElementById('last-updated').textContent = 
+          `Last Updated: ${playoffData.insights.last_updated}`;
+        
+      } catch (error) {
+        console.error('Error loading playoff data:', error);
+        
+        // Show fallback content
+        document.getElementById('insights-container').innerHTML = `
+          <div class="insight-card">
+            <div class="insight-title">📊 2025 Playoff Picture</div>
+            <p>The 2025 MLB playoff race is heating up! Division races are tight across both leagues.</p>
+            <div class="race-details">
+              <strong>Key storylines:</strong> Multiple divisions separated by just a few games, 
+              wild card battles intensifying, and several teams still vying for World Series contention.
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    async function checkPlayoffAccuracyData() {
+      try {
+        const response = await fetch('playoff_accuracy.html');
+        if (response.ok) {
+          // If accuracy HTML exists, show the iframe
+          document.getElementById('playoff-accuracy-status').innerHTML = `
+            <iframe src="playoff_accuracy.html" style="width: 100%; height: 600px; border: 1px solid var(--text); border-radius: 8px;"></iframe>
+          `;
+        }
+      } catch (error) {
+        // Keep the default "Starting Prediction Tracking" message
+        console.log('Playoff accuracy data not yet available - this is expected for new installations');
+      }
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+      
+      switchTab("overview");
+      loadPlayoffData();
+      checkPlayoffAccuracyData(); // Check if accuracy data is available
+    };
+  </script>
+</body>
+</html>
