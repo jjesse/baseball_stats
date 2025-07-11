@@ -47,9 +47,13 @@ jobs:
       run: |
         mkdir -p archive
         if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-          cp docs/preview/batting_stats.csv archive/batting_$(date +%F).csv
+          if [ -f "docs/preview/batting_stats.csv" ]; then
+            cp docs/preview/batting_stats.csv archive/batting_$(date +%F).csv
+          fi
         else
-          cp docs/batting_stats.csv archive/batting_$(date +%F).csv
+          if [ -f "docs/batting_stats.csv" ]; then
+            cp docs/batting_stats.csv archive/batting_$(date +%F).csv
+          fi
         fi
       timeout-minutes: 2
 
@@ -91,6 +95,18 @@ jobs:
           # Re-run the scripts after reset
           python batting_chart.py || exit 1
           python trend_batting.py || exit 1
+          
+          # Archive again after reset
+          mkdir -p archive
+          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+            if [ -f "docs/preview/batting_stats.csv" ]; then
+              cp docs/preview/batting_stats.csv archive/batting_$(date +%F).csv
+            fi
+          else
+            if [ -f "docs/batting_stats.csv" ]; then
+              cp docs/batting_stats.csv archive/batting_$(date +%F).csv
+            fi
+          fi
           
           # Try commit and push again
           git add $FILE_PATTERN
