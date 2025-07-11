@@ -156,5 +156,5 @@ with open(f"{output_path}/last_updated_batting.txt", "w") as f:
     create_chart_and_table(df, stat, title, color, asc)
 
 # Write last updated timestamp
-with open("docs/last_updated_batting.txt", "w") as f:
+with open(f"{output_path}/last_updated_batting.txt", "w") as f:
     f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
