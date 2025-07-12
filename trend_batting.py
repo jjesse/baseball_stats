@@ -91,12 +91,12 @@ for stat in tracked_stats:
         continue
 
 print("✓ Batting trend analysis completed successfully!")
-            # For batting stats, higher is generally better, so sort descending
-            top_players = filtered.mean().sort_values(ascending=False).head(5).index
-            
-            trend = filtered[top_players]
-            
-            # Skip if no trend data
+print("✓ Batting trend analysis completed successfully!")
+    except Exception as e:
+        print(f"Error creating trend chart for {stat}: {e}")
+        continue
+
+print("✓ Batting trend analysis completed successfully!")
             if trend.empty or len(trend.columns) == 0:
                 print(f"No trend data for {stat}, skipping chart generation")
                 continue
