@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 from glob import glob
+import traceback
 
 # Set up style and output path
 sns.set_theme(style="whitegrid")
@@ -14,7 +15,16 @@ try:
     archive_files = sorted(glob("archive/batting_*.csv"))
     if not archive_files:
         print("No batting archive files found. Creating placeholder trend files.")
-        # Create placeholder files to prevent workflow failures
+        # Create empty trend files to prevent workflow failures
+        for stat in ['AVG', 'HR', 'RBI', 'OBP', 'SLG', 'wOBA']:
+            placeholder_path = f"{output_path}/trend_batting_{stat.lower().replace('/', '_')}.png"
+            plt.figure(figsize=(12, 6))
+            plt.text(0.5, 0.5, f'No historical data available for {stat} trends', 
+                    horizontalalignment='center', verticalalignment='center', 
+                    transform=plt.gca().transAxes, fontsize=14)
+            plt.title(f"{stat} Trends Over Time - No Data Available")
+            plt.savefig(placeholder_path, dpi=150, bbox_inches='tight')
+            plt.close()
         exit(0)
 
     # Stats to track trends for - matching the batting stats
@@ -131,18 +141,9 @@ try:
                 plt.savefig(filename, dpi=150, bbox_inches='tight')
             
             plt.close()
-            
         except Exception as e:
             print(f"Error creating trend chart for {stat}: {e}")
-            continue
-
-    print("✓ Batting trend analysis completed successfully!")
-
-except Exception as e:
-    print(f"Critical error in trend_batting.py: {e}")
-    # Ensure we don't leave the workflow hanging
-    raise
-            print(f"Error creating trend chart for {stat}: {e}")
+            traceback.print_exc()
             continue
 
     print("✓ Batting trend analysis completed successfully!")

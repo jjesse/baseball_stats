@@ -13,34 +13,19 @@ try:
     # Fetch current season batting data
     df = batting_stats(2025)
     
-    # Handle missing columns gracefully
-    required_cols = ['Name', 'Team', 'G', 'AB', 'R', 'H', 'HR', 'RBI', 'SB', 'BB', 'SO', 'AVG', 'OBP', 'SLG', 'OPS']
-    optional_cols = ['wOBA', 'wRC+', 'BABIP', 'ISO', 'K%', 'BB%']
+    # Select relevant batting stats
+    df = df[['Name', 'Team', 'G', 'AB', 'R', 'H', 'HR', 'RBI', 'SB', 'BB', 'SO', 'AVG', 'OBP', 'SLG', 'OPS', 'wOBA', 'wRC+', 'BABIP', 'ISO', 'K%', 'BB%']]
     
-    available_cols = [col for col in required_cols + optional_cols if col in df.columns]
-    df = df[available_cols]
-    
-    # Filter players with minimal playing time
-    if 'AB' in df.columns:
-        df = df[df['AB'] >= 50]
+    # Filter out players with minimal playing time
+    df = df[df['AB'] >= 50]  # At least 50 at-bats
     
     # Save CSV for archiving
     df.to_csv(f"{output_path}/batting_stats.csv", index=False)
     
     def create_chart_and_table(df, stat, title, color, ascending):
         """Create chart and HTML table for a given stat"""
-        if stat not in df.columns:
-            print(f"Warning: {stat} not found in data columns")
-            return
-            
         try:
-            # Remove any NaN values before sorting
-            stat_df = df.dropna(subset=[stat])
-            if stat_df.empty:
-                print(f"Warning: No valid data for {stat}")
-                return
-                
-            top = stat_df.sort_values(stat, ascending=ascending).head(10)
+            top = df.sort_values(stat, ascending=ascending).head(10)
             
             # Create chart
             plt.figure(figsize=(12, 8))
@@ -122,6 +107,7 @@ try:
                     }}
                 </style>
                 <script>
+                    // Inherit theme from parent window
                     window.onload = function() {{
                         try {{
                             const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
@@ -159,19 +145,33 @@ try:
         ("OBP", "Top 10 Hitters by On-Base Percentage", "Purples", False),
         ("SLG", "Top 10 Hitters by Slugging Percentage", "Oranges", False),
         ("SB", "Top 10 Hitters by Stolen Bases", "BuGn", False),
+        ("wOBA", "Top 10 Hitters by wOBA", "viridis", False),
+        ("wRC+", "Top 10 Hitters by wRC+", "plasma", False),
+        ("BABIP", "Top 10 Hitters by BABIP", "coolwarm", False),
+        ("ISO", "Top 10 Hitters by Isolated Power", "YlOrRd", False),
+        ("K%", "Lowest K% (Best Contact)", "Greys", True),
+        ("BB%", "Top 10 Hitters by Walk Rate", "BuPu", False)
     ]
     
-    # Add advanced stats if available
-    if 'wOBA' in df.columns:
-        stats_to_plot.append(("wOBA", "Top 10 Hitters by wOBA", "viridis", False))
-    if 'wRC+' in df.columns:
-        stats_to_plot.append(("wRC+", "Top 10 Hitters by wRC+", "plasma", False))
-    if 'BABIP' in df.columns:
-        stats_to_plot.append(("BABIP", "Top 10 Hitters by BABIP", "coolwarm", False))
-    if 'ISO' in df.columns:
-        stats_to_plot.append(("ISO", "Top 10 Hitters by Isolated Power", "YlOrRd", False))
-    if 'K%' in df.columns:
-        stats_to_plot.append(("K%", "Lowest K% (Best Contact)", "Greys", True))
+    # Generate charts and tables for each stat
+    for stat, title, color, asc in stats_to_plot:
+        if stat in df.columns:
+            create_chart_and_table(df, stat, title, color, asc)
+        else:
+            print(f"Warning: {stat} not found in data columns")
+    
+    # Write last updated timestamp
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    print("✓ Batting charts and tables generated successfully!")
+
+except Exception as e:
+    print(f"Error in batting_chart.py: {e}")
+    # Create a minimal fallback file so the workflow doesn't fail completely
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    raise
     if 'BB%' in df.columns:
         stats_to_plot.append(("BB%", "Top 10 Hitters by Walk Rate", "BuPu", False))
     
