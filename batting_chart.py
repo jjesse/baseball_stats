@@ -107,7 +107,6 @@ try:
                     }}
                 </style>
                 <script>
-                    // Inherit theme from parent window
                     window.onload = function() {{
                         try {{
                             const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
@@ -171,6 +170,7 @@ except Exception as e:
     # Create a minimal fallback file so the workflow doesn't fail completely
     with open(f"{output_path}/last_updated_batting.txt", "w") as f:
         f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    raise
     raise
     if 'BB%' in df.columns:
         stats_to_plot.append(("BB%", "Top 10 Hitters by Walk Rate", "BuPu", False))
