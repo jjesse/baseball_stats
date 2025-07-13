@@ -1,0 +1,466 @@
+{
+  "insights": {
+    "closest_division_races": [
+      {
+        "division": "Al East",
+        "leader": "TORONTO BLUE JAYS",
+        "leader_wins": 55,
+        "second": "BOSTON RED SOX",
+        "second_wins": 53,
+        "gap": 2
+      },
+      {
+        "division": "Al West",
+        "leader": "HOUSTON ASTROS",
+        "leader_wins": 56,
+        "second": "SEATTLE MARINERS",
+        "second_wins": 51,
+        "gap": 5
+      },
+      {
+        "division": "Nl East",
+        "leader": "NEW YORK METS",
+        "leader_wins": 55,
+        "second": "PHILADELPHIA PHILLIES",
+        "second_wins": 54,
+        "gap": 1
+      },
+      {
+        "division": "Nl Central",
+        "leader": "CHICAGO CUBS",
+        "leader_wins": 57,
+        "second": "MILWAUKEE BREWERS",
+        "second_wins": 56,
+        "gap": 1
+      },
+      {
+        "division": "Nl West",
+        "leader": "LOS ANGELES DODGERS",
+        "leader_wins": 57,
+        "second": "SAN DIEGO PADRES",
+        "second_wins": 52,
+        "gap": 5
+      }
+    ],
+    "wild_card_battles": {
+      "al_contenders": [
+        {
+          "team": "DETROIT TIGERS",
+          "probability": 92.0
+        },
+        {
+          "team": "HOUSTON ASTROS",
+          "probability": 72.0
+        },
+        {
+          "team": "TORONTO BLUE JAYS",
+          "probability": 58.6
+        },
+        {
+          "team": "NEW YORK YANKEES",
+          "probability": 37.8
+        },
+        {
+          "team": "BOSTON RED SOX",
+          "probability": 22.2
+        },
+        {
+          "team": "SEATTLE MARINERS",
+          "probability": 7.2
+        }
+      ],
+      "nl_contenders": [
+        {
+          "team": "CHICAGO CUBS",
+          "probability": 87.4
+        },
+        {
+          "team": "LOS ANGELES DODGERS",
+          "probability": 75.4
+        },
+        {
+          "team": "MILWAUKEE BREWERS",
+          "probability": 60.0
+        },
+        {
+          "team": "NEW YORK METS",
+          "probability": 44.6
+        },
+        {
+          "team": "PHILADELPHIA PHILLIES",
+          "probability": 31.2
+        },
+        {
+          "team": "SAN DIEGO PADRES",
+          "probability": 12.4
+        }
+      ]
+    },
+    "world_series_favorites": [
+      {
+        "team": "DETROIT TIGERS",
+        "odds": 12.4
+      },
+      {
+        "team": "CHICAGO CUBS",
+        "odds": 12.1
+      },
+      {
+        "team": "LOS ANGELES DODGERS",
+        "odds": 12.1
+      },
+      {
+        "team": "MILWAUKEE BREWERS",
+        "odds": 11.9
+      },
+      {
+        "team": "HOUSTON ASTROS",
+        "odds": 11.9
+      }
+    ],
+    "elimination_watch": [],
+    "last_updated": "2025-07-13 21:19:04"
+  },
+  "playoff_scenarios": {
+    "al_division_winners": {
+      "TORONTO BLUE JAYS": 30.4,
+      "NEW YORK YANKEES": 19.4,
+      "BOSTON RED SOX": 18.7,
+      "TAMPA BAY RAYS": 11.4,
+      "BALTIMORE ORIOLES": 4.6,
+      "DETROIT TIGERS": 39.7,
+      "MINNESOTA TWINS": 6.3,
+      "CLEVELAND GUARDIANS": 6.1,
+      "KANSAS CITY ROYALS": 6.0,
+      "CHICAGO WHITE SOX": 2.4,
+      "HOUSTON ASTROS": 33.6,
+      "SEATTLE MARINERS": 13.2,
+      "TEXAS RANGERS": 5.8,
+      "LOS ANGELES ANGELS": 5.8,
+      "ATHLETICS": 4.0
+    },
+    "nl_division_winners": {
+      "NEW YORK METS": 34.5,
+      "PHILADELPHIA PHILLIES": 23.6,
+      "MIAMI MARLINS": 5.3,
+      "ATLANTA BRAVES": 5.0,
+      "WASHINGTON NATIONALS": 3.9,
+      "CHICAGO CUBS": 32.3,
+      "MILWAUKEE BREWERS": 21.7,
+      "ST. LOUIS CARDINALS": 6.0,
+      "CINCINNATI REDS": 5.8,
+      "PITTSBURGH PIRATES": 3.5,
+      "LOS ANGELES DODGERS": 38.1,
+      "SAN DIEGO PADRES": 15.4,
+      "SAN FRANCISCO GIANTS": 15.1,
+      "ARIZONA DIAMONDBACKS": 6.0,
+      "COLORADO ROCKIES": 0.1
+    },
+    "al_wild_card": {
+      "DETROIT TIGERS": 92.0,
+      "HOUSTON ASTROS": 72.0,
+      "TORONTO BLUE JAYS": 58.6,
+      "NEW YORK YANKEES": 37.8,
+      "BOSTON RED SOX": 22.2,
+      "SEATTLE MARINERS": 7.2,
+      "TAMPA BAY RAYS": 0,
+      "TEXAS RANGERS": 0
+    },
+    "nl_wild_card": {
+      "CHICAGO CUBS": 87.4,
+      "LOS ANGELES DODGERS": 75.4,
+      "MILWAUKEE BREWERS": 60.0,
+      "NEW YORK METS": 44.6,
+      "PHILADELPHIA PHILLIES": 31.2,
+      "SAN DIEGO PADRES": 12.4,
+      "SAN FRANCISCO GIANTS": 0,
+      "ST. LOUIS CARDINALS": 0
+    },
+    "world_series_odds": {
+      "DETROIT TIGERS": 12.4,
+      "CHICAGO CUBS": 12.1,
+      "LOS ANGELES DODGERS": 12.1,
+      "MILWAUKEE BREWERS": 11.9,
+      "HOUSTON ASTROS": 11.9,
+      "TORONTO BLUE JAYS": 11.8,
+      "NEW YORK METS": 8.7,
+      "PHILADELPHIA PHILLIES": 8.6,
+      "NEW YORK YANKEES": 8.3,
+      "SAN DIEGO PADRES": 8.2,
+      "SAN FRANCISCO GIANTS": 8.1,
+      "BOSTON RED SOX": 8.0
+    }
+  },
+  "team_strength": {
+    "DETROIT TIGERS": {
+      "wins": 59,
+      "losses": 38,
+      "win_pct": 0.608,
+      "projected_wins": 98.5,
+      "strength_score": 0.491,
+      "games_remaining": 65,
+      "division": "al_central"
+    },
+    "CHICAGO CUBS": {
+      "wins": 57,
+      "losses": 39,
+      "win_pct": 0.594,
+      "projected_wins": 96.2,
+      "strength_score": 0.472,
+      "games_remaining": 66,
+      "division": "nl_central"
+    },
+    "LOS ANGELES DODGERS": {
+      "wins": 57,
+      "losses": 39,
+      "win_pct": 0.594,
+      "projected_wins": 96.2,
+      "strength_score": 0.472,
+      "games_remaining": 66,
+      "division": "nl_west"
+    },
+    "MILWAUKEE BREWERS": {
+      "wins": 56,
+      "losses": 40,
+      "win_pct": 0.583,
+      "projected_wins": 94.5,
+      "strength_score": 0.458,
+      "games_remaining": 66,
+      "division": "nl_central"
+    },
+    "HOUSTON ASTROS": {
+      "wins": 56,
+      "losses": 40,
+      "win_pct": 0.583,
+      "projected_wins": 94.5,
+      "strength_score": 0.458,
+      "games_remaining": 66,
+      "division": "al_west"
+    },
+    "TORONTO BLUE JAYS": {
+      "wins": 55,
+      "losses": 40,
+      "win_pct": 0.579,
+      "projected_wins": 93.8,
+      "strength_score": 0.453,
+      "games_remaining": 67,
+      "division": "al_east"
+    },
+    "NEW YORK METS": {
+      "wins": 55,
+      "losses": 41,
+      "win_pct": 0.573,
+      "projected_wins": 92.8,
+      "strength_score": 0.445,
+      "games_remaining": 66,
+      "division": "nl_east"
+    },
+    "PHILADELPHIA PHILLIES": {
+      "wins": 54,
+      "losses": 41,
+      "win_pct": 0.568,
+      "projected_wins": 92.1,
+      "strength_score": 0.439,
+      "games_remaining": 67,
+      "division": "nl_east"
+    },
+    "BOSTON RED SOX": {
+      "wins": 53,
+      "losses": 45,
+      "win_pct": 0.541,
+      "projected_wins": 87.6,
+      "strength_score": 0.403,
+      "games_remaining": 64,
+      "division": "al_east"
+    },
+    "NEW YORK YANKEES": {
+      "wins": 53,
+      "losses": 43,
+      "win_pct": 0.552,
+      "projected_wins": 89.4,
+      "strength_score": 0.418,
+      "games_remaining": 66,
+      "division": "al_east"
+    },
+    "SAN DIEGO PADRES": {
+      "wins": 52,
+      "losses": 43,
+      "win_pct": 0.547,
+      "projected_wins": 88.7,
+      "strength_score": 0.412,
+      "games_remaining": 67,
+      "division": "nl_west"
+    },
+    "SAN FRANCISCO GIANTS": {
+      "wins": 52,
+      "losses": 44,
+      "win_pct": 0.542,
+      "projected_wins": 87.8,
+      "strength_score": 0.404,
+      "games_remaining": 66,
+      "division": "nl_west"
+    },
+    "SEATTLE MARINERS": {
+      "wins": 51,
+      "losses": 45,
+      "win_pct": 0.531,
+      "projected_wins": 86.1,
+      "strength_score": 0.391,
+      "games_remaining": 66,
+      "division": "al_west"
+    },
+    "TAMPA BAY RAYS": {
+      "wins": 50,
+      "losses": 47,
+      "win_pct": 0.515,
+      "projected_wins": 83.5,
+      "strength_score": 0.37,
+      "games_remaining": 65,
+      "division": "al_east"
+    },
+    "CINCINNATI REDS": {
+      "wins": 50,
+      "losses": 47,
+      "win_pct": 0.515,
+      "projected_wins": 83.5,
+      "strength_score": 0.37,
+      "games_remaining": 65,
+      "division": "nl_central"
+    },
+    "ST. LOUIS CARDINALS": {
+      "wins": 50,
+      "losses": 46,
+      "win_pct": 0.521,
+      "projected_wins": 84.4,
+      "strength_score": 0.377,
+      "games_remaining": 66,
+      "division": "nl_central"
+    },
+    "TEXAS RANGERS": {
+      "wins": 48,
+      "losses": 49,
+      "win_pct": 0.495,
+      "projected_wins": 80.2,
+      "strength_score": 0.343,
+      "games_remaining": 65,
+      "division": "al_west"
+    },
+    "LOS ANGELES ANGELS": {
+      "wins": 47,
+      "losses": 48,
+      "win_pct": 0.495,
+      "projected_wins": 80.1,
+      "strength_score": 0.343,
+      "games_remaining": 67,
+      "division": "al_west"
+    },
+    "MINNESOTA TWINS": {
+      "wins": 47,
+      "losses": 49,
+      "win_pct": 0.49,
+      "projected_wins": 79.3,
+      "strength_score": 0.336,
+      "games_remaining": 66,
+      "division": "al_central"
+    },
+    "ARIZONA DIAMONDBACKS": {
+      "wins": 46,
+      "losses": 50,
+      "win_pct": 0.479,
+      "projected_wins": 77.6,
+      "strength_score": 0.323,
+      "games_remaining": 66,
+      "division": "nl_west"
+    },
+    "CLEVELAND GUARDIANS": {
+      "wins": 46,
+      "losses": 49,
+      "win_pct": 0.484,
+      "projected_wins": 78.4,
+      "strength_score": 0.329,
+      "games_remaining": 67,
+      "division": "al_central"
+    },
+    "KANSAS CITY ROYALS": {
+      "wins": 46,
+      "losses": 50,
+      "win_pct": 0.479,
+      "projected_wins": 77.6,
+      "strength_score": 0.323,
+      "games_remaining": 66,
+      "division": "al_central"
+    },
+    "MIAMI MARLINS": {
+      "wins": 43,
+      "losses": 51,
+      "win_pct": 0.457,
+      "projected_wins": 74.1,
+      "strength_score": 0.295,
+      "games_remaining": 68,
+      "division": "nl_east"
+    },
+    "BALTIMORE ORIOLES": {
+      "wins": 43,
+      "losses": 51,
+      "win_pct": 0.457,
+      "projected_wins": 74.1,
+      "strength_score": 0.295,
+      "games_remaining": 68,
+      "division": "al_east"
+    },
+    "ATLANTA BRAVES": {
+      "wins": 42,
+      "losses": 52,
+      "win_pct": 0.447,
+      "projected_wins": 72.4,
+      "strength_score": 0.281,
+      "games_remaining": 68,
+      "division": "nl_east"
+    },
+    "ATHLETICS": {
+      "wins": 40,
+      "losses": 57,
+      "win_pct": 0.412,
+      "projected_wins": 66.8,
+      "strength_score": 0.236,
+      "games_remaining": 65,
+      "division": "al_west"
+    },
+    "PITTSBURGH PIRATES": {
+      "wins": 39,
+      "losses": 58,
+      "win_pct": 0.402,
+      "projected_wins": 65.1,
+      "strength_score": 0.223,
+      "games_remaining": 65,
+      "division": "nl_central"
+    },
+    "WASHINGTON NATIONALS": {
+      "wins": 38,
+      "losses": 58,
+      "win_pct": 0.396,
+      "projected_wins": 64.1,
+      "strength_score": 0.215,
+      "games_remaining": 66,
+      "division": "nl_east"
+    },
+    "CHICAGO WHITE SOX": {
+      "wins": 32,
+      "losses": 65,
+      "win_pct": 0.33,
+      "projected_wins": 53.4,
+      "strength_score": 0.129,
+      "games_remaining": 65,
+      "division": "al_central"
+    },
+    "COLORADO ROCKIES": {
+      "wins": 22,
+      "losses": 74,
+      "win_pct": 0.229,
+      "projected_wins": 37.1,
+      "strength_score": -0.002,
+      "games_remaining": 66,
+      "division": "nl_west"
+    }
+  }
+}
