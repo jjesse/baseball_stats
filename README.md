@@ -311,3 +311,21 @@ The "Update All Stats (Complete Rebuild)" workflow:
 ---
 
 **Last Updated**: January 2025 | **Status**: Actively Maintained ✅ | **Features**: Complete with Playoff Predictions & Accuracy Tracking 🏆
+
+## 🚀 Running Workflows After Code Changes
+
+When you've made changes to the code that affect multiple workflows, the most efficient approach is to use the master rebuild workflow:
+
+1. Go to the **Actions** tab in your GitHub repository
+2. Select the **Update All Stats (Complete Rebuild)** workflow
+3. Click the **Run workflow** button on the right side
+4. Optionally add a reason like "Fix after code changes" in the input field
+5. Click the green **Run workflow** button
+
+This will trigger all individual workflows in the correct sequence with proper delays to prevent conflicts. The complete rebuild takes about 25-30 minutes to run all workflows.
+
+Alternatively, for changes affecting only specific components:
+
+- For batting-related changes: Run only the **Update Batting Stats** workflow
+- For pitching-related changes: Run only the **Update Pitching Stats** workflow
+- For standings or playoff-related changes: Run both **Update Standings** and **Update Playoff Predictions**
