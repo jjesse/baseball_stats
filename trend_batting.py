@@ -45,6 +45,7 @@ all_data['Date'] = pd.to_datetime(all_data['Date'])
 
 # Create charts for each stat
 for stat in tracked_stats:
+    # Properly indented try-except block
     try:
         stat_df = all_data.pivot_table(index='Date', columns='Name', values=stat)
         valid_players = stat_df.count()[stat_df.count() >= min_appearances].index
@@ -90,7 +91,6 @@ for stat in tracked_stats:
         print(f"Error creating trend chart for {stat}: {e}")
         continue
 
-print("✓ Batting trend analysis completed successfully!")
 print("✓ Batting trend analysis completed successfully!")
     except Exception as e:
         print(f"Error creating trend chart for {stat}: {e}")
