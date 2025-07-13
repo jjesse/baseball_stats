@@ -85,11 +85,11 @@ jobs:
             export OUTPUT_PATH="docs/preview"
             mkdir -p docs/preview
             COMMIT_MSG="Update pitching stats and trends (preview) [skip ci]"
-            FILE_PATTERN="docs/preview/*_chart.png docs/preview/*_table.html docs/preview/last_updated_pitching.txt archive/pitching_*.csv"
+            FILE_PATTERN="docs/preview/*.png docs/preview/*.html docs/preview/last_updated_pitching.txt archive/pitching_*.csv"
           else
             export OUTPUT_PATH="docs"
             COMMIT_MSG="Update pitching stats and trends [skip ci]"
-            FILE_PATTERN="docs/*_chart.png docs/*_table.html docs/last_updated_pitching.txt archive/pitching_*.csv"
+            FILE_PATTERN="docs/*.png docs/*.html docs/last_updated_pitching.txt archive/pitching_*.csv"
           fi
           
           # Re-run the scripts after reset

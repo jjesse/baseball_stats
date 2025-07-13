@@ -96,66 +96,84 @@ def evaluate_playoff_prediction_accuracy():
             'top_predicted_teams': {}
         }
         
-        print("✓ Playoff prediction accuracy evaluation completed")
-        return accuracy_metrics
-        
-    except Exception as e:
-        print(f"Error evaluating playoff prediction accuracy: {e}")
-        return None
-
-def create_playoff_accuracy_charts(accuracy_metrics):
-    """Create charts showing playoff prediction accuracy over time"""
-    try:
-        print("✓ Playoff accuracy charts created successfully")
-    except Exception as e:
-        print(f"Error creating playoff accuracy charts: {e}")
-
-def create_playoff_accuracy_html_report():
-    """Create HTML report showing playoff prediction accuracy"""
-    try:
-        html_content = """
-        <!DOCTYPE html>
-        <html lang="en" data-theme="light">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Playoff Prediction Accuracy Report</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                .container { max-width: 1200px; margin: 0 auto; }
-                h1 { text-align: center; }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <h1>MLB Playoff Prediction Accuracy Report</h1>
-                <p>Playoff prediction accuracy tracking will be available once the system accumulates data.</p>
-            </div>
-        </body>
-        </html>
-        """
-        
-        with open(f"{output_path}/playoff_accuracy.html", "w") as f:
-            f.write(html_content)
-        
-        print("✓ Playoff accuracy HTML report created")
-        
-    except Exception as e:
-        print(f"Error creating playoff accuracy HTML report: {e}")
-
-if __name__ == "__main__":
-    # Save today's playoff predictions
-    save_daily_playoff_predictions()
-    
-    # Evaluate accuracy (will show TBD until actual results known)
-    accuracy_metrics = evaluate_playoff_prediction_accuracy()
-    
-    # Create HTML report
-    if accuracy_metrics:
-        create_playoff_accuracy_html_report()
-    
-    print("✓ Playoff prediction accuracy tracking completed successfully!")
-                        sub_metrics['correct_predictions'] += 1
+        # Analyze each category
+        for category in accuracy_metrics['prediction_categories']:
+            category_metrics = {
+                'category_name': category,
+                'total_correct': 0,
+                'total_days': 0,
+                'subcategory_accuracy': {}
+            }
+            
+            # Get actual results for this category
+            actual_category = actual_results.get('2025', {}).get(category, {})
+            
+            # Process each subcategory (division, wild card spot, etc)
+            for subcategory, result in actual_category.items():
+                actual_winner = result.get('team', result.get('winner', 'TBD'))
+                
+                sub_metrics = {
+                    'actual_winner': actual_winner,
+                    'prediction_history': [],
+                    'correct_predictions': 0,
+                    'total_days': 0,
+                    'accuracy_percentage': 0
+                }
+                
+                # Process historical predictions
+                for history_file in history_files:
+                    try:
+                        with open(f"{output_path}/playoff_prediction_history/{history_file}", "r") as f:
+                            daily_data = json.load(f)
+                        
+                        sub_metrics['total_days'] += 1
+                        category_metrics['total_days'] += 1
+                        
+                        # Extract prediction based on category
+                        predicted_leader = None
+                        if category == 'division_winners':
+                            if subcategory.startswith('al_'):
+                                div_predictions = daily_data.get('playoff_scenarios', {}).get('al_division_winners', {})
+                            else:
+                                div_predictions = daily_data.get('playoff_scenarios', {}).get('nl_division_winners', {})
+                            
+                            # Get top team for this division
+                            div_teams = [(team, prob) for team, prob in div_predictions.items() 
+                                       if team_division(team, daily_data) == subcategory]
+                            if div_teams:
+                                predicted_leader = max(div_teams, key=lambda x: x[1])[0]
+                        
+                        elif category == 'wild_card_teams':
+                            # For wild cards, we'd need to identify specific spots which is complex
+                            # This is a simplified version
+                            league = 'al_wild_card' if subcategory.startswith('al_') else 'nl_wild_card'
+                            wc_predictions = daily_data.get('playoff_scenarios', {}).get(league, {})
+                            if wc_predictions:
+                                top_teams = sorted(wc_predictions.items(), key=lambda x: x[1], reverse=True)
+                                # Assign prediction based on wild card position (1st, 2nd, 3rd)
+                                position = int(subcategory[-1]) - 1
+                                if position < len(top_teams):
+                                    predicted_leader = top_teams[position][0]
+                        
+                        elif category == 'world_series_winner':
+                            ws_predictions = daily_data.get('playoff_scenarios', {}).get('world_series_odds', {})
+                            if ws_predictions:
+                                predicted_leader = max(ws_predictions.items(), key=lambda x: x[1])[0]
+                        
+                        # Record prediction
+                        sub_metrics['prediction_history'].append({
+                            'date': daily_data.get('date', 'unknown'),
+                            'predicted_leader': predicted_leader,
+                            'correct': predicted_leader == actual_winner if actual_winner != 'TBD' else None
+                        })
+                        
+                        # Count correct predictions
+                        if actual_winner != 'TBD' and predicted_leader == actual_winner:
+                            sub_metrics['correct_predictions'] += 1
+                            category_metrics['total_correct'] += 1
+                    
+                    except Exception as e:
+                        print(f"Error processing file {history_file} for {subcategory}: {e}")
                 
                 # Calculate accuracy percentage
                 if actual_winner != 'TBD' and sub_metrics['total_days'] > 0:
@@ -179,6 +197,11 @@ if __name__ == "__main__":
         print(f"Error evaluating playoff prediction accuracy: {e}")
         return None
 
+def team_division(team_name, data):
+    """Helper function to determine a team's division"""
+    team_data = data.get('team_strength', {}).get(team_name, {})
+    return team_data.get('division', 'unknown')
+
 def create_playoff_accuracy_charts(accuracy_metrics):
     """Create charts showing playoff prediction accuracy over time"""
     try:
@@ -192,7 +215,7 @@ def create_playoff_accuracy_charts(accuracy_metrics):
         div_labels = []
         
         for div in divisions:
-            div_data = accuracy_metrics['accuracy_by_category']['division_winners']['subcategory_accuracy'].get(div, {})
+            div_data = accuracy_metrics['accuracy_by_category'].get('division_winners', {}).get('subcategory_accuracy', {}).get(div, {})
             accuracy = div_data.get('accuracy_percentage', 0)
             div_accuracies.append(accuracy)
             div_labels.append(div.replace('_', ' ').title())
@@ -208,7 +231,7 @@ def create_playoff_accuracy_charts(accuracy_metrics):
         wc_labels = []
         
         for wc in wc_teams:
-            wc_data = accuracy_metrics['accuracy_by_category']['wild_card_teams']['subcategory_accuracy'].get(wc, {})
+            wc_data = accuracy_metrics['accuracy_by_category'].get('wild_card_teams', {}).get('subcategory_accuracy', {}).get(wc, {})
             accuracy = wc_data.get('accuracy_percentage', 0)
             wc_accuracies.append(accuracy)
             wc_labels.append(wc.upper().replace('_', ' '))
@@ -219,7 +242,7 @@ def create_playoff_accuracy_charts(accuracy_metrics):
         ax2.tick_params(axis='x', rotation=45)
         
         # World Series Winner Timeline (if available)
-        ws_data = accuracy_metrics['accuracy_by_category']['world_series_winner']['subcategory_accuracy'].get('champion', {})
+        ws_data = accuracy_metrics['accuracy_by_category'].get('world_series_winner', {}).get('subcategory_accuracy', {}).get('champion', {})
         ws_history = ws_data.get('prediction_history', [])
         
         if ws_history:
@@ -408,5 +431,4 @@ if __name__ == "__main__":
     if accuracy_metrics:
         create_playoff_accuracy_html_report()
     
-    print("✓ Playoff prediction accuracy tracking completed successfully!")
     print("✓ Playoff prediction accuracy tracking completed successfully!")
