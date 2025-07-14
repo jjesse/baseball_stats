@@ -6,9 +6,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 # Ensure output directory exists
-output_path = os.environ.get('OUTPUT_PATH', 'docs')
+output_path = os.environ.get("OUTPUT_PATH", "docs")
 os.makedirs(output_path, exist_ok=True)
 os.makedirs(f"{output_path}/playoff_prediction_history", exist_ok=True)
+
 
 def save_daily_playoff_predictions():
     """Save today's playoff predictions to historical tracking"""
@@ -16,32 +17,36 @@ def save_daily_playoff_predictions():
         # Load current playoff predictions
         with open(f"{output_path}/playoff_predictions.json", "r") as f:
             current_predictions = json.load(f)
-        
+
         # Create daily snapshot
         daily_snapshot = {
-            'date': datetime.now().strftime('%Y-%m-%d'),
-            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'playoff_scenarios': current_predictions['playoff_scenarios'],
-            'insights': current_predictions['insights'],
-            'team_strength': current_predictions['team_strength']
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "playoff_scenarios": current_predictions["playoff_scenarios"],
+            "insights": current_predictions["insights"],
+            "team_strength": current_predictions["team_strength"],
         }
-        
+
         # Save daily snapshot
-        date_str = datetime.now().strftime('%Y-%m-%d')
-        with open(f"{output_path}/playoff_prediction_history/playoff_predictions_{date_str}.json", "w") as f:
+        date_str = datetime.now().strftime("%Y-%m-%d")
+        with open(
+            f"{output_path}/playoff_prediction_history/playoff_predictions_{date_str}.json",
+            "w",
+        ) as f:
             json.dump(daily_snapshot, f, indent=2)
-        
+
         print(f"✓ Saved daily playoff predictions for {date_str}")
         return True
-        
+
     except Exception as e:
         print(f"Error saving daily playoff predictions: {e}")
         return False
 
+
 def load_actual_playoff_results():
     """Load actual playoff results (to be updated manually at season end)"""
     results_file = f"{output_path}/actual_playoff_results.json"
-    
+
     # Default structure for 2025 season (to be updated when playoffs complete)
     default_results = {
         "2025": {
@@ -51,7 +56,7 @@ def load_actual_playoff_results():
                 "al_west": {"winner": "TBD", "final_date": "TBD"},
                 "nl_east": {"winner": "TBD", "final_date": "TBD"},
                 "nl_central": {"winner": "TBD", "final_date": "TBD"},
-                "nl_west": {"winner": "TBD", "final_date": "TBD"}
+                "nl_west": {"winner": "TBD", "final_date": "TBD"},
             },
             "wild_card_teams": {
                 "al_wc1": {"team": "TBD", "final_date": "TBD"},
@@ -59,13 +64,13 @@ def load_actual_playoff_results():
                 "al_wc3": {"team": "TBD", "final_date": "TBD"},
                 "nl_wc1": {"team": "TBD", "final_date": "TBD"},
                 "nl_wc2": {"team": "TBD", "final_date": "TBD"},
-                "nl_wc3": {"team": "TBD", "final_date": "TBD"}
+                "nl_wc3": {"team": "TBD", "final_date": "TBD"},
             },
             "world_series_winner": {"team": "TBD", "final_date": "TBD"},
-            "season_end_date": "2025-10-01"
+            "season_end_date": "2025-10-01",
         }
     }
-    
+
     if os.path.exists(results_file):
         with open(results_file, "r") as f:
             return json.load(f)
@@ -74,211 +79,304 @@ def load_actual_playoff_results():
             json.dump(default_results, f, indent=2)
         return default_results
 
+
 def evaluate_playoff_prediction_accuracy():
     """Evaluate accuracy of playoff predictions against actual results"""
     try:
         # Load actual results
         actual_results = load_actual_playoff_results()
-        
+
         # Load all historical predictions
-        history_files = sorted([f for f in os.listdir(f"{output_path}/playoff_prediction_history") 
-                              if f.startswith("playoff_predictions_") and f.endswith(".json")])
-        
+        history_files = sorted(
+            [
+                f
+                for f in os.listdir(f"{output_path}/playoff_prediction_history")
+                if f.startswith("playoff_predictions_") and f.endswith(".json")
+            ]
+        )
+
         if not history_files:
             print("No historical playoff predictions found")
             return None
-        
+
         accuracy_metrics = {
-            'total_prediction_days': len(history_files),
-            'prediction_categories': ['division_winners', 'wild_card_teams', 'world_series_winner'],
-            'accuracy_by_category': {},
-            'prediction_timeline': [],
-            'top_predicted_teams': {}
+            "total_prediction_days": len(history_files),
+            "prediction_categories": [
+                "division_winners",
+                "wild_card_teams",
+                "world_series_winner",
+            ],
+            "accuracy_by_category": {},
+            "prediction_timeline": [],
+            "top_predicted_teams": {},
         }
-        
+
         # Analyze each category
-        for category in accuracy_metrics['prediction_categories']:
+        for category in accuracy_metrics["prediction_categories"]:
             category_metrics = {
-                'category_name': category,
-                'total_correct': 0,
-                'total_days': 0,
-                'subcategory_accuracy': {}
+                "category_name": category,
+                "total_correct": 0,
+                "total_days": 0,
+                "subcategory_accuracy": {},
             }
-            
+
             # Get actual results for this category
-            actual_category = actual_results.get('2025', {}).get(category, {})
-            
+            actual_category = actual_results.get("2025", {}).get(category, {})
+
             # Process each subcategory (division, wild card spot, etc)
             for subcategory, result in actual_category.items():
-                actual_winner = result.get('team', result.get('winner', 'TBD'))
-                
+                actual_winner = result.get("team", result.get("winner", "TBD"))
+
                 sub_metrics = {
-                    'actual_winner': actual_winner,
-                    'prediction_history': [],
-                    'correct_predictions': 0,
-                    'total_days': 0,
-                    'accuracy_percentage': 0
+                    "actual_winner": actual_winner,
+                    "prediction_history": [],
+                    "correct_predictions": 0,
+                    "total_days": 0,
+                    "accuracy_percentage": 0,
                 }
-                
+
                 # Process historical predictions
                 for history_file in history_files:
                     try:
-                        with open(f"{output_path}/playoff_prediction_history/{history_file}", "r") as f:
+                        with open(
+                            f"{output_path}/playoff_prediction_history/{history_file}",
+                            "r",
+                        ) as f:
                             daily_data = json.load(f)
-                        
-                        sub_metrics['total_days'] += 1
-                        category_metrics['total_days'] += 1
-                        
+
+                        sub_metrics["total_days"] += 1
+                        category_metrics["total_days"] += 1
+
                         # Extract prediction based on category
                         predicted_leader = None
-                        if category == 'division_winners':
-                            if subcategory.startswith('al_'):
-                                div_predictions = daily_data.get('playoff_scenarios', {}).get('al_division_winners', {})
+                        if category == "division_winners":
+                            if subcategory.startswith("al_"):
+                                div_predictions = daily_data.get(
+                                    "playoff_scenarios", {}
+                                ).get("al_division_winners", {})
                             else:
-                                div_predictions = daily_data.get('playoff_scenarios', {}).get('nl_division_winners', {})
-                            
+                                div_predictions = daily_data.get(
+                                    "playoff_scenarios", {}
+                                ).get("nl_division_winners", {})
+
                             # Get top team for this division
-                            div_teams = [(team, prob) for team, prob in div_predictions.items() 
-                                       if team_division(team, daily_data) == subcategory]
+                            div_teams = [
+                                (team, prob)
+                                for team, prob in div_predictions.items()
+                                if team_division(team, daily_data) == subcategory
+                            ]
                             if div_teams:
                                 predicted_leader = max(div_teams, key=lambda x: x[1])[0]
-                        
-                        elif category == 'wild_card_teams':
+
+                        elif category == "wild_card_teams":
                             # For wild cards, we'd need to identify specific spots which is complex
                             # This is a simplified version
-                            league = 'al_wild_card' if subcategory.startswith('al_') else 'nl_wild_card'
-                            wc_predictions = daily_data.get('playoff_scenarios', {}).get(league, {})
+                            league = (
+                                "al_wild_card"
+                                if subcategory.startswith("al_")
+                                else "nl_wild_card"
+                            )
+                            wc_predictions = daily_data.get(
+                                "playoff_scenarios", {}
+                            ).get(league, {})
                             if wc_predictions:
-                                top_teams = sorted(wc_predictions.items(), key=lambda x: x[1], reverse=True)
+                                top_teams = sorted(
+                                    wc_predictions.items(),
+                                    key=lambda x: x[1],
+                                    reverse=True,
+                                )
                                 # Assign prediction based on wild card position (1st, 2nd, 3rd)
                                 position = int(subcategory[-1]) - 1
                                 if position < len(top_teams):
                                     predicted_leader = top_teams[position][0]
-                        
-                        elif category == 'world_series_winner':
-                            ws_predictions = daily_data.get('playoff_scenarios', {}).get('world_series_odds', {})
+
+                        elif category == "world_series_winner":
+                            ws_predictions = daily_data.get(
+                                "playoff_scenarios", {}
+                            ).get("world_series_odds", {})
                             if ws_predictions:
-                                predicted_leader = max(ws_predictions.items(), key=lambda x: x[1])[0]
-                        
+                                predicted_leader = max(
+                                    ws_predictions.items(), key=lambda x: x[1]
+                                )[0]
+
                         # Record prediction
-                        sub_metrics['prediction_history'].append({
-                            'date': daily_data.get('date', 'unknown'),
-                            'predicted_leader': predicted_leader,
-                            'correct': predicted_leader == actual_winner if actual_winner != 'TBD' else None
-                        })
-                        
+                        sub_metrics["prediction_history"].append(
+                            {
+                                "date": daily_data.get("date", "unknown"),
+                                "predicted_leader": predicted_leader,
+                                "correct": (
+                                    predicted_leader == actual_winner
+                                    if actual_winner != "TBD"
+                                    else None
+                                ),
+                            }
+                        )
+
                         # Count correct predictions
-                        if actual_winner != 'TBD' and predicted_leader == actual_winner:
-                            sub_metrics['correct_predictions'] += 1
-                            category_metrics['total_correct'] += 1
-                    
+                        if actual_winner != "TBD" and predicted_leader == actual_winner:
+                            sub_metrics["correct_predictions"] += 1
+                            category_metrics["total_correct"] += 1
+
                     except Exception as e:
-                        print(f"Error processing file {history_file} for {subcategory}: {e}")
-                
+                        print(
+                            f"Error processing file {history_file} for {subcategory}: {e}"
+                        )
+
                 # Calculate accuracy percentage
-                if actual_winner != 'TBD' and sub_metrics['total_days'] > 0:
-                    sub_metrics['accuracy_percentage'] = (sub_metrics['correct_predictions'] / sub_metrics['total_days']) * 100
-                
-                category_metrics['subcategory_accuracy'][subcategory] = sub_metrics
-            
-            accuracy_metrics['accuracy_by_category'][category] = category_metrics
-        
+                if actual_winner != "TBD" and sub_metrics["total_days"] > 0:
+                    sub_metrics["accuracy_percentage"] = (
+                        sub_metrics["correct_predictions"] / sub_metrics["total_days"]
+                    ) * 100
+
+                category_metrics["subcategory_accuracy"][subcategory] = sub_metrics
+
+            accuracy_metrics["accuracy_by_category"][category] = category_metrics
+
         # Save accuracy report
         with open(f"{output_path}/playoff_accuracy_report.json", "w") as f:
             json.dump(accuracy_metrics, f, indent=2)
-        
+
         # Create accuracy visualizations
         create_playoff_accuracy_charts(accuracy_metrics)
-        
+
         print("✓ Playoff prediction accuracy evaluation completed")
         return accuracy_metrics
-        
+
     except Exception as e:
         print(f"Error evaluating playoff prediction accuracy: {e}")
         return None
 
+
 def team_division(team_name, data):
     """Helper function to determine a team's division"""
-    team_data = data.get('team_strength', {}).get(team_name, {})
-    return team_data.get('division', 'unknown')
+    team_data = data.get("team_strength", {}).get(team_name, {})
+    return team_data.get("division", "unknown")
+
 
 def create_playoff_accuracy_charts(accuracy_metrics):
     """Create charts showing playoff prediction accuracy over time"""
     try:
         # Create division winner accuracy chart
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
-        fig.suptitle('Playoff Prediction Accuracy Analysis', fontsize=16, fontweight='bold')
-        
+        fig.suptitle(
+            "Playoff Prediction Accuracy Analysis", fontsize=16, fontweight="bold"
+        )
+
         # Division Winners Accuracy
-        divisions = ['al_east', 'al_central', 'al_west', 'nl_east', 'nl_central', 'nl_west']
+        divisions = [
+            "al_east",
+            "al_central",
+            "al_west",
+            "nl_east",
+            "nl_central",
+            "nl_west",
+        ]
         div_accuracies = []
         div_labels = []
-        
+
         for div in divisions:
-            div_data = accuracy_metrics['accuracy_by_category'].get('division_winners', {}).get('subcategory_accuracy', {}).get(div, {})
-            accuracy = div_data.get('accuracy_percentage', 0)
+            div_data = (
+                accuracy_metrics["accuracy_by_category"]
+                .get("division_winners", {})
+                .get("subcategory_accuracy", {})
+                .get(div, {})
+            )
+            accuracy = div_data.get("accuracy_percentage", 0)
             div_accuracies.append(accuracy)
-            div_labels.append(div.replace('_', ' ').title())
-        
-        ax1.bar(div_labels, div_accuracies, color=['#1f77b4' if 'Al' in label else '#ff7f0e' for label in div_labels])
-        ax1.set_title('Division Winner Prediction Accuracy')
-        ax1.set_ylabel('Accuracy (%)')
-        ax1.tick_params(axis='x', rotation=45)
-        
+            div_labels.append(div.replace("_", " ").title())
+
+        ax1.bar(
+            div_labels,
+            div_accuracies,
+            color=["#1f77b4" if "Al" in label else "#ff7f0e" for label in div_labels],
+        )
+        ax1.set_title("Division Winner Prediction Accuracy")
+        ax1.set_ylabel("Accuracy (%)")
+        ax1.tick_params(axis="x", rotation=45)
+
         # Wild Card Accuracy
-        wc_teams = ['al_wc1', 'al_wc2', 'al_wc3', 'nl_wc1', 'nl_wc2', 'nl_wc3']
+        wc_teams = ["al_wc1", "al_wc2", "al_wc3", "nl_wc1", "nl_wc2", "nl_wc3"]
         wc_accuracies = []
         wc_labels = []
-        
+
         for wc in wc_teams:
-            wc_data = accuracy_metrics['accuracy_by_category'].get('wild_card_teams', {}).get('subcategory_accuracy', {}).get(wc, {})
-            accuracy = wc_data.get('accuracy_percentage', 0)
+            wc_data = (
+                accuracy_metrics["accuracy_by_category"]
+                .get("wild_card_teams", {})
+                .get("subcategory_accuracy", {})
+                .get(wc, {})
+            )
+            accuracy = wc_data.get("accuracy_percentage", 0)
             wc_accuracies.append(accuracy)
-            wc_labels.append(wc.upper().replace('_', ' '))
-        
-        ax2.bar(wc_labels, wc_accuracies, color=['#2ca02c' if 'AL' in label else '#d62728' for label in wc_labels])
-        ax2.set_title('Wild Card Prediction Accuracy')
-        ax2.set_ylabel('Accuracy (%)')
-        ax2.tick_params(axis='x', rotation=45)
-        
+            wc_labels.append(wc.upper().replace("_", " "))
+
+        ax2.bar(
+            wc_labels,
+            wc_accuracies,
+            color=["#2ca02c" if "AL" in label else "#d62728" for label in wc_labels],
+        )
+        ax2.set_title("Wild Card Prediction Accuracy")
+        ax2.set_ylabel("Accuracy (%)")
+        ax2.tick_params(axis="x", rotation=45)
+
         # World Series Winner Timeline (if available)
-        ws_data = accuracy_metrics['accuracy_by_category'].get('world_series_winner', {}).get('subcategory_accuracy', {}).get('champion', {})
-        ws_history = ws_data.get('prediction_history', [])
-        
+        ws_data = (
+            accuracy_metrics["accuracy_by_category"]
+            .get("world_series_winner", {})
+            .get("subcategory_accuracy", {})
+            .get("champion", {})
+        )
+        ws_history = ws_data.get("prediction_history", [])
+
         if ws_history:
-            dates = [pd.to_datetime(entry['date']) for entry in ws_history]
-            predictions = [entry['predicted_leader'] for entry in ws_history]
-            
+            dates = [pd.to_datetime(entry["date"]) for entry in ws_history]
+            predictions = [entry["predicted_leader"] for entry in ws_history]
+
             # Count prediction frequency
             prediction_counts = pd.Series(predictions).value_counts().head(10)
-            
-            ax3.bar(range(len(prediction_counts)), prediction_counts.values, color='purple')
-            ax3.set_title('World Series Prediction Frequency')
-            ax3.set_xlabel('Team')
-            ax3.set_ylabel('Days Predicted as Favorite')
+
+            ax3.bar(
+                range(len(prediction_counts)), prediction_counts.values, color="purple"
+            )
+            ax3.set_title("World Series Prediction Frequency")
+            ax3.set_xlabel("Team")
+            ax3.set_ylabel("Days Predicted as Favorite")
             ax3.set_xticks(range(len(prediction_counts)))
-            ax3.set_xticklabels(prediction_counts.index, rotation=45, ha='right')
-        
+            ax3.set_xticklabels(prediction_counts.index, rotation=45, ha="right")
+
         # Overall accuracy summary
-        categories = ['Division Winners', 'Wild Card', 'World Series']
+        categories = ["Division Winners", "Wild Card", "World Series"]
         overall_accuracies = [
-            sum(div_accuracies) / len([x for x in div_accuracies if x > 0]) if any(div_accuracies) else 0,
-            sum(wc_accuracies) / len([x for x in wc_accuracies if x > 0]) if any(wc_accuracies) else 0,
-            ws_data.get('accuracy_percentage', 0)
+            (
+                sum(div_accuracies) / len([x for x in div_accuracies if x > 0])
+                if any(div_accuracies)
+                else 0
+            ),
+            (
+                sum(wc_accuracies) / len([x for x in wc_accuracies if x > 0])
+                if any(wc_accuracies)
+                else 0
+            ),
+            ws_data.get("accuracy_percentage", 0),
         ]
-        
-        ax4.bar(categories, overall_accuracies, color=['skyblue', 'lightgreen', 'purple'])
-        ax4.set_title('Overall Prediction Accuracy by Category')
-        ax4.set_ylabel('Average Accuracy (%)')
-        
+
+        ax4.bar(
+            categories, overall_accuracies, color=["skyblue", "lightgreen", "purple"]
+        )
+        ax4.set_title("Overall Prediction Accuracy by Category")
+        ax4.set_ylabel("Average Accuracy (%)")
+
         plt.tight_layout()
-        plt.savefig(f"{output_path}/playoff_accuracy_chart.png", dpi=150, bbox_inches='tight')
+        plt.savefig(
+            f"{output_path}/playoff_accuracy_chart.png", dpi=150, bbox_inches="tight"
+        )
         plt.close()
-        
+
         print("✓ Playoff accuracy charts created successfully")
-        
+
     except Exception as e:
         print(f"Error creating playoff accuracy charts: {e}")
+
 
 def create_playoff_accuracy_html_report():
     """Create HTML report showing playoff prediction accuracy"""
@@ -286,7 +384,7 @@ def create_playoff_accuracy_html_report():
         # Load accuracy data
         with open(f"{output_path}/playoff_accuracy_report.json", "r") as f:
             accuracy_data = json.load(f)
-        
+
         html_content = f"""
         <!DOCTYPE html>
         <html lang="en" data-theme="light">
@@ -411,24 +509,25 @@ def create_playoff_accuracy_html_report():
         </body>
         </html>
         """
-        
+
         with open(f"{output_path}/playoff_accuracy.html", "w") as f:
             f.write(html_content)
-        
+
         print("✓ Playoff accuracy HTML report created")
-        
+
     except Exception as e:
         print(f"Error creating playoff accuracy HTML report: {e}")
+
 
 if __name__ == "__main__":
     # Save today's playoff predictions
     save_daily_playoff_predictions()
-    
+
     # Evaluate accuracy (will show TBD until actual results known)
     accuracy_metrics = evaluate_playoff_prediction_accuracy()
-    
+
     # Create HTML report
     if accuracy_metrics:
         create_playoff_accuracy_html_report()
-    
+
     print("✓ Playoff prediction accuracy tracking completed successfully!")

@@ -6,39 +6,65 @@ from datetime import datetime
 import os
 
 # Ensure output directory exists
-output_path = os.environ.get('OUTPUT_PATH', 'docs')
+output_path = os.environ.get("OUTPUT_PATH", "docs")
 os.makedirs(output_path, exist_ok=True)
 
 try:
     # Fetch current season batting data
     df = batting_stats(2025)
-    
+
     # Select relevant batting stats
-    df = df[['Name', 'Team', 'G', 'AB', 'R', 'H', 'HR', 'RBI', 'SB', 'BB', 'SO', 'AVG', 'OBP', 'SLG', 'OPS', 'wOBA', 'wRC+', 'BABIP', 'ISO', 'K%', 'BB%']]
-    
+    df = df[
+        [
+            "Name",
+            "Team",
+            "G",
+            "AB",
+            "R",
+            "H",
+            "HR",
+            "RBI",
+            "SB",
+            "BB",
+            "SO",
+            "AVG",
+            "OBP",
+            "SLG",
+            "OPS",
+            "wOBA",
+            "wRC+",
+            "BABIP",
+            "ISO",
+            "K%",
+            "BB%",
+        ]
+    ]
+
     # Filter out players with minimal playing time
-    df = df[df['AB'] >= 50]  # At least 50 at-bats
-    
+    df = df[df["AB"] >= 50]  # At least 50 at-bats
+
     # Save CSV for archiving
     df.to_csv(f"{output_path}/batting_stats.csv", index=False)
-    
+
     def create_chart_and_table(df, stat, title, color, ascending):
         """Create chart and HTML table for a given stat"""
         try:
             top = df.sort_values(stat, ascending=ascending).head(10)
-            
+
             # Create chart
             plt.figure(figsize=(12, 8))
-            sns.barplot(data=top, x=stat, y='Name', hue='Name', palette=color, legend=False)
-            plt.title(title, fontsize=14, fontweight='bold')
+            sns.barplot(
+                data=top, x=stat, y="Name", hue="Name", palette=color, legend=False
+            )
+            plt.title(title, fontsize=14, fontweight="bold")
             plt.xlabel(stat, fontsize=12)
-            plt.ylabel('Player', fontsize=12)
+            plt.ylabel("Player", fontsize=12)
             plt.tight_layout()
-            
+
             chart_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct').replace('/', '_')}_chart.png"
-            plt.savefig(chart_path, dpi=150, bbox_inches='tight')
+            plt.savefig(chart_path, dpi=150, bbox_inches="tight")
             plt.close()
-            
+
             # Create HTML table with dark mode support
             html_content = f"""
             <!DOCTYPE html>
@@ -126,16 +152,16 @@ try:
             </body>
             </html>
             """
-            
+
             table_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct').replace('/', '_')}_table.html"
             with open(table_path, "w") as f:
                 f.write(html_content)
-                
+
             print(f"✓ Created chart and table for {stat}")
-            
+
         except Exception as e:
             print(f"Error creating chart for {stat}: {e}")
-    
+
     # List of batting stats to chart
     stats_to_plot = [
         ("AVG", "Top 10 Hitters by Batting Average", "Blues", False),
@@ -149,20 +175,20 @@ try:
         ("BABIP", "Top 10 Hitters by BABIP", "coolwarm", False),
         ("ISO", "Top 10 Hitters by Isolated Power", "YlOrRd", False),
         ("K%", "Lowest K% (Best Contact)", "Greys", True),
-        ("BB%", "Top 10 Hitters by Walk Rate", "BuPu", False)
+        ("BB%", "Top 10 Hitters by Walk Rate", "BuPu", False),
     ]
-    
+
     # Generate charts and tables for each stat
     for stat, title, color, asc in stats_to_plot:
         if stat in df.columns:
             create_chart_and_table(df, stat, title, color, asc)
         else:
             print(f"Warning: {stat} not found in data columns")
-    
+
     # Write last updated timestamp
     with open(f"{output_path}/last_updated_batting.txt", "w") as f:
         f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    
+
     print("✓ Batting charts and tables generated successfully!")
 
 except Exception as e:
@@ -170,25 +196,4 @@ except Exception as e:
     # Create a minimal fallback file so the workflow doesn't fail completely
     with open(f"{output_path}/last_updated_batting.txt", "w") as f:
         f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    raise
-    raise
-    if 'BB%' in df.columns:
-        stats_to_plot.append(("BB%", "Top 10 Hitters by Walk Rate", "BuPu", False))
-    
-    # Generate charts and tables for each stat
-    for stat, title, color, asc in stats_to_plot:
-        create_chart_and_table(df, stat, title, color, asc)
-    
-    # Write last updated timestamp
-    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
-        f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    
-    print("✓ Batting charts and tables generated successfully!")
-
-except Exception as e:
-    print(f"Error in batting_chart.py: {e}")
-    # Create a minimal fallback file so the workflow doesn't fail completely
-    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
-        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    raise
     raise
