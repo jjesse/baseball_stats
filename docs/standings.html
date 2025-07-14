@@ -270,49 +270,37 @@
         <h3>AL Leader
           <div class="tooltip">
             <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>American League Leader</strong><br>
-              Team with the best record in the AL.
-            </span>
+            <span class="tooltiptext">Current American League team with the best record.</span>
           </div>
         </h3>
-        <div class="stat-value">Loading...</div>
+        <div class="stat-value" id="al-leader">Loading...</div>
       </div>
       <div class="stat-card">
         <h3>NL Leader
           <div class="tooltip">
             <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>National League Leader</strong><br>
-              Team with the best record in the NL.
-            </span>
+            <span class="tooltiptext">Current National League team with the best record.</span>
           </div>
         </h3>
-        <div class="stat-value">Loading...</div>
+        <div class="stat-value" id="nl-leader">Loading...</div>
       </div>
       <div class="stat-card">
         <h3>Best Record
           <div class="tooltip">
             <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>Best Overall Record</strong><br>
-              Team with the most wins in MLB.
-            </span>
+            <span class="tooltiptext">Team with the best overall record in MLB.</span>
           </div>
         </h3>
-        <div class="stat-value">Loading...</div>
+        <div class="stat-value" id="best-record">Loading...</div>
       </div>
       <div class="stat-card">
         <h3>Closest Division
           <div class="tooltip">
             <span class="info-icon">?</span>
-            <span class="tooltiptext">
-              <strong>Tightest Division Race</strong><br>
-              Division with smallest lead margin.
-            </span>
+            <span class="tooltiptext">The division with the smallest gap between first and second place.</span>
           </div>
         </h3>
-        <div class="stat-value">Loading...</div>
+        <div class="stat-value" id="closest-race">Loading...</div>
       </div>
     </div>
 
@@ -379,25 +367,27 @@
       <h2 style="text-align: center;">Standings Glossary</h2>
       
       <div style="margin-bottom: 1.5rem;">
-        <h3>Basic Terms</h3>
-        <p><strong>W (Wins):</strong> Total games won by the team.</p>
-        <p><strong>L (Losses):</strong> Total games lost by the team.</p>
-        <p><strong>PCT (Winning Percentage):</strong> Wins divided by total games played.</p>
-        <p><strong>GB (Games Behind):</strong> How many games behind the division leader.</p>
+        <h3>Basic Standings Terms</h3>
+        <p><strong>W:</strong> Wins - The number of games the team has won.</p>
+        <p><strong>L:</strong> Losses - The number of games the team has lost.</p>
+        <p><strong>PCT:</strong> Winning Percentage - Calculated as wins divided by total games played.</p>
+        <p><strong>GB:</strong> Games Behind - The number of games a team is behind the division leader.</p>
       </div>
 
       <div style="margin-bottom: 1.5rem;">
-        <h3>Playoff Structure</h3>
-        <p><strong>Division Winners:</strong> First place team in each of the 6 divisions automatically qualify for playoffs.</p>
-        <p><strong>Wild Card:</strong> Next 3 best records in each league (6 total) qualify for Wild Card round.</p>
-        <p><strong>Playoff Format:</strong> Wild Card → Division Series → Championship Series → World Series</p>
+        <h3>Divisions</h3>
+        <p><strong>AL East:</strong> American League East - Yankees, Red Sox, Blue Jays, Rays, Orioles</p>
+        <p><strong>AL Central:</strong> American League Central - Guardians, Tigers, Twins, Royals, White Sox</p>
+        <p><strong>AL West:</strong> American League West - Astros, Mariners, Rangers, Angels, Athletics</p>
+        <p><strong>NL East:</strong> National League East - Phillies, Braves, Mets, Nationals, Marlins</p>
+        <p><strong>NL Central:</strong> National League Central - Brewers, Cubs, Cardinals, Reds, Pirates</p>
+        <p><strong>NL West:</strong> National League West - Dodgers, Padres, Diamondbacks, Giants, Rockies</p>
       </div>
 
       <div>
-        <h3>Understanding the Race</h3>
-        <p><strong>Magic Number:</strong> Wins needed (or competitor losses) to clinch playoff spot.</p>
-        <p><strong>Elimination Number:</strong> Losses that would eliminate team from playoffs.</p>
-        <p><strong>Strength of Schedule:</strong> Difficulty of remaining games affects playoff chances.</p>
+        <h3>Other Terms</h3>
+        <p><strong>Closest Division:</strong> The division where the gap between first and second place is smallest.</p>
+        <p><strong>Best Record:</strong> The team with the highest winning percentage in all of MLB.</p>
       </div>
     </div>
   </div>
@@ -438,7 +428,6 @@
           document.getElementById("last-updated").innerText = text;
         })
         .catch(err => {
-          console.error('Error loading update time:', err);
           document.getElementById("last-updated").innerText = "Update time unavailable";
         });
       
@@ -448,118 +437,39 @@
 
     async function loadOverviewStats() {
       try {
-        // Load the combined standings data
-        const response = await fetch("standings_all.csv");
-        const csvText = await response.text();
-        
-        // Parse CSV data
-        const lines = csvText.split('\n').filter(line => line.trim());
-        const headers = lines[0].split(',');
-        const data = [];
-        
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',');
-          if (values.length >= headers.length) {
-            const row = {};
-            headers.forEach((header, index) => {
-              row[header.trim()] = values[index] ? values[index].trim() : '';
-            });
-            if (row.Tm && row.W && row.Division) {
-              row.W = parseInt(row.W) || 0;
-              row.L = parseInt(row.L) || 0;
-              data.push(row);
-            }
-          }
+        const response = await fetch("standings_summary.json");
+        if (!response.ok) {
+          throw new Error("Failed to load standings summary data");
         }
         
-        if (data.length === 0) {
-          throw new Error("No valid standings data found");
+        const data = await response.json();
+        console.log("Loaded standings data:", data);
+        
+        // Update summary cards with data
+        if (data.al_leader) {
+          document.getElementById('al-leader').textContent = data.al_leader;
         }
         
-        // Calculate overview statistics
-        const alTeams = data.filter(team => {
-          const div = team.Division ? team.Division.toLowerCase() : '';
-          return div.includes('al_east') || div.includes('al_central') || div.includes('al_west') ||
-                 div.includes('al east') || div.includes('al central') || div.includes('al west');
-        });
-        
-        const nlTeams = data.filter(team => {
-          const div = team.Division ? team.Division.toLowerCase() : '';
-          return div.includes('nl_east') || div.includes('nl_central') || div.includes('nl_west') ||
-                 div.includes('nl east') || div.includes('nl central') || div.includes('nl west');
-        });
-        
-        console.log('AL Teams found:', alTeams.map(t => `${t.Team || t.Tm} (${t.W}W) - ${t.Division}`));
-        console.log('NL Teams found:', nlTeams.map(t => `${t.Team || t.Tm} (${t.W}W) - ${t.Division}`));
-        
-        // AL Leader (best AL record)
-        const alLeader = alTeams.length > 0 ? 
-          alTeams.reduce((best, team) => team.W > best.W ? team : best, alTeams[0]) : 
-          {Team: 'N/A', Tm: 'N/A', W: 0};
-        
-        // NL Leader (best NL record)  
-        const nlLeader = nlTeams.length > 0 ? 
-          nlTeams.reduce((best, team) => team.W > best.W ? team : best, nlTeams[0]) : 
-          {Team: 'N/A', Tm: 'N/A', W: 0};
-        
-        // Best Overall Record
-        const bestRecord = data.length > 0 ? 
-          data.reduce((best, team) => team.W > best.W ? team : best, data[0]) : 
-          {Team: 'N/A', Tm: 'N/A', W: 0};
-        
-        console.log('AL Leader:', alLeader);
-        console.log('NL Leader:', nlLeader);
-        console.log('Best Record:', bestRecord);
-        
-        // Closest Division (smallest games back difference)
-        const divisions = ['al_east', 'al_central', 'al_west', 'nl_east', 'nl_central', 'nl_west'];
-        let closestDivision = 'N/A';
-        let smallestGap = Infinity;
-        
-        divisions.forEach(div => {
-          const divTeams = data.filter(team => 
-            team.Division && team.Division.toLowerCase().includes(div.toLowerCase()));
-          if (divTeams.length >= 2) {
-            // Sort by wins descending
-            divTeams.sort((a, b) => b.W - a.W);
-            const gap = divTeams[0].W - divTeams[1].W; // Win difference between 1st and 2nd
-            if (gap < smallestGap) {
-              smallestGap = gap;
-              closestDivision = div.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
-            }
-          }
-        });
-        
-        // Update the stat cards
-        const statCards = document.querySelectorAll('.stat-card .stat-value');
-        if (statCards.length >= 4) {
-          const alLeaderName = alLeader.Team || alLeader.Tm || 'N/A';
-          const nlLeaderName = nlLeader.Team || nlLeader.Tm || 'N/A';
-          const bestRecordName = bestRecord.Team || bestRecord.Tm || 'N/A';
-          
-          statCards[0].textContent = `${alLeaderName} (${alLeader.W}W)`;
-          statCards[1].textContent = `${nlLeaderName} (${nlLeader.W}W)`;
-          statCards[2].textContent = `${bestRecordName} (${bestRecord.W}W)`;
-          statCards[3].textContent = `${closestDivision} (${smallestGap}W gap)`;
-          
-          console.log('Updated stat cards with:', {
-            alLeader: `${alLeaderName} (${alLeader.W}W)`,
-            nlLeader: `${nlLeaderName} (${nlLeader.W}W)`,
-            bestRecord: `${bestRecordName} (${bestRecord.W}W)`,
-            closestDiv: `${closestDivision} (${smallestGap}W gap)`
-          });
+        if (data.nl_leader) {
+          document.getElementById('nl-leader').textContent = data.nl_leader;
         }
         
+        if (data.best_record) {
+          document.getElementById('best-record').textContent = data.best_record;
+        }
+        
+        if (data.closest_race) {
+          document.getElementById('closest-race').textContent = data.closest_race;
+        }
+        
+        console.log("Overview stats updated successfully");
       } catch (error) {
-        console.error('Error loading standings data:', error);
-        // Set fallback values based on corrected 2025 standings
-        const statCards = document.querySelectorAll('.stat-card .stat-value');
-        if (statCards.length >= 4) {
-          statCards[0].textContent = 'Detroit Tigers (53W)';        // AL Leader (53W > 52W > 50W > 48W)
-          statCards[1].textContent = 'Los Angeles Dodgers (58W)';   // NL Leader  
-          statCards[2].textContent = 'Los Angeles Dodgers (58W)';   // Best Overall
-          statCards[3].textContent = 'AL Central (1W gap)';         // Closest Division (Tigers 53, Guardians 52)
-        }
+        console.error("Error loading overview stats:", error);
+        document.querySelectorAll('.stat-value').forEach(el => {
+          if (el.textContent === "Loading...") {
+            el.textContent = "Data unavailable";
+          }
+        });
       }
     }
   </script>
