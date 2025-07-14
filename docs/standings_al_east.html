@@ -33,7 +33,7 @@
                     overflow-x: auto;
                 }
                 
-                .standings-table { 
+                table { 
                     width: 100%; 
                     border-collapse: collapse; 
                     background-color: var(--bg);
@@ -41,31 +41,36 @@
                     font-size: 14px;
                 }
                 
-                .standings-table th, .standings-table td { 
+                th, td { 
                     border: 1px solid var(--border); 
                     padding: 6px; 
                     text-align: center;
                     color: var(--text) !important;
                 }
                 
-                .standings-table th { 
+                th { 
                     background-color: var(--header-bg) !important;
                     font-weight: bold;
                     color: var(--text) !important;
                 }
                 
-                .standings-table tr:nth-child(even) td { 
+                tr:nth-child(even) td { 
                     background-color: var(--row-even, #f9f9f9) !important;
                     color: var(--text) !important;
                 }
                 
-                .standings-table tr:nth-child(odd) td { 
+                tr:nth-child(odd) td { 
                     background-color: var(--bg) !important;
                     color: var(--text) !important;
                 }
+                
+                h3 {
+                    color: var(--text);
+                    text-align: center;
+                    margin-top: 0;
+                }
             </style>
             <script>
-                // Inherit theme from parent window
                 window.onload = function() {
                     try {
                         const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
@@ -80,51 +85,52 @@
         </head>
         <body>
             <div class="table-container">
-                <table border="1" class="dataframe standings-table">
+                <h3>AL EAST Standings</h3>
+                <table border="1" class="dataframe stats-table">
   <thead>
     <tr style="text-align: right;">
       <th>Team</th>
       <th>W</th>
       <th>L</th>
-      <th>PCT</th>
       <th>GB</th>
+      <th>PCT</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td>TORONTO BLUE JAYS</td>
+      <td>Unknown</td>
       <td>55</td>
       <td>41</td>
-      <td>0.573</td>
       <td>-</td>
+      <td>0.573</td>
     </tr>
     <tr>
-      <td>NEW YORK YANKEES</td>
+      <td>Unknown</td>
       <td>53</td>
       <td>43</td>
-      <td>0.552</td>
       <td>2.0</td>
+      <td>0.552</td>
     </tr>
     <tr>
-      <td>BOSTON RED SOX</td>
+      <td>Unknown</td>
       <td>53</td>
       <td>45</td>
-      <td>0.541</td>
       <td>3.0</td>
+      <td>0.541</td>
     </tr>
     <tr>
-      <td>TAMPA BAY RAYS</td>
+      <td>Unknown</td>
       <td>50</td>
       <td>47</td>
-      <td>0.515</td>
       <td>5.5</td>
+      <td>0.515</td>
     </tr>
     <tr>
-      <td>BALTIMORE ORIOLES</td>
+      <td>Unknown</td>
       <td>43</td>
       <td>52</td>
-      <td>0.453</td>
       <td>11.5</td>
+      <td>0.453</td>
     </tr>
   </tbody>
 </table>
