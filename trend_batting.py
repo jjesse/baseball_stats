@@ -1,3 +1,7 @@
+#!/usr/bin/env python3
+"""
+Batting trend analyzer - Tracks batting trends over time for top players
+"""
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -75,9 +79,7 @@ try:
 
             for i, player in enumerate(trend.columns):
                 player_data = trend[player].dropna()
-                if (
-                    not player_data.empty and len(player_data) >= 2
-                ):  # Need at least 2 points for a trend
+                if not player_data.empty and len(player_data) >= 2:  # Need at least 2 points for a trend
                     plt.plot(
                         player_data.index,
                         player_data.values,
@@ -97,9 +99,7 @@ try:
                 plt.grid(True, alpha=0.3)
                 plt.tight_layout()
 
-                filename = (
-                    f"{output_path}/trend_batting_{stat.lower().replace('/', '_')}.png"
-                )
+                filename = f"{output_path}/trend_batting_{stat.lower().replace('/', '_')}.png"
                 plt.savefig(filename, dpi=150, bbox_inches="tight")
                 print(f"Generated batting trend chart for {stat}")
             else:
