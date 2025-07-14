@@ -1,97 +1,102 @@
 
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            :root {
-                --bg: #ffffff;
-                --text: #333333;
-                --border: #dddddd;
-                --header-bg: #f8f9fa;
-            }
-            
-            [data-theme='dark'] {
-                --bg: #1f1f1f;
-                --text: #ffffff;
-                --border: #555555;
-                --header-bg: #2d2d2d;
-                --row-even: #2a2a2a;
-            }
-            
-            body { 
-                font-family: Arial, sans-serif; 
-                margin: 0; 
-                padding: 10px;
-                background-color: var(--bg);
-                color: var(--text);
-                overflow: hidden;
-            }
-            
-            .table-container {
-                width: 100%;
-                max-width: 100%;
-                overflow-x: auto;
-            }
-            
-            table { 
-                width: 100%; 
-                border-collapse: collapse; 
-                background-color: var(--bg);
-                margin: 0 auto;
-                font-size: 14px;
-            }
-            
-            th, td { 
-                border: 1px solid var(--border); 
-                padding: 6px; 
-                text-align: center;
-                color: var(--text) !important;
-            }
-            
-            th { 
-                background-color: var(--header-bg) !important;
-                font-weight: bold;
-                color: var(--text) !important;
-            }
-            
-            tr:nth-child(even) td { 
-                background-color: var(--row-even, #f9f9f9) !important;
-                color: var(--text) !important;
-            }
-            
-            tr:nth-child(odd) td { 
-                background-color: var(--bg) !important;
-                color: var(--text) !important;
-            }
-        </style>
-        <script>
-            // Inherit theme from parent window
-            window.onload = function() {
-                try {
-                    const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                    if (parentTheme) {
-                        document.documentElement.setAttribute('data-theme', parentTheme);
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    :root {
+                        --bg: #ffffff;
+                        --text: #333333;
+                        --border: #dddddd;
+                        --header-bg: #f8f9fa;
                     }
-                } catch(e) {
-                    // Cross-origin issues, use default
-                }
-            };
-        </script>
-    </head>
-    <body>
-        <div class="table-container">
-            <table border="1" class="dataframe stats-table">
+                    
+                    [data-theme='dark'] {
+                        --bg: #1f1f1f;
+                        --text: #ffffff;
+                        --border: #555555;
+                        --header-bg: #2d2d2d;
+                        --row-even: #2a2a2a;
+                    }
+                    
+                    body { 
+                        font-family: Arial, sans-serif; 
+                        margin: 0; 
+                        padding: 10px;
+                        background-color: var(--bg);
+                        color: var(--text);
+                        overflow: hidden;
+                    }
+                    
+                    .table-container {
+                        width: 100%;
+                        max-width: 100%;
+                        overflow-x: auto;
+                    }
+                    
+                    table { 
+                        width: 100%; 
+                        border-collapse: collapse; 
+                        background-color: var(--bg);
+                        margin: 0 auto;
+                        font-size: 14px;
+                    }
+                    
+                    th, td { 
+                        border: 1px solid var(--border); 
+                        padding: 6px; 
+                        text-align: center;
+                        color: var(--text) !important;
+                    }
+                    
+                    th { 
+                        background-color: var(--header-bg) !important;
+                        font-weight: bold;
+                        color: var(--text) !important;
+                    }
+                    
+                    tr:nth-child(even) td { 
+                        background-color: var(--row-even, #f9f9f9) !important;
+                        color: var(--text) !important;
+                    }
+                    
+                    tr:nth-child(odd) td { 
+                        background-color: var(--bg) !important;
+                        color: var(--text) !important;
+                    }
+                </style>
+                <script>
+                    window.onload = function() {
+                        try {
+                            const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                            if (parentTheme) {
+                                document.documentElement.setAttribute('data-theme', parentTheme);
+                            }
+                        } catch(e) {
+                            // Cross-origin issues, use default
+                        }
+                    };
+                </script>
+            </head>
+            <body>
+                <div class="table-container">
+                    <table border="1" class="dataframe stats-table">
   <thead>
     <tr style="text-align: right;">
       <th>Name</th>
       <th>Team</th>
-      <th>PA</th>
-      <th>AVG</th>
+      <th>G</th>
+      <th>AB</th>
+      <th>R</th>
+      <th>H</th>
       <th>HR</th>
       <th>RBI</th>
+      <th>SB</th>
+      <th>BB</th>
+      <th>SO</th>
+      <th>AVG</th>
       <th>OBP</th>
       <th>SLG</th>
-      <th>SB</th>
+      <th>OPS</th>
       <th>wOBA</th>
       <th>wRC+</th>
       <th>BABIP</th>
@@ -104,176 +109,236 @@
     <tr>
       <td>Aaron Judge</td>
       <td>NYY</td>
-      <td>402</td>
-      <td>0.360</td>
-      <td>33</td>
-      <td>74</td>
-      <td>0.468</td>
-      <td>0.734</td>
+      <td>96</td>
+      <td>352</td>
+      <td>85</td>
+      <td>125</td>
+      <td>35</td>
+      <td>81</td>
       <td>6</td>
-      <td>0.490</td>
-      <td>224</td>
-      <td>0.432</td>
-      <td>0.374</td>
-      <td>0.251244</td>
-      <td>0.161692</td>
+      <td>69</td>
+      <td>109</td>
+      <td>0.355</td>
+      <td>0.462</td>
+      <td>0.733</td>
+      <td>1.194</td>
+      <td>0.484</td>
+      <td>219</td>
+      <td>0.425</td>
+      <td>0.378</td>
+      <td>0.254</td>
+      <td>0.161</td>
     </tr>
     <tr>
       <td>Cal Raleigh</td>
       <td>SEA</td>
-      <td>388</td>
-      <td>0.268</td>
-      <td>35</td>
-      <td>74</td>
-      <td>0.381</td>
-      <td>0.640</td>
-      <td>9</td>
-      <td>0.422</td>
-      <td>182</td>
-      <td>0.267</td>
-      <td>0.372</td>
-      <td>0.250000</td>
-      <td>0.144330</td>
+      <td>94</td>
+      <td>347</td>
+      <td>65</td>
+      <td>90</td>
+      <td>38</td>
+      <td>82</td>
+      <td>10</td>
+      <td>62</td>
+      <td>105</td>
+      <td>0.259</td>
+      <td>0.376</td>
+      <td>0.634</td>
+      <td>1.011</td>
+      <td>0.416</td>
+      <td>178</td>
+      <td>0.251</td>
+      <td>0.375</td>
+      <td>0.252</td>
+      <td>0.149</td>
     </tr>
     <tr>
       <td>Will Smith</td>
       <td>LAD</td>
-      <td>286</td>
-      <td>0.332</td>
-      <td>12</td>
+      <td>74</td>
+      <td>248</td>
       <td>45</td>
-      <td>0.434</td>
-      <td>0.557</td>
+      <td>80</td>
+      <td>12</td>
+      <td>46</td>
       <td>2</td>
+      <td>45</td>
+      <td>55</td>
+      <td>0.323</td>
       <td>0.425</td>
-      <td>177</td>
-      <td>0.375</td>
-      <td>0.225</td>
-      <td>0.181818</td>
-      <td>0.150350</td>
+      <td>0.540</td>
+      <td>0.966</td>
+      <td>0.415</td>
+      <td>171</td>
+      <td>0.366</td>
+      <td>0.218</td>
+      <td>0.183</td>
+      <td>0.150</td>
     </tr>
     <tr>
       <td>Shohei Ohtani</td>
       <td>LAD</td>
-      <td>415</td>
-      <td>0.280</td>
-      <td>30</td>
-      <td>56</td>
-      <td>0.382</td>
-      <td>0.609</td>
+      <td>95</td>
+      <td>370</td>
+      <td>91</td>
+      <td>102</td>
+      <td>32</td>
+      <td>60</td>
       <td>12</td>
-      <td>0.412</td>
+      <td>62</td>
+      <td>109</td>
+      <td>0.276</td>
+      <td>0.382</td>
+      <td>0.605</td>
+      <td>0.988</td>
+      <td>0.410</td>
       <td>168</td>
-      <td>0.312</td>
-      <td>0.329</td>
-      <td>0.250602</td>
-      <td>0.134940</td>
+      <td>0.303</td>
+      <td>0.330</td>
+      <td>0.249</td>
+      <td>0.142</td>
     </tr>
     <tr>
       <td>Michael Busch</td>
       <td>CHC</td>
-      <td>318</td>
-      <td>0.297</td>
-      <td>18</td>
-      <td>56</td>
-      <td>0.384</td>
-      <td>0.566</td>
+      <td>90</td>
+      <td>300</td>
+      <td>45</td>
+      <td>87</td>
+      <td>19</td>
+      <td>59</td>
       <td>4</td>
-      <td>0.407</td>
-      <td>166</td>
-      <td>0.344</td>
-      <td>0.269</td>
-      <td>0.226415</td>
-      <td>0.103774</td>
+      <td>35</td>
+      <td>77</td>
+      <td>0.290</td>
+      <td>0.375</td>
+      <td>0.550</td>
+      <td>0.925</td>
+      <td>0.397</td>
+      <td>160</td>
+      <td>0.333</td>
+      <td>0.260</td>
+      <td>0.226</td>
+      <td>0.103</td>
     </tr>
     <tr>
       <td>Pete Alonso</td>
       <td>NYM</td>
-      <td>397</td>
-      <td>0.287</td>
-      <td>20</td>
-      <td>73</td>
-      <td>0.380</td>
-      <td>0.543</td>
+      <td>97</td>
+      <td>361</td>
+      <td>53</td>
+      <td>101</td>
+      <td>21</td>
+      <td>77</td>
       <td>1</td>
-      <td>0.395</td>
-      <td>160</td>
-      <td>0.332</td>
-      <td>0.256</td>
-      <td>0.224181</td>
-      <td>0.103275</td>
-    </tr>
-    <tr>
-      <td>James Wood</td>
-      <td>WSN</td>
-      <td>399</td>
-      <td>0.288</td>
-      <td>23</td>
-      <td>67</td>
-      <td>0.391</td>
-      <td>0.549</td>
-      <td>12</td>
-      <td>0.398</td>
-      <td>158</td>
-      <td>0.347</td>
-      <td>0.261</td>
-      <td>0.260652</td>
-      <td>0.142857</td>
+      <td>46</td>
+      <td>96</td>
+      <td>0.280</td>
+      <td>0.376</td>
+      <td>0.532</td>
+      <td>0.908</td>
+      <td>0.387</td>
+      <td>156</td>
+      <td>0.323</td>
+      <td>0.252</td>
+      <td>0.227</td>
+      <td>0.109</td>
     </tr>
     <tr>
       <td>Juan Soto</td>
       <td>NYM</td>
-      <td>397</td>
-      <td>0.263</td>
-      <td>21</td>
-      <td>51</td>
+      <td>96</td>
+      <td>340</td>
+      <td>70</td>
+      <td>89</td>
+      <td>23</td>
+      <td>56</td>
+      <td>11</td>
+      <td>77</td>
+      <td>78</td>
+      <td>0.262</td>
       <td>0.396</td>
-      <td>0.508</td>
-      <td>10</td>
-      <td>0.388</td>
+      <td>0.509</td>
+      <td>0.905</td>
+      <td>0.386</td>
       <td>155</td>
-      <td>0.269</td>
-      <td>0.245</td>
-      <td>0.171285</td>
-      <td>0.181360</td>
+      <td>0.272</td>
+      <td>0.247</td>
+      <td>0.184</td>
+      <td>0.182</td>
     </tr>
     <tr>
       <td>Kyle Schwarber</td>
       <td>PHI</td>
-      <td>401</td>
-      <td>0.251</td>
-      <td>27</td>
-      <td>63</td>
-      <td>0.382</td>
-      <td>0.538</td>
-      <td>8</td>
-      <td>0.393</td>
-      <td>153</td>
-      <td>0.280</td>
-      <td>0.287</td>
-      <td>0.259352</td>
-      <td>0.159601</td>
+      <td>96</td>
+      <td>352</td>
+      <td>66</td>
+      <td>87</td>
+      <td>30</td>
+      <td>69</td>
+      <td>9</td>
+      <td>66</td>
+      <td>112</td>
+      <td>0.247</td>
+      <td>0.378</td>
+      <td>0.545</td>
+      <td>0.923</td>
+      <td>0.394</td>
+      <td>154</td>
+      <td>0.271</td>
+      <td>0.298</td>
+      <td>0.263</td>
+      <td>0.155</td>
     </tr>
     <tr>
-      <td>Kyle Tucker</td>
-      <td>CHC</td>
-      <td>396</td>
-      <td>0.284</td>
-      <td>17</td>
-      <td>55</td>
+      <td>James Wood</td>
+      <td>WSN</td>
+      <td>95</td>
+      <td>356</td>
+      <td>59</td>
+      <td>99</td>
+      <td>24</td>
+      <td>69</td>
+      <td>12</td>
+      <td>59</td>
+      <td>116</td>
+      <td>0.278</td>
+      <td>0.381</td>
+      <td>0.534</td>
+      <td>0.915</td>
       <td>0.387</td>
-      <td>0.515</td>
-      <td>22</td>
-      <td>0.384</td>
-      <td>150</td>
-      <td>0.294</td>
-      <td>0.231</td>
-      <td>0.138889</td>
-      <td>0.141414</td>
+      <td>152</td>
+      <td>0.342</td>
+      <td>0.256</td>
+      <td>0.276</td>
+      <td>0.140</td>
+    </tr>
+    <tr>
+      <td>Byron Buxton</td>
+      <td>MIN</td>
+      <td>78</td>
+      <td>298</td>
+      <td>64</td>
+      <td>86</td>
+      <td>21</td>
+      <td>56</td>
+      <td>17</td>
+      <td>27</td>
+      <td>87</td>
+      <td>0.289</td>
+      <td>0.351</td>
+      <td>0.574</td>
+      <td>0.925</td>
+      <td>0.390</td>
+      <td>152</td>
+      <td>0.335</td>
+      <td>0.285</td>
+      <td>0.261</td>
+      <td>0.081</td>
     </tr>
   </tbody>
 </table>
-        </div>
-    </body>
-    </html>
-    
+                </div>
+            </body>
+            </html>
+            
