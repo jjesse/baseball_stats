@@ -2,13 +2,14 @@ name: Update Prediction Tracking
 
 on:
   schedule:
-    - cron: '0 15 * * *'  # Runs daily at 15:00 UTC - after all predictions updated
+    - cron: '30 14 * * *'  # Runs daily at 14:30 UTC (main branch only), after award predictions
   workflow_dispatch:      # Allow manual trigger
 
 jobs:
   update-prediction-tracking:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
+    # Skip scheduled runs on preview branch
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
 
     steps:
@@ -27,124 +28,87 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install pandas matplotlib seaborn numpy
-        timeout-minutes: 3
+        timeout-minutes: 5
 
-      - name: Wait for prediction data
+      - name: Archive current predictions
         run: |
-          # Wait up to 2 minutes for both award and playoff prediction data
-          max_attempts=12
-          attempt=0
+          # Create prediction history directory if it doesn't exist
+          mkdir -p docs/prediction_history
           
-          while [ $attempt -lt $max_attempts ]; do
-            award_ready=false
-            playoff_ready=false
-            
-            # Check for award predictions (MVP/Cy Young)
-            if [ -f "docs/award_predictions.json" ]; then
-              if [ "$(find docs/award_predictions.json -mmin -120)" ]; then
-                award_ready=true
-              fi
-            fi
-            
-            # Check for playoff predictions
-            if [ -f "docs/playoff_predictions.json" ]; then
-              if [ "$(find docs/playoff_predictions.json -mmin -120)" ]; then
-                playoff_ready=true
-              fi
-            fi
-            
-            if $award_ready && $playoff_ready; then
-              echo "Fresh prediction data found for both awards and playoffs, proceeding with tracking..."
-              break
-            fi
-            
-            echo "Waiting for prediction data... (attempt $((attempt+1))/$max_attempts)"
-            echo "Award predictions ready: $award_ready"
-            echo "Playoff predictions ready: $playoff_ready"
-            sleep 10
-            attempt=$((attempt+1))
-            
-            git fetch origin main
-            git reset --hard origin/main
-          done
-          
-          if [ $attempt -eq $max_attempts ]; then
-            echo "Warning: Fresh prediction data not found for all systems, continuing anyway..."
+          # Copy today's predictions to history with timestamp
+          if [ -f "docs/award_predictions.json" ]; then
+            cp docs/award_predictions.json docs/prediction_history/predictions_$(date +%F).json
+            echo "✓ Archived today's predictions"
+          else
+            echo "Warning: No award predictions found to archive"
           fi
         timeout-minutes: 2
+        continue-on-error: true
 
-      - name: Track award prediction accuracy (MVP & Cy Young)
-        run: |
-          export OUTPUT_PATH="docs"
-          python prediction_tracker.py || exit 1
-        timeout-minutes: 4
-        continue-on-error: false
-
-      - name: Track playoff prediction accuracy
-        run: |
-          export OUTPUT_PATH="docs"
-          python playoff_accuracy_tracker.py || exit 1
-        timeout-minutes: 4
-        continue-on-error: false
-
-      - name: Commit and push changes
+      - name: Commit and push changes with retry
         run: |
           if [[ -n $(git status --porcelain) ]]; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             
-            # Handle potential conflicts with retry logic
-            for attempt in {1..3}; do
-              echo "Attempt $attempt to push prediction tracking updates..."
+            COMMIT_MSG="Update prediction tracking [skip ci]"
+            FILE_PATTERN="docs/prediction_history/*.json"
+            
+            # Retry logic with proper conflict resolution
+            for attempt in {1..5}; do
+              echo "Attempt $attempt to push changes..."
               
-              git fetch origin main
-              git reset --hard origin/main
+              # Fetch latest changes
+              git fetch origin ${{ github.ref_name }}
               
-              # Re-run scripts after reset
-              python prediction_tracker.py || exit 1
-              python playoff_accuracy_tracker.py || exit 1
-              
-              # Add files for award tracking
-              git add docs/prediction_accuracy_report.json || true
-              git add docs/prediction_accuracy.html || true
-              git add docs/prediction_accuracy_chart.png || true
-              git add docs/prediction_timeline_chart.png || true
-              git add docs/prediction_history/ || true
-              git add docs/actual_winners.json || true
-              
-              # Add files for playoff tracking
-              git add docs/playoff_accuracy_report.json || true
-              git add docs/playoff_accuracy.html || true
-              git add docs/playoff_accuracy_chart.png || true
-              git add docs/playoff_prediction_history/ || true
-              git add docs/actual_playoff_results.json || true
-              
-              # Check if there are changes
-              if [[ -z $(git diff --cached) ]]; then
-                echo "No changes after re-running scripts. Exiting."
-                exit 0
+              # Check if we're behind
+              BEHIND=$(git rev-list --count HEAD..origin/${{ github.ref_name }})
+              if [ "$BEHIND" -gt 0 ]; then
+                echo "Local branch is $BEHIND commits behind. Attempting to rebase..."
+                
+                # Reset to origin
+                git reset --hard origin/${{ github.ref_name }}
+                
+                # Re-archive today's predictions
+                mkdir -p docs/prediction_history
+                if [ -f "docs/award_predictions.json" ]; then
+                  cp docs/award_predictions.json docs/prediction_history/predictions_$(date +%F).json
+                fi
+                
+                # Stage the new files
+                git add $FILE_PATTERN
+                
+                # Check if there are actually changes after re-running
+                if [[ -z $(git diff --cached) ]]; then
+                  echo "No changes after re-running scripts. Exiting."
+                  exit 0
+                fi
+              else
+                # We're up to date, just add our changes
+                git add $FILE_PATTERN
               fi
               
-              # Commit
-              git commit -m "Update prediction accuracy tracking (awards and playoffs) [skip ci]" || {
+              # Commit changes
+              git commit -m "$COMMIT_MSG" || {
                 echo "Nothing to commit on attempt $attempt"
                 exit 0
               }
               
               # Try to push
-              if git push origin main; then
-                echo "Successfully pushed prediction tracking on attempt $attempt"
+              if git push origin ${{ github.ref_name }}; then
+                echo "Successfully pushed on attempt $attempt"
                 exit 0
               else
-                echo "Push failed on attempt $attempt. Retrying in 15 seconds..."
-                sleep 15
+                echo "Push failed on attempt $attempt. Retrying in 10 seconds..."
+                sleep 10
               fi
             done
             
-            echo "Failed to push after 3 attempts"
+            # If all attempts failed
+            echo "Failed to push after 5 attempts"
             exit 1
           else
-            echo "No prediction tracking changes to commit"
+            echo "No changes to commit"
           fi
         timeout-minutes: 5
 

@@ -6,7 +6,7 @@ on:
   workflow_dispatch:      # Allows manual run
 
 jobs:
-  build:
+  update-pitching:
     runs-on: ubuntu-latest
     timeout-minutes: 15  # Prevent hung jobs
     # Skip scheduled runs on preview branch
@@ -70,15 +70,11 @@ jobs:
         fi
       timeout-minutes: 2
 
-    - name: Commit and push changes
+    - name: Commit and push changes with retry
       run: |
         if [[ -n $(git status --porcelain) ]]; then
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Handle potential conflicts
-          git fetch origin ${{ github.ref_name }}
-          git reset --hard origin/${{ github.ref_name }}
           
           # Set output path based on branch
           if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
@@ -92,42 +88,69 @@ jobs:
             FILE_PATTERN="docs/*.png docs/*.html docs/last_updated_pitching.txt archive/pitching_*.csv"
           fi
           
-          # Re-run the scripts after reset
-          python pitching_chart.py || exit 1
-          python trend_pitching.py || exit 1
-          
-          # Archive again after reset
-          mkdir -p archive
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            if [ -f "docs/preview/season_stats.csv" ]; then
-              cp docs/preview/season_stats.csv archive/pitching_$(date +%F).csv
-            fi
-          else
-            if [ -f "docs/season_stats.csv" ]; then
-              cp docs/season_stats.csv archive/pitching_$(date +%F).csv
-            fi
-          fi
-          
-          # Try commit and push again
-          git add $FILE_PATTERN
-          git commit -m "$COMMIT_MSG"
-          git push origin ${{ github.ref_name }}
-        else
-          echo "No changes to commit"
-        fi
-      timeout-minutes: 2
-
-    - name: Check for failures
-      if: failure()
-      run: |
-        echo "::error::Workflow failed! Check the logs for details."
-        exit 1
+          # Retry logic with proper conflict resolution
+          for attempt in {1..5}; do
+            echo "Attempt $attempt to push changes..."
             
-            if [ $i -eq 3 ]; then
-              echo "All push attempts failed"
-              exit 1
+            # Fetch latest changes
+            git fetch origin ${{ github.ref_name }}
+            
+            # Check if we're behind
+            BEHIND=$(git rev-list --count HEAD..origin/${{ github.ref_name }})
+            if [ "$BEHIND" -gt 0 ]; then
+              echo "Local branch is $BEHIND commits behind. Attempting to rebase..."
+              
+              # Reset to origin
+              git reset --hard origin/${{ github.ref_name }}
+              
+              # Re-run the scripts to ensure fresh data
+              python pitching_chart.py || exit 1
+              python trend_pitching.py || exit 1
+              
+              # Archive again after reset
+              mkdir -p archive
+              if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+                if [ -f "docs/preview/season_stats.csv" ]; then
+                  cp docs/preview/season_stats.csv archive/pitching_$(date +%F).csv
+                fi
+              else
+                if [ -f "docs/season_stats.csv" ]; then
+                  cp docs/season_stats.csv archive/pitching_$(date +%F).csv
+                fi
+              fi
+              
+              # Stage the new files
+              git add $FILE_PATTERN
+              
+              # Check if there are actually changes after re-running
+              if [[ -z $(git diff --cached) ]]; then
+                echo "No changes after re-running scripts. Exiting."
+                exit 0
+              fi
+            else
+              # We're up to date, just add our changes
+              git add $FILE_PATTERN
+            fi
+            
+            # Commit changes
+            git commit -m "$COMMIT_MSG" || {
+              echo "Nothing to commit on attempt $attempt"
+              exit 0
+            }
+            
+            # Try to push
+            if git push origin ${{ github.ref_name }}; then
+              echo "Successfully pushed on attempt $attempt"
+              exit 0
+            else
+              echo "Push failed on attempt $attempt. Retrying in 10 seconds..."
+              sleep 10
             fi
           done
+          
+          # If all attempts failed
+          echo "Failed to push after 5 attempts"
+          exit 1
         else
           echo "No changes to commit"
         fi

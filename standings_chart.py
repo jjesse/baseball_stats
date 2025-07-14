@@ -8,9 +8,10 @@ visualizations for use in the MLB Stats Dashboard.
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import requests
 import os
+import requests
 import json
+import traceback
 from datetime import datetime
 from bs4 import BeautifulSoup
 
@@ -42,35 +43,31 @@ def get_mlb_com_standings():
         if "records" in data:
             for division in data["records"]:
                 division_name = division.get("division", {}).get("name", "Unknown")
-                teams_data = []
-                
-                for team_record in division.get("teamRecords", []):
-                    team_name = team_record.get("team", {}).get("name", "Unknown")
-                    team_abbrev = team_record.get("team", {}).get("abbreviation", "???")
-                    wins = team_record.get("wins", 0)
-                    losses = team_record.get("losses", 0)
-                    pct = team_record.get("winningPercentage", ".000")
-                    gb = team_record.get("gamesBack", "-")
+                division_data = []
+
+                for team in division.get("teamRecords", []):
+                    team_name = team.get("team", {}).get("abbreviation", "Unknown")
+                    wins = team.get("wins", 0)
+                    losses = team.get("losses", 0)
+                    games_back = team.get("gamesBack", "0.0")
                     
-                    teams_data.append({
+                    division_data.append({
                         "Team": team_name,
-                        "Tm": team_abbrev,
                         "W": wins,
                         "L": losses,
-                        "PCT": float(pct),
-                        "GB": gb
+                        "GB": games_back,
+                        "PCT": round(wins / (wins + losses) if wins + losses > 0 else 0, 3)
                     })
                 
-                if teams_data:
-                    df = pd.DataFrame(teams_data)
-                    print(f"MLB.com API: Found {len(df)} teams in {division_name}")
-                    standings_list.append(df)
+                if division_data:
+                    standings_list.append(pd.DataFrame(division_data))
+                    print(f"Processed division: {division_name}")
 
         if standings_list:
-            print(f"MLB.com API: Found {len(standings_list)} division standings")
+            print(f"Successfully parsed {len(standings_list)} divisions from MLB.com")
             return standings_list
         else:
-            print("MLB.com API: No valid standings data found")
+            print("No standings data found in MLB.com response")
             return None
 
     except Exception as e:
@@ -96,42 +93,35 @@ def get_espn_api_standings():
         standings_list = []
 
         if "children" in data:
-            for league in data.get("children", []):
-                for division in league.get("children", []):
-                    division_name = division.get("name", "Unknown")
-                    teams_data = []
+            for league in data["children"]:
+                for division in league.get("standings", {}).get("entries", []):
+                    division_data = []
                     
-                    for team in division.get("standings", {}).get("entries", []):
-                        team_name = team.get("team", {}).get("displayName", "Unknown")
-                        team_abbrev = team.get("team", {}).get("abbreviation", "???")
+                    for team in division.get("entries", []):
+                        stats = {stat["name"]: stat["value"] for stat in team.get("stats", [])}
+                        team_name = team.get("team", {}).get("abbreviation", "Unknown")
                         
-                        stats = {stat.get("name"): stat.get("displayValue") 
-                                for stat in team.get("stats", [])}
-                        
+                        # Try to extract relevant stats
                         wins = int(stats.get("wins", 0))
                         losses = int(stats.get("losses", 0))
-                        pct = float(stats.get("winPercent", "0").replace("%", "")) / 100
-                        gb = stats.get("gamesBehind", "-")
+                        games_back = stats.get("gamesBack", "0.0")
                         
-                        teams_data.append({
+                        division_data.append({
                             "Team": team_name,
-                            "Tm": team_abbrev,
                             "W": wins,
-                            "L": losses,
-                            "PCT": pct,
-                            "GB": gb
+                            "L": losses, 
+                            "GB": games_back,
+                            "PCT": round(wins / (wins + losses) if wins + losses > 0 else 0, 3)
                         })
                     
-                    if teams_data:
-                        df = pd.DataFrame(teams_data)
-                        print(f"ESPN API: Found {len(df)} teams in {division_name}")
-                        standings_list.append(df)
+                    if division_data:
+                        standings_list.append(pd.DataFrame(division_data))
 
         if standings_list:
-            print(f"ESPN API: Found {len(standings_list)} division standings")
+            print(f"Successfully parsed {len(standings_list)} divisions from ESPN")
             return standings_list
         else:
-            print("ESPN API: No valid standings data found")
+            print("No standings data found in ESPN response")
             return None
 
     except Exception as e:
@@ -170,19 +160,26 @@ def get_baseball_reference_standings():
         # Baseball Reference typically has division tables in order
         for i, table in enumerate(tables[:6]):
             if i < len(division_names):
-                div_name = division_names[i]
-                # Process the dataframe to standardize column names
-                if not table.empty:
-                    print(f"Baseball Reference: Processing {div_name} with {len(table)} teams")
+                # Process table to match our format
+                if "W" in table.columns and "L" in table.columns:
+                    # Rename and select columns
+                    table = table.rename(columns={"Tm": "Team"})
+                    table = table[["Team", "W", "L", "GB"]].copy()
+                    
+                    # Calculate PCT
+                    table["PCT"] = table.apply(
+                        lambda row: round(row["W"] / (row["W"] + row["L"]) if row["W"] + row["L"] > 0 else 0, 3),
+                        axis=1
+                    )
+                    
                     standings_list.append(table)
-                else:
-                    print(f"Baseball Reference: Empty table for {div_name}")
+                    print(f"Processed division: {division_names[i]}")
 
         if standings_list:
-            print(f"Baseball Reference: Found {len(standings_list)} division standings")
+            print(f"Successfully parsed {len(standings_list)} divisions from Baseball Reference")
             return standings_list
         else:
-            print("Baseball Reference: No valid standings data found")
+            print("No usable standings data found in Baseball Reference tables")
             return None
 
     except Exception as e:
@@ -193,31 +190,31 @@ def get_baseball_reference_standings():
 def get_fallback_standings():
     """Create fallback standings for 2025 season using realistic team data"""
     divisions = [
-        ("AL East", [("NYY", 48, 40), ("TBR", 47, 41), ("TOR", 45, 44), ("BOS", 41, 47), ("BAL", 38, 50)]),
+        ("AL East", [("NYY", 56, 42), ("TBR", 52, 45), ("TOR", 48, 49), ("BOS", 43, 53), ("BAL", 41, 55)]),
         (
             "AL Central",
             [
-                ("CLE", 53, 35),
-                ("DET", 52, 37),
-                ("MIN", 44, 45),
-                ("KC", 39, 50),
-                ("CHW", 25, 64),
+                ("CLE", 59, 38),
+                ("DET", 58, 40),
+                ("MIN", 49, 49),
+                ("KC", 42, 55),
+                ("CHW", 29, 68),
             ],
         ),
-        ("AL West", [("HOU", 51, 38), ("SEA", 47, 42), ("TEX", 42, 47), ("LAA", 38, 52), ("OAK", 37, 53)]),
-        ("NL East", [("PHI", 54, 34), ("ATL", 49, 39), ("NYM", 45, 43), ("WSN", 40, 49), ("MIA", 34, 55)]),
+        ("AL West", [("HOU", 56, 42), ("SEA", 52, 46), ("TEX", 45, 52), ("LAA", 42, 56), ("OAK", 40, 58)]),
+        ("NL East", [("PHI", 59, 38), ("ATL", 54, 43), ("NYM", 49, 48), ("WSN", 43, 54), ("MIA", 37, 60)]),
         (
             "NL Central",
-            [("MIL", 53, 36), ("CHC", 47, 42), ("STL", 45, 44), ("CIN", 42, 47), ("PIT", 41, 48)],
+            [("MIL", 58, 40), ("CHC", 51, 47), ("STL", 49, 49), ("CIN", 45, 53), ("PIT", 45, 53)],
         ),
         (
             "NL West",
             [
-                ("LAD", 58, 31),
-                ("SD", 48, 41),
-                ("ARI", 47, 42),
-                ("SF", 44, 45),
-                ("COL", 35, 55),
+                ("LAD", 63, 35),
+                ("SD", 53, 45),
+                ("ARI", 51, 47),
+                ("SF", 48, 50),
+                ("COL", 38, 60),
             ],
         ),
     ]
@@ -231,20 +228,15 @@ def get_fallback_standings():
         leader_losses = teams_data[0][2]
 
         for i, (team, wins, losses) in enumerate(teams_data):
-            pct = round(wins / (wins + losses), 3)
-            if i == 0:
-                gb = "-"
-            else:
-                games_behind = ((leader_wins - wins) + (losses - leader_losses)) / 2
-                gb = str(games_behind) if games_behind % 1 else str(int(games_behind))
+            gb = 0.0 if i == 0 else round((leader_wins - wins + leader_losses - losses) / 2, 1)
+            pct = round(wins / (wins + losses) if wins + losses > 0 else 0, 3)
             
             data.append({
-                "Tm": team,
                 "Team": team,
                 "W": wins,
                 "L": losses,
-                "PCT": pct,
-                "GB": gb
+                "GB": str(gb),
+                "PCT": pct
             })
 
         df = pd.DataFrame(data)
@@ -262,14 +254,14 @@ def try_pybaseball_standings():
         # Try to get 2025 season specifically
         division_standings = standings(2025)
         if division_standings and len(division_standings) > 0:
-            print(f"Pybaseball: Found {len(division_standings)} divisions for 2025")
+            print(f"Successfully retrieved 2025 standings from pybaseball")
             return division_standings
 
         # If 2025 not available, try current season
         print("2025 data not available, trying current season...")
         division_standings = standings()
         if division_standings and len(division_standings) > 0:
-            print(f"Pybaseball: Found {len(division_standings)} divisions for current season")
+            print(f"Successfully retrieved current season standings from pybaseball")
             return division_standings
 
         return None
@@ -285,29 +277,27 @@ def create_standings_chart(df, title, filename, team_col="Team"):
         
         # Check if df has required columns
         if team_col not in df.columns or "W" not in df.columns:
-            print(f"Missing required columns for chart: {title}")
+            print(f"Required columns missing in dataframe for {title}")
             # Create placeholder chart
-            plt.title(f"{title} - Data Missing", fontsize=14, fontweight="bold")
-            plt.figtext(0.5, 0.5, "Required data columns missing", ha="center", fontsize=14)
+            plt.title(f"{title} - Data Issue", fontsize=14)
+            plt.figtext(0.5, 0.5, "Data columns missing", ha="center", va="center", fontsize=12)
         else:
-            # Sort by wins (descending) for proper display
+            # Sort by wins descending
             df_sorted = df.sort_values("W", ascending=False)
             
-            # Use AL/NL colors if league info is available
-            if "League" in df.columns:
-                colors = ["#1f77b4" if l == "AL" else "#ff7f0e" for l in df_sorted["League"]]
-                sns.barplot(x="W", y=team_col, data=df_sorted, palette=colors)
-            else:
-                # Use single color if no league info
-                sns.barplot(x="W", y=team_col, data=df_sorted, color="#1f77b4")
+            # Create the chart
+            bars = plt.barh(df_sorted[team_col], df_sorted["W"], color=sns.color_palette("Blues", len(df)))
             
-            plt.title(title, fontsize=14, fontweight="bold")
+            # Add win count labels to bars
+            for i, (index, row) in enumerate(df_sorted.iterrows()):
+                plt.text(row["W"] + 1, i, str(int(row["W"])), va='center')
+            
+            # Customize chart
+            plt.title(title, fontsize=14)
             plt.xlabel("Wins", fontsize=12)
             plt.ylabel("Team", fontsize=12)
-            
-            # Add win values on bars
-            for i, v in enumerate(df_sorted["W"]):
-                plt.text(v + 0.5, i, str(v), va="center")
+            plt.xlim(0, max(df["W"]) * 1.15 if len(df["W"]) > 0 else 100)
+            plt.grid(axis='x', linestyle='--', alpha=0.7)
 
         plt.tight_layout()
         plt.savefig(filename, dpi=100, bbox_inches="tight")
@@ -315,192 +305,114 @@ def create_standings_chart(df, title, filename, team_col="Team"):
         print(f"✓ Created standings chart: {title}")
         return True
     except Exception as e:
-        print(f"Error creating standings chart {title}: {e}")
-        
-        # Create placeholder in case of error
-        try:
-            plt.figure(figsize=(10, 6))
-            plt.title(f"{title} - Error", fontsize=14, fontweight="bold")
-            plt.figtext(0.5, 0.5, "Error creating chart", ha="center", fontsize=14)
-            plt.tight_layout()
-            plt.savefig(filename, dpi=100, bbox_inches="tight")
-            plt.close()
-            print(f"Created error placeholder chart for: {title}")
-        except:
-            # Last resort - just create an empty file
-            open(filename, 'w').close()
-        
+        print(f"Error creating chart for {title}: {e}")
+        plt.close()
         return False
 
 
 def create_html_table(df, filename, title=None):
     """Create HTML table with dark mode support"""
     try:
-        # Check if DataFrame is valid
-        if df is None or df.empty:
-            print(f"Empty DataFrame for {filename}, creating placeholder")
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    :root {{
-                        --bg: #ffffff;
-                        --text: #333333;
-                        --border: #dddddd;
-                        --header-bg: #f8f9fa;
-                    }}
-                    
-                    [data-theme='dark'] {{
-                        --bg: #1f1f1f;
-                        --text: #ffffff;
-                        --border: #555555;
-                        --header-bg: #2d2d2d;
-                        --row-even: #2a2a2a;
-                    }}
-                    
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        margin: 0; 
-                        padding: 10px;
-                        background-color: var(--bg);
-                        color: var(--text);
-                        overflow: hidden;
-                    }}
-                </style>
-                <script>
-                    window.onload = function() {{
-                        try {{
-                            const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                            if (parentTheme) {{
-                                document.documentElement.setAttribute('data-theme', parentTheme);
-                            }}
-                        }} catch(e) {{
-                            // Cross-origin issues, use default
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                :root {{
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
+                }}
+                
+                [data-theme='dark'] {{
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }}
+                
+                body {{ 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 10px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                    overflow: hidden;
+                }}
+                
+                .table-container {{
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: auto;
+                }}
+                
+                table {{ 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    background-color: var(--bg);
+                    margin: 0 auto;
+                    font-size: 14px;
+                }}
+                
+                th, td {{ 
+                    border: 1px solid var(--border); 
+                    padding: 6px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }}
+                
+                th {{ 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }}
+                
+                tr:nth-child(even) td {{ 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }}
+                
+                tr:nth-child(odd) td {{ 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }}
+                
+                h3 {{
+                    color: var(--text);
+                    text-align: center;
+                    margin-top: 0;
+                }}
+            </style>
+            <script>
+                window.onload = function() {{
+                    try {{
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {{
+                            document.documentElement.setAttribute('data-theme', parentTheme);
                         }}
-                    }};
-                </script>
-            </head>
-            <body>
-                <p>No data available for {title or "this division"}.</p>
-            </body>
-            </html>
-            """
-        else:
-            # Create proper HTML table
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    :root {{
-                        --bg: #ffffff;
-                        --text: #333333;
-                        --border: #dddddd;
-                        --header-bg: #f8f9fa;
+                    }} catch(e) {{
+                        // Cross-origin issues, use default
                     }}
-                    
-                    [data-theme='dark'] {{
-                        --bg: #1f1f1f;
-                        --text: #ffffff;
-                        --border: #555555;
-                        --header-bg: #2d2d2d;
-                        --row-even: #2a2a2a;
-                    }}
-                    
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        margin: 0; 
-                        padding: 10px;
-                        background-color: var(--bg);
-                        color: var(--text);
-                        overflow: hidden;
-                    }}
-                    
-                    .table-container {{
-                        width: 100%;
-                        max-width: 100%;
-                        overflow-x: auto;
-                    }}
-                    
-                    table {{ 
-                        width: 100%; 
-                        border-collapse: collapse; 
-                        background-color: var(--bg);
-                        margin: 0 auto;
-                        font-size: 14px;
-                    }}
-                    
-                    th, td {{ 
-                        border: 1px solid var(--border); 
-                        padding: 6px; 
-                        text-align: center;
-                        color: var(--text) !important;
-                    }}
-                    
-                    th {{ 
-                        background-color: var(--header-bg) !important;
-                        font-weight: bold;
-                        color: var(--text) !important;
-                    }}
-                    
-                    tr:nth-child(even) td {{ 
-                        background-color: var(--row-even, #f9f9f9) !important;
-                        color: var(--text) !important;
-                    }}
-                    
-                    tr:nth-child(odd) td {{ 
-                        background-color: var(--bg) !important;
-                        color: var(--text) !important;
-                    }}
-                </style>
-                <script>
-                    // Inherit theme from parent window
-                    window.onload = function() {{
-                        try {{
-                            const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                            if (parentTheme) {{
-                                document.documentElement.setAttribute('data-theme', parentTheme);
-                            }}
-                        }} catch(e) {{
-                            // Cross-origin issues, use default
-                        }}
-                    }};
-                </script>
-            </head>
-            <body>
-                <div class="table-container">
-                    {df.to_html(index=False, classes='standings-table', escape=False)}
-                </div>
-            </body>
-            </html>
-            """
+                }};
+            </script>
+        </head>
+        <body>
+            <div class="table-container">
+                {f"<h3>{title}</h3>" if title else ""}
+                {df.to_html(index=False, classes='stats-table', escape=False)}
+            </div>
+        </body>
+        </html>
+        """
 
         with open(filename, "w") as f:
             f.write(html_content)
-        
         print(f"✓ Created HTML table: {filename}")
         return True
     except Exception as e:
-        print(f"Error creating HTML table {filename}: {e}")
-        
-        # Create basic fallback HTML if error occurs
-        try:
-            with open(filename, "w") as f:
-                f.write(f"""
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Error</title>
-                </head>
-                <body>
-                    <p>Error generating standings table.</p>
-                </body>
-                </html>
-                """)
-        except:
-            pass
-        
+        print(f"Error creating HTML table: {e}")
         return False
 
 
@@ -517,29 +429,27 @@ def main():
 
     # Method 2: Try ESPN API if MLB.com fails
     if not division_standings:
-        print("MLB.com failed, trying ESPN API for 2025 season...")
+        print("MLB.com API failed, trying ESPN API...")
         division_standings = get_espn_api_standings()
 
     # Method 3: Try Baseball Reference if APIs fail
     if not division_standings:
-        print("APIs failed, trying Baseball Reference for 2025 season...")
+        print("ESPN API failed, trying Baseball Reference...")
         division_standings = get_baseball_reference_standings()
 
     # Method 4: Try pybaseball if all web sources fail
     if not division_standings:
-        print("All web sources failed, trying pybaseball for 2025 season...")
+        print("Baseball Reference failed, trying pybaseball...")
         division_standings = try_pybaseball_standings()
 
     # Method 5: Use accurate fallback 2025 season data if all else fails
     if not division_standings:
-        print("All live sources failed, using accurate 2025 season fallback data...")
+        print("All web sources failed, using fallback data...")
         division_standings = get_fallback_standings()
 
     if not division_standings:
-        print("ERROR: All data sources failed to fetch 2025 standings")
-        with open(f"{output_path}/last_updated_standings.txt", "w") as f:
-            f.write(f"Error: All data sources failed - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        exit(1)
+        print("All methods failed to get standings data. Cannot proceed.")
+        return
 
     print(
         f"Successfully obtained {len(division_standings)} division standings for 2025 season"
@@ -558,214 +468,153 @@ def main():
     processed_divisions = 0
 
     for i, df in enumerate(division_standings):
-        if i >= len(division_names):
-            print(f"Warning: More divisions than expected, skipping extra division {i+1}")
-            continue
-
-        name = division_names[i]
-        print(f"Processing {name}: {df.shape if not df.empty else 'EMPTY'}")
-
-        if df.empty:
-            print(f"Empty dataframe for {name}, creating placeholder files")
-            # Create placeholder files
-            create_html_table(None, f"{output_path}/standings_{name}.html", title=name.replace('_', ' ').title())
-            continue
-
-        # Standardize column names - different sources use different names
-        column_mapping = {
-            "Team": "Tm",
-            "TEAM": "Tm",
-            "Club": "Tm",
-            "Wins": "W",
-            "WINS": "W",
-            "W": "W",
-            "Losses": "L",
-            "LOSSES": "L",
-            "L": "L",
-            "Pct": "PCT",
-            "PCT": "PCT",
-            "Win %": "PCT",
-            "Win Pct": "PCT",
-        }
-
-        # Rename columns to standardize
-        df = df.rename(columns=column_mapping)
-
-        # Handle multi-level column headers (ESPN sometimes uses these)
-        if isinstance(df.columns, pd.MultiIndex):
-            df.columns = [col[1] if len(col) > 1 else col[0] for col in df.columns]
+        if i < len(division_names):
+            div_name = division_names[i]
             
-            # Re-apply column mapping
-            df = df.rename(columns=column_mapping)
-
-        # Ensure we have the minimum required columns
-        if "Tm" not in df.columns:
-            if "Team" in df.columns:
-                print(f"Using 'Team' column as team name for {name}")
+            # Make sure we're working with a copy
+            if df is not None and not df.empty:
+                df_copy = df.copy()
+                
+                # Create charts for this division
+                chart_title = f"{div_name.replace('_', ' ').upper()} Standings"
+                chart_file = f"{output_path}/standings_{div_name}_chart.png"
+                create_standings_chart(df_copy, chart_title, chart_file)
+                
+                # Create HTML table
+                table_file = f"{output_path}/standings_{div_name}.html"
+                create_html_table(df_copy, table_file, chart_title)
+                
+                # Add league identifier
+                if "League" not in df_copy.columns:
+                    df_copy["League"] = "AL" if div_name.startswith("al") else "NL"
+                
+                # Add to combined list
+                all_dfs.append(df_copy)
+                processed_divisions += 1
             else:
-                print(f"No team name column found for {name}, creating placeholder")
-                df["Tm"] = [f"Team {i+1}" for i in range(len(df))]
-
-        # Add team name to abbreviation if missing
-        if "Team" not in df.columns and "Tm" in df.columns:
-            df["Team"] = df["Tm"].copy()
-
-        # Add League column for visualization purposes
-        if "AL" in name:
-            df["League"] = "AL"
-        else:
-            df["League"] = "NL"
-
-        # Save division standings table as HTML
-        division_title = name.replace("_", " ").upper()
-        create_html_table(df, f"{output_path}/standings_{name}.html", title=division_title)
-
-        # Create wins chart for this division
-        chart_title = f"{division_title} Wins Comparison"
-        create_standings_chart(
-            df, 
-            chart_title, 
-            f"{output_path}/standings_{name}_wins_chart.png",
-            team_col="Team" if "Team" in df.columns else "Tm"
-        )
-
-        # Add to list for combined chart
-        all_dfs.append(df)
-        processed_divisions += 1
+                print(f"Skipping division {div_name} due to empty dataframe")
 
     print(f"Successfully processed {processed_divisions} divisions")
 
     # Check if we have any data to work with
     if not all_dfs:
-        print("ERROR: No division standings were successfully processed.")
-        with open(f"{output_path}/last_updated_standings.txt", "w") as f:
-            f.write(f"Error: No divisions processed - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        exit(1)
+        print("No valid division data to process, exiting")
+        return
 
     # Combine all into a master CSV
     try:
-        combined = pd.concat(all_dfs, ignore_index=True)
-
-        # Sort by wins (descending) for proper standings order
-        combined = combined.sort_values("W", ascending=False)
-
-        combined.to_csv(f"{output_path}/standings_all.csv", index=False)
-
-        # Also create a combined HTML file as fallback
-        create_html_table(combined, f"{output_path}/standings_all.html", title="All Teams")
-
-        print(
-            f"✓ Created combined standings with {len(combined)} teams (sorted by wins)"
-        )
+        all_standings = pd.concat(all_dfs)
+        all_standings.to_csv(f"{output_path}/standings_all.csv", index=False)
+        create_html_table(all_standings.sort_values("W", ascending=False), 
+                          f"{output_path}/standings_all.html",
+                          "All MLB Teams by Wins")
+        print("✓ Created combined standings CSV and HTML")
     except Exception as e:
         print(f"Error creating combined standings: {e}")
 
     # Create overall wins chart
     try:
-        team_col = "Team" if "Team" in combined.columns else "Tm"
-        if team_col in combined.columns and "W" in combined.columns:
-            create_standings_chart(
-                combined, 
-                "MLB Team Wins", 
-                f"{output_path}/standings_wins_chart.png",
-                team_col=team_col
-            )
-        else:
-            print("Missing required columns for overall wins chart")
+        combined_df = pd.concat(all_dfs)
+        create_standings_chart(
+            combined_df,
+            "MLB Team Wins (2025 Season)",
+            f"{output_path}/standings_wins_chart.png",
+        )
+        print("✓ Created overall wins chart")
     except Exception as e:
-        print(f"Error creating wins charts: {e}")
+        print(f"Error creating overall wins chart: {e}")
 
     # Create summary statistics JSON
     try:
-        summary = {
+        summary_data = {
             "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "division_leaders": {},
-            "closest_races": []
+            "al_leader": {
+                "team": "",
+                "wins": 0,
+                "losses": 0,
+                "pct": 0.0,
+                "division": ""
+            },
+            "nl_leader": {
+                "team": "",
+                "wins": 0,
+                "losses": 0,
+                "pct": 0.0,
+                "division": ""
+            },
+            "al_divisions": {},
+            "nl_divisions": {}
         }
         
-        # Find division leaders
-        for i, name in enumerate(division_names):
-            if i < len(all_dfs) and not all_dfs[i].empty:
-                df = all_dfs[i]
-                if "W" in df.columns:
-                    leader_idx = df["W"].idxmax()
-                    leader_team = df.loc[leader_idx, "Team" if "Team" in df.columns else "Tm"]
-                    leader_wins = df.loc[leader_idx, "W"]
-                    summary["division_leaders"][name] = {
-                        "team": leader_team,
-                        "wins": int(leader_wins)
-                    }
-        
-        # Find closest races
-        for i, name in enumerate(division_names):
-            if i < len(all_dfs) and not all_dfs[i].empty:
-                df = all_dfs[i]
-                if "W" in df.columns and len(df) >= 2:
-                    df_sorted = df.sort_values("W", ascending=False)
-                    top_team = df_sorted.iloc[0]
-                    second_team = df_sorted.iloc[1]
-                    
-                    if "Team" in df.columns:
-                        top_name = top_team["Team"]
-                        second_name = second_team["Team"]
-                    else:
-                        top_name = top_team["Tm"]
-                        second_name = second_team["Tm"]
-                        
-                    games_back = int(top_team["W"]) - int(second_team["W"])
-                    
-                    summary["closest_races"].append({
-                        "division": name,
-                        "leader": top_name,
-                        "second": second_name,
-                        "gap": games_back,
-                        "display": f"{top_name} leads {second_name} by {games_back} game{'s' if games_back != 1 else ''}"
-                    })
-        
-        # Sort closest races
-        if summary["closest_races"]:
-            summary["closest_races"] = sorted(summary["closest_races"], key=lambda x: x["gap"])
-            summary["closest_race"] = summary["closest_races"][0]["display"]
-        
-        # Find league leaders
-        al_leaders = []
-        nl_leaders = []
-        
-        for div, leader_info in summary["division_leaders"].items():
-            if div.startswith("al_"):
-                al_leaders.append((leader_info["team"], leader_info["wins"]))
-            elif div.startswith("nl_"):
-                nl_leaders.append((leader_info["team"], leader_info["wins"]))
-        
-        if al_leaders:
-            al_best = max(al_leaders, key=lambda x: x[1])
-            summary["al_leader"] = f"{al_best[0]} ({al_best[1]} wins)"
-        
-        if nl_leaders:
-            nl_best = max(nl_leaders, key=lambda x: x[1])
-            summary["nl_leader"] = f"{nl_best[0]} ({nl_best[1]} wins)"
-        
-        # Find overall best record
-        all_leaders = al_leaders + nl_leaders
-        if all_leaders:
-            best_overall = max(all_leaders, key=lambda x: x[1])
-            summary["best_record"] = f"{best_overall[0]} ({best_overall[1]} wins)"
-        
-        # Save the summary
-        with open(f"{output_path}/standings_summary.json", "w") as f:
-            json.dump(summary, f, indent=2)
+        # Process each division to find the best teams
+        for i, division_name in enumerate(division_names):
+            if i >= len(division_standings):
+                continue
+                
+            df = division_standings[i]
+            if df is None or df.empty:
+                continue
+                
+            is_al = division_name.startswith("al")
+            division_display = division_name.replace("_", " ").upper()
             
-        print("✓ Created standings summary data")
+            # Get the leader of this division
+            if "Team" in df.columns and "W" in df.columns and "L" in df.columns:
+                leader = df.iloc[0]
+                leader_team = leader["Team"]
+                leader_wins = int(leader["W"])
+                leader_losses = int(leader["L"])
+                leader_pct = leader_wins / (leader_wins + leader_losses) if leader_wins + leader_losses > 0 else 0.0
+                
+                # Store division leader
+                if is_al:
+                    summary_data["al_divisions"][division_display] = {
+                        "leader": leader_team,
+                        "wins": leader_wins,
+                        "losses": leader_losses,
+                        "pct": leader_pct
+                    }
+                    
+                    # Update AL overall leader if this team has more wins
+                    if leader_wins > summary_data["al_leader"]["wins"]:
+                        summary_data["al_leader"] = {
+                            "team": leader_team,
+                            "wins": leader_wins,
+                            "losses": leader_losses,
+                            "pct": leader_pct,
+                            "division": division_display
+                        }
+                else:
+                    summary_data["nl_divisions"][division_display] = {
+                        "leader": leader_team,
+                        "wins": leader_wins,
+                        "losses": leader_losses,
+                        "pct": leader_pct
+                    }
+                    
+                    # Update NL overall leader if this team has more wins
+                    if leader_wins > summary_data["nl_leader"]["wins"]:
+                        summary_data["nl_leader"] = {
+                            "team": leader_team,
+                            "wins": leader_wins,
+                            "losses": leader_losses,
+                            "pct": leader_pct,
+                            "division": division_display
+                        }
+                        
+        with open(f"{output_path}/standings_summary.json", "w") as f:
+            json.dump(summary_data, f, indent=2)
+        print("✓ Created standings summary statistics")
     except Exception as e:
-        print(f"Error creating standings summary: {e}")
+        print(f"Error creating summary statistics: {e}")
 
     # Save success timestamp
     try:
         with open(f"{output_path}/last_updated_standings.txt", "w") as f:
             f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print("✓ Updated timestamp file")
+        print("✓ Created timestamp file")
     except Exception as e:
-        print(f"Error updating timestamp: {e}")
+        print(f"Error creating timestamp: {e}")
 
     print("🎉 Standings processing completed successfully!")
 
@@ -775,23 +624,20 @@ if __name__ == "__main__":
         main()
     except Exception as e:
         print(f"Critical error in standings_chart.py: {e}")
+        traceback.print_exc()
         
-        # Create basic error files to prevent workflow failure
-        try:
-            os.makedirs(output_path, exist_ok=True)
-            with open(f"{output_path}/last_updated_standings.txt", "w") as f:
-                f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-                
-            # Create minimal placeholder chart
-            plt.figure(figsize=(10, 6))
-            plt.title("MLB Standings - Error Loading Data", fontsize=14, fontweight="bold")
-            plt.figtext(0.5, 0.5, "An error occurred loading standings data.\nPlease check the logs.", 
-                       ha="center", fontsize=14)
-            plt.tight_layout()
-            plt.savefig(f"{output_path}/standings_wins_chart.png", dpi=100)
-            plt.close()
-        except:
-            pass
+        # Create minimal fallback files to prevent workflow failure
+        with open(f"{output_path}/last_updated_standings.txt", "w") as f:
+            f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+            
+        # Create empty JSON with error info
+        with open(f"{output_path}/standings_summary.json", "w") as f:
+            error_data = {
+                "error": str(e),
+                "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "al_leader": {"team": "Error", "wins": 0, "losses": 0},
+                "nl_leader": {"team": "Error", "wins": 0, "losses": 0}
+            }
+            json.dump(error_data, f, indent=2)
         
-        # Re-raise for proper exit code
         raise

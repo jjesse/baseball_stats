@@ -260,135 +260,118 @@
       <h2>League-Wide Team Wins Comparison</h2>
       <img src="standings_wins_chart.png" alt="MLB Team Wins Chart">
       <p style="text-align: center; font-size: 0.9rem; color: var(--text); margin-top: 0.5rem;">
-        <span style="color: #1f77b4; font-weight: bold;">■</span> American League teams &nbsp;&nbsp;
-        <span style="color: #ff7f0e; font-weight: bold;">■</span> National League teams
+        All MLB teams ranked by wins for the 2025 season. American League teams are shown in blue, National League teams in orange.
       </p>
     </div>
 
     <div class="overview-stats">
       <div class="stat-card">
-        <h3>AL Leader
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">Current American League team with the best record.</span>
-          </div>
-        </h3>
-        <div class="stat-value" id="al-leader">Loading...</div>
+        <h3>AL Leader <span class="tooltip info-icon">?<span class="tooltiptext">The team with the most wins in the American League</span></span></h3>
+        <div id="al-leader">Loading...</div>
       </div>
       <div class="stat-card">
-        <h3>NL Leader
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">Current National League team with the best record.</span>
-          </div>
-        </h3>
-        <div class="stat-value" id="nl-leader">Loading...</div>
+        <h3>NL Leader <span class="tooltip info-icon">?<span class="tooltiptext">The team with the most wins in the National League</span></span></h3>
+        <div id="nl-leader">Loading...</div>
       </div>
       <div class="stat-card">
-        <h3>Best Record
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">Team with the best overall record in MLB.</span>
-          </div>
-        </h3>
-        <div class="stat-value" id="best-record">Loading...</div>
+        <h3>Closest AL Race <span class="tooltip info-icon">?<span class="tooltiptext">The division with the smallest games back gap between 1st and 2nd place</span></span></h3>
+        <div id="closest-al">Loading...</div>
       </div>
       <div class="stat-card">
-        <h3>Closest Division
-          <div class="tooltip">
-            <span class="info-icon">?</span>
-            <span class="tooltiptext">The division with the smallest gap between first and second place.</span>
-          </div>
-        </h3>
-        <div class="stat-value" id="closest-race">Loading...</div>
+        <h3>Closest NL Race <span class="tooltip info-icon">?<span class="tooltiptext">The division with the smallest games back gap between 1st and 2nd place</span></span></h3>
+        <div id="closest-nl">Loading...</div>
       </div>
     </div>
 
     <div class="division-section">
-      <h2>All Teams by Wins (League-Wide Standings)</h2>
-      <iframe src="standings_all.html"></iframe>
+      <h2>All MLB Teams by Wins</h2>
+      <iframe src="standings_all.html" frameborder="0"></iframe>
     </div>
   </div>
 
   <div id="american" class="content">
     <div class="division-section">
       <h2>AL East</h2>
-      <iframe src="standings_al_east.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_al_east_wins_chart.png" alt="AL East Wins Chart">
-      </div>
+      <img src="standings_al_east_chart.png" alt="AL East Standings">
+      <iframe src="standings_al_east.html" frameborder="0"></iframe>
     </div>
 
     <div class="division-section">
       <h2>AL Central</h2>
-      <iframe src="standings_al_central.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_al_central_wins_chart.png" alt="AL Central Wins Chart">
-      </div>
+      <img src="standings_al_central_chart.png" alt="AL Central Standings">
+      <iframe src="standings_al_central.html" frameborder="0"></iframe>
     </div>
 
     <div class="division-section">
       <h2>AL West</h2>
-      <iframe src="standings_al_west.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_al_west_wins_chart.png" alt="AL West Wins Chart">
-      </div>
+      <img src="standings_al_west_chart.png" alt="AL West Standings">
+      <iframe src="standings_al_west.html" frameborder="0"></iframe>
     </div>
   </div>
 
   <div id="national" class="content">
     <div class="division-section">
       <h2>NL East</h2>
-      <iframe src="standings_nl_east.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_nl_east_wins_chart.png" alt="NL East Wins Chart">
-      </div>
+      <img src="standings_nl_east_chart.png" alt="NL East Standings">
+      <iframe src="standings_nl_east.html" frameborder="0"></iframe>
     </div>
 
     <div class="division-section">
       <h2>NL Central</h2>
-      <iframe src="standings_nl_central.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_nl_central_wins_chart.png" alt="NL Central Wins Chart">
-      </div>
+      <img src="standings_nl_central_chart.png" alt="NL Central Standings">
+      <iframe src="standings_nl_central.html" frameborder="0"></iframe>
     </div>
 
     <div class="division-section">
       <h2>NL West</h2>
-      <iframe src="standings_nl_west.html"></iframe>
-      <div class="chart-container">
-        <img src="standings_nl_west_wins_chart.png" alt="NL West Wins Chart">
-      </div>
+      <img src="standings_nl_west_chart.png" alt="NL West Standings">
+      <iframe src="standings_nl_west.html" frameborder="0"></iframe>
     </div>
   </div>
 
   <div id="glossary" class="content">
     <div style="max-width: 600px; margin: 0 auto; text-align: left;">
-      <h2 style="text-align: center;">Standings Glossary</h2>
+      <h2>MLB Standings Glossary</h2>
+      <p>This page displays the current standings for the 2025 MLB season.</p>
       
-      <div style="margin-bottom: 1.5rem;">
-        <h3>Basic Standings Terms</h3>
-        <p><strong>W:</strong> Wins - The number of games the team has won.</p>
-        <p><strong>L:</strong> Losses - The number of games the team has lost.</p>
-        <p><strong>PCT:</strong> Winning Percentage - Calculated as wins divided by total games played.</p>
-        <p><strong>GB:</strong> Games Behind - The number of games a team is behind the division leader.</p>
-      </div>
+      <h3>Key Terms</h3>
+      <ul>
+        <li><strong>W</strong>: Wins</li>
+        <li><strong>L</strong>: Losses</li>
+        <li><strong>PCT</strong>: Winning Percentage (Wins ÷ Games Played)</li>
+        <li><strong>GB</strong>: Games Behind leader in division</li>
+        <li><strong>WC</strong>: Wild Card standing</li>
+        <li><strong>L10</strong>: Record in last 10 games</li>
+        <li><strong>STRK</strong>: Current streak (W5 = 5 game winning streak, L3 = 3 game losing streak)</li>
+      </ul>
 
-      <div style="margin-bottom: 1.5rem;">
-        <h3>Divisions</h3>
-        <p><strong>AL East:</strong> American League East - Yankees, Red Sox, Blue Jays, Rays, Orioles</p>
-        <p><strong>AL Central:</strong> American League Central - Guardians, Tigers, Twins, Royals, White Sox</p>
-        <p><strong>AL West:</strong> American League West - Astros, Mariners, Rangers, Angels, Athletics</p>
-        <p><strong>NL East:</strong> National League East - Phillies, Braves, Mets, Nationals, Marlins</p>
-        <p><strong>NL Central:</strong> National League Central - Brewers, Cubs, Cardinals, Reds, Pirates</p>
-        <p><strong>NL West:</strong> National League West - Dodgers, Padres, Diamondbacks, Giants, Rockies</p>
-      </div>
-
-      <div>
-        <h3>Other Terms</h3>
-        <p><strong>Closest Division:</strong> The division where the gap between first and second place is smallest.</p>
-        <p><strong>Best Record:</strong> The team with the highest winning percentage in all of MLB.</p>
-      </div>
+      <h3>Divisions</h3>
+      <p>MLB is divided into two leagues (American and National), each with three divisions (East, Central, and West).</p>
+      
+      <h4>American League</h4>
+      <ul>
+        <li><strong>East</strong>: Yankees, Red Sox, Blue Jays, Rays, Orioles</li>
+        <li><strong>Central</strong>: Guardians, Tigers, Twins, Royals, White Sox</li>
+        <li><strong>West</strong>: Astros, Mariners, Rangers, Angels, Athletics</li>
+      </ul>
+      
+      <h4>National League</h4>
+      <ul>
+        <li><strong>East</strong>: Phillies, Braves, Mets, Nationals, Marlins</li>
+        <li><strong>Central</strong>: Brewers, Cubs, Cardinals, Reds, Pirates</li>
+        <li><strong>West</strong>: Dodgers, Padres, Diamondbacks, Giants, Rockies</li>
+      </ul>
+      
+      <h3>Playoff Format</h3>
+      <p>The MLB playoff format includes:</p>
+      <ul>
+        <li>3 division winners from each league</li>
+        <li>3 wild card teams from each league (best records among non-division winners)</li>
+        <li>The top 2 division winners get a bye to the Division Series</li>
+        <li>Wild Card Series is best-of-3</li>
+        <li>Division Series is best-of-5</li>
+        <li>Championship Series and World Series are best-of-7</li>
+      </ul>
     </div>
   </div>
 
@@ -419,57 +402,66 @@
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
       
-      switchTab("overview");
+      // Set the active tab
+      switchTab('overview');
       
-      // Load timestamp
+      // Load the timestamp
       fetch("last_updated_standings.txt")
-        .then(res => res.text())
+        .then(response => response.text())
         .then(text => {
-          document.getElementById("last-updated").innerText = text;
+          document.getElementById("last-updated").textContent = text;
         })
-        .catch(err => {
-          document.getElementById("last-updated").innerText = "Update time unavailable";
+        .catch(error => {
+          document.getElementById("last-updated").textContent = "Last updated: Unknown";
         });
-      
-      // Load and process standings data for overview stats
+        
+      // Load the standings summary
       loadOverviewStats();
     };
 
     async function loadOverviewStats() {
       try {
-        const response = await fetch("standings_summary.json");
-        if (!response.ok) {
-          throw new Error("Failed to load standings summary data");
-        }
-        
+        const response = await fetch('standings_summary.json');
         const data = await response.json();
-        console.log("Loaded standings data:", data);
         
-        // Update summary cards with data
-        if (data.al_leader) {
-          document.getElementById('al-leader').textContent = data.al_leader;
+        // Update AL Leader
+        const alLeader = document.getElementById('al-leader');
+        if (data.al_leader && data.al_leader.team) {
+          alLeader.innerHTML = `
+            <div class="stat-value">${data.al_leader.team}</div>
+            <div>${data.al_leader.wins}W - ${data.al_leader.losses}L</div>
+            <div>${data.al_leader.division}</div>
+          `;
+        } else {
+          alLeader.textContent = "No data available";
         }
         
-        if (data.nl_leader) {
-          document.getElementById('nl-leader').textContent = data.nl_leader;
+        // Update NL Leader
+        const nlLeader = document.getElementById('nl-leader');
+        if (data.nl_leader && data.nl_leader.team) {
+          nlLeader.innerHTML = `
+            <div class="stat-value">${data.nl_leader.team}</div>
+            <div>${data.nl_leader.wins}W - ${data.nl_leader.losses}L</div>
+            <div>${data.nl_leader.division}</div>
+          `;
+        } else {
+          nlLeader.textContent = "No data available";
         }
         
-        if (data.best_record) {
-          document.getElementById('best-record').textContent = data.best_record;
-        }
+        // Find closest AL race
+        const closestAl = document.getElementById('closest-al');
+        closestAl.textContent = "Data coming soon";
         
-        if (data.closest_race) {
-          document.getElementById('closest-race').textContent = data.closest_race;
-        }
+        // Find closest NL race
+        const closestNl = document.getElementById('closest-nl');
+        closestNl.textContent = "Data coming soon";
         
-        console.log("Overview stats updated successfully");
       } catch (error) {
-        console.error("Error loading overview stats:", error);
-        document.querySelectorAll('.stat-value').forEach(el => {
-          if (el.textContent === "Loading...") {
-            el.textContent = "Data unavailable";
-          }
-        });
+        console.error("Error loading standings data:", error);
+        document.getElementById('al-leader').textContent = "Error loading data";
+        document.getElementById('nl-leader').textContent = "Error loading data";
+        document.getElementById('closest-al').textContent = "Error loading data";
+        document.getElementById('closest-nl').textContent = "Error loading data";
       }
     }
   </script>
