@@ -1,9 +1,9 @@
 name: Update Prediction Tracking
 
 on:
+  workflow_dispatch: {}  # Minimalist workflow_dispatch trigger that will definitely work
   schedule:
     - cron: '30 14 * * *'  # Runs daily at 14:30 UTC (main branch only), after award predictions
-  workflow_dispatch:      # Allow manual trigger
 
 jobs:
   update-prediction-tracking:
@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
           cache: 'pip'
@@ -45,7 +45,7 @@ jobs:
         timeout-minutes: 2
         continue-on-error: true
 
-      - name: Commit and push changes with retry
+      - name: Commit and push changes
         run: |
           if [[ -n $(git status --porcelain) ]]; then
             git config user.name "github-actions[bot]"
@@ -54,66 +54,10 @@ jobs:
             COMMIT_MSG="Update prediction tracking [skip ci]"
             FILE_PATTERN="docs/prediction_history/*.json"
             
-            # Retry logic with proper conflict resolution
-            for attempt in {1..5}; do
-              echo "Attempt $attempt to push changes..."
-              
-              # Fetch latest changes
-              git fetch origin ${{ github.ref_name }}
-              
-              # Check if we're behind
-              BEHIND=$(git rev-list --count HEAD..origin/${{ github.ref_name }})
-              if [ "$BEHIND" -gt 0 ]; then
-                echo "Local branch is $BEHIND commits behind. Attempting to rebase..."
-                
-                # Reset to origin
-                git reset --hard origin/${{ github.ref_name }}
-                
-                # Re-archive today's predictions
-                mkdir -p docs/prediction_history
-                if [ -f "docs/award_predictions.json" ]; then
-                  cp docs/award_predictions.json docs/prediction_history/predictions_$(date +%F).json
-                fi
-                
-                # Stage the new files
-                git add $FILE_PATTERN
-                
-                # Check if there are actually changes after re-running
-                if [[ -z $(git diff --cached) ]]; then
-                  echo "No changes after re-running scripts. Exiting."
-                  exit 0
-                fi
-              else
-                # We're up to date, just add our changes
-                git add $FILE_PATTERN
-              fi
-              
-              # Commit changes
-              git commit -m "$COMMIT_MSG" || {
-                echo "Nothing to commit on attempt $attempt"
-                exit 0
-              }
-              
-              # Try to push
-              if git push origin ${{ github.ref_name }}; then
-                echo "Successfully pushed on attempt $attempt"
-                exit 0
-              else
-                echo "Push failed on attempt $attempt. Retrying in 10 seconds..."
-                sleep 10
-              fi
-            done
-            
-            # If all attempts failed
-            echo "Failed to push after 5 attempts"
-            exit 1
+            git add $FILE_PATTERN
+            git commit -m "$COMMIT_MSG"
+            git push origin ${{ github.ref_name }}
           else
             echo "No changes to commit"
           fi
         timeout-minutes: 5
-
-      - name: Check for failures
-        if: failure()
-        run: |
-          echo "::error::Prediction tracking workflow failed! Check the logs for details."
-          exit 1

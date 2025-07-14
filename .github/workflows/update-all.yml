@@ -1,7 +1,7 @@
 name: Update All Stats (Complete Rebuild)
 
 on:
-  workflow_dispatch:      # Manual trigger only
+  workflow_dispatch:  # Manually triggered workflow
     inputs:
       reason:
         description: 'Reason for complete rebuild'
