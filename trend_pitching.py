@@ -29,7 +29,9 @@ try:
                 print(f"Skipping empty or malformed file: {file}")
                 continue
             date = os.path.basename(file).replace(".csv", "").replace("pitching_", "")
-            df = df[["Name"] + [col for col in tracked_stats if col in df.columns]].copy()
+            df = df[
+                ["Name"] + [col for col in tracked_stats if col in df.columns]
+            ].copy()
             df["Date"] = date
             dfs.append(df)
         except Exception as e:
@@ -72,17 +74,17 @@ try:
             plt.figure(figsize=(12, 6))
             lines_plotted = False
             colors = plt.cm.Set1(range(len(trend.columns)))
-            
+
             for i, player in enumerate(trend.columns):
                 player_data = trend[player].dropna()
                 if not player_data.empty and len(player_data) >= 2:
                     plt.plot(
-                        player_data.index, 
-                        player_data.values, 
-                        marker="o", 
-                        label=player, 
-                        color=colors[i], 
-                        linewidth=2
+                        player_data.index,
+                        player_data.values,
+                        marker="o",
+                        label=player,
+                        color=colors[i],
+                        linewidth=2,
                     )
                     lines_plotted = True
 
@@ -94,7 +96,7 @@ try:
                 plt.xticks(rotation=45)
                 plt.grid(True, alpha=0.3)
                 plt.tight_layout()
-                
+
                 filename = f"{output_path}/trend_{stat.lower().replace('/', '_')}.png"
                 plt.savefig(filename, dpi=150, bbox_inches="tight")
                 print(f"Generated pitching trend chart for {stat}")

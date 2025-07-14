@@ -40,22 +40,24 @@ def get_mlb_com_standings():
             for division in data["records"]:
                 div_name = division.get("division", {}).get("name", "Unknown")
                 div_teams = []
-                
+
                 for team_record in division.get("teamRecords", []):
                     team_name = team_record.get("team", {}).get("name", "Unknown")
                     team_abbrev = team_record.get("team", {}).get("abbreviation", "???")
                     team_wins = team_record.get("wins", 0)
                     team_losses = team_record.get("losses", 0)
                     team_pct = team_record.get("winningPercentage", ".000")
-                    
-                    div_teams.append({
-                        "Team": team_name,
-                        "Tm": team_abbrev,
-                        "W": team_wins,
-                        "L": team_losses,
-                        "PCT": team_pct
-                    })
-                
+
+                    div_teams.append(
+                        {
+                            "Team": team_name,
+                            "Tm": team_abbrev,
+                            "W": team_wins,
+                            "L": team_losses,
+                            "PCT": team_pct,
+                        }
+                    )
+
                 if div_teams:
                     df = pd.DataFrame(div_teams)
                     standings_list.append(df)
@@ -95,28 +97,32 @@ def get_espn_api_standings():
                 for division in league.get("children", []):
                     div_name = division.get("name", "Unknown")
                     div_teams = []
-                    
+
                     for team in division.get("standings", {}).get("entries", []):
                         team_name = team.get("team", {}).get("displayName", "Unknown")
                         team_abbrev = team.get("team", {}).get("abbreviation", "???")
-                        
+
                         stats = {
-                            stat["name"]: stat["value"] 
+                            stat["name"]: stat["value"]
                             for stat in team.get("stats", [])
                         }
-                        
-                        div_teams.append({
-                            "Team": team_name,
-                            "Tm": team_abbrev,
-                            "W": stats.get("wins", 0),
-                            "L": stats.get("losses", 0),
-                            "PCT": stats.get("winPercent", .000)
-                        })
-                    
+
+                        div_teams.append(
+                            {
+                                "Team": team_name,
+                                "Tm": team_abbrev,
+                                "W": stats.get("wins", 0),
+                                "L": stats.get("losses", 0),
+                                "PCT": stats.get("winPercent", 0.000),
+                            }
+                        )
+
                     if div_teams:
                         df = pd.DataFrame(div_teams)
                         standings_list.append(df)
-                        print(f"Processed division: {div_name} with {len(div_teams)} teams")
+                        print(
+                            f"Processed division: {div_name} with {len(div_teams)} teams"
+                        )
 
         if standings_list:
             print(f"ESPN API: Found {len(standings_list)} division standings")
@@ -162,19 +168,23 @@ def get_baseball_reference_standings():
         for i, table in enumerate(tables[:6]):
             if i < len(division_names):
                 div_name = division_names[i]
-                
+
                 # Clean up the dataframe
                 if "Tm" not in table.columns and "Team" in table.columns:
                     table = table.rename(columns={"Team": "Tm"})
-                
+
                 # Ensure we have required columns
-                if "Tm" in table.columns and "W" in table.columns and "L" in table.columns:
+                if (
+                    "Tm" in table.columns
+                    and "W" in table.columns
+                    and "L" in table.columns
+                ):
                     # Add winning percentage if missing
                     if "PCT" not in table.columns and "W-L%" in table.columns:
                         table = table.rename(columns={"W-L%": "PCT"})
                     elif "PCT" not in table.columns:
                         table["PCT"] = table["W"] / (table["W"] + table["L"])
-                    
+
                     standings_list.append(table)
                     print(f"Processed division: {div_name} with {len(table)} teams")
 
@@ -198,7 +208,7 @@ def get_fallback_standings():
             "AL Central",
             [
                 ("CLE", 53),
-                ("DET", 52), 
+                ("DET", 52),
                 ("MIN", 44),
                 ("KC", 39),
                 ("CHW", 25),
@@ -232,15 +242,13 @@ def get_fallback_standings():
         for i, (team, wins) in enumerate(teams_data):
             losses = 162 - wins - int(i * 1.5)  # Realistic number of games played
             pct = round(wins / (wins + losses), 3)
-            gb = round((leader_wins - wins) + (losses - teams_data[0][2]) / 2, 1) if i > 0 else "-"
-            
-            data.append({
-                "Tm": team,
-                "W": wins,
-                "L": losses,
-                "PCT": pct,
-                "GB": gb
-            })
+            gb = (
+                round((leader_wins - wins) + (losses - teams_data[0][2]) / 2, 1)
+                if i > 0
+                else "-"
+            )
+
+            data.append({"Tm": team, "W": wins, "L": losses, "PCT": pct, "GB": gb})
 
         df = pd.DataFrame(data)
         standings_list.append(df)
@@ -257,16 +265,20 @@ def try_pybaseball_standings():
         # Try to get 2025 season specifically
         division_standings = standings(2025)
         if division_standings and len(division_standings) > 0:
-            print(f"Pybaseball: Found {len(division_standings)} division standings for 2025")
+            print(
+                f"Pybaseball: Found {len(division_standings)} division standings for 2025"
+            )
             return division_standings
 
         # If 2025 not available, try current season
         print("2025 data not available, trying current season...")
         division_standings = standings()
         if division_standings and len(division_standings) > 0:
-            print(f"Pybaseball: Found {len(division_standings)} division standings for current season")
+            print(
+                f"Pybaseball: Found {len(division_standings)} division standings for current season"
+            )
             return division_standings
-            
+
         return None
     except Exception as e:
         print(f"Pybaseball standings failed: {e}")
@@ -377,6 +389,7 @@ def main():
 
         # Clean up team names - convert abbreviations to full names
         if "Tm" in df.columns:
+
             def expand_team_name(team_abbrev):
                 team_mapping = {
                     "NYY": "New York Yankees",
@@ -410,7 +423,7 @@ def main():
                     "SF": "San Francisco Giants",
                     "COL": "Colorado Rockies",
                 }
-                
+
                 if isinstance(team_abbrev, str) and team_abbrev in team_mapping:
                     return team_mapping[team_abbrev]
                 return team_abbrev
@@ -441,10 +454,10 @@ def main():
         try:
             # Sort by wins (descending)
             df = df.sort_values("W", ascending=False)
-            
+
             # Save division data
             df.to_csv(f"{output_path}/standings_{name}.csv", index=False)
-            
+
             # Create HTML version with theme support
             html_content = f"""
             <!DOCTYPE html>
@@ -523,10 +536,10 @@ def main():
             </body>
             </html>
             """
-            
+
             with open(f"{output_path}/standings_{name}.html", "w") as f:
                 f.write(html_content)
-            
+
             # Create wins chart for this division
             plt.figure(figsize=(10, 6))
             sns.barplot(data=df, x=team_col, y="W", palette="Blues")
@@ -535,11 +548,11 @@ def main():
             plt.tight_layout()
             plt.savefig(f"{output_path}/standings_{name}_wins_chart.png", dpi=150)
             plt.close()
-            
+
             # Add to combined dataframe
             all_dfs.append(df)
             processed_divisions += 1
-            
+
             print(f"✓ Processed {name} division successfully")
 
         except Exception as e:
@@ -570,7 +583,8 @@ def main():
             index=False, classes="standings-table", escape=False
         )
         with open(f"{output_path}/standings_all.html", "w") as f:
-            f.write(f"""
+            f.write(
+                f"""
             <!DOCTYPE html>
             <html>
             <head>
@@ -646,9 +660,12 @@ def main():
                 </div>
             </body>
             </html>
-            """)
+            """
+            )
 
-        print(f"✓ Created combined standings with {len(combined)} teams (sorted by wins)")
+        print(
+            f"✓ Created combined standings with {len(combined)} teams (sorted by wins)"
+        )
     except Exception as e:
         print(f"Error creating combined standings: {e}")
 
@@ -658,38 +675,68 @@ def main():
         if team_col in combined.columns and "W" in combined.columns:
             # Create league indicator (American/National)
             combined["League"] = "NL"
-            combined.loc[combined[team_col].isin([
-                "New York Yankees", "Boston Red Sox", "Tampa Bay Rays", 
-                "Toronto Blue Jays", "Baltimore Orioles", "Cleveland Guardians",
-                "Detroit Tigers", "Minnesota Twins", "Kansas City Royals",
-                "Chicago White Sox", "Houston Astros", "Seattle Mariners",
-                "Texas Rangers", "Los Angeles Angels", "Oakland Athletics",
-                "NYY", "BOS", "TBR", "TOR", "BAL", "CLE", "DET", "MIN", 
-                "KC", "CHW", "HOU", "SEA", "TEX", "LAA", "OAK"
-            ]), "League"] = "AL"
-            
+            combined.loc[
+                combined[team_col].isin(
+                    [
+                        "New York Yankees",
+                        "Boston Red Sox",
+                        "Tampa Bay Rays",
+                        "Toronto Blue Jays",
+                        "Baltimore Orioles",
+                        "Cleveland Guardians",
+                        "Detroit Tigers",
+                        "Minnesota Twins",
+                        "Kansas City Royals",
+                        "Chicago White Sox",
+                        "Houston Astros",
+                        "Seattle Mariners",
+                        "Texas Rangers",
+                        "Los Angeles Angels",
+                        "Oakland Athletics",
+                        "NYY",
+                        "BOS",
+                        "TBR",
+                        "TOR",
+                        "BAL",
+                        "CLE",
+                        "DET",
+                        "MIN",
+                        "KC",
+                        "CHW",
+                        "HOU",
+                        "SEA",
+                        "TEX",
+                        "LAA",
+                        "OAK",
+                    ]
+                ),
+                "League",
+            ] = "AL"
+
             plt.figure(figsize=(14, 8))
             ax = sns.barplot(
-                data=combined, 
-                x=team_col, 
-                y="W", 
+                data=combined,
+                x=team_col,
+                y="W",
                 hue="League",
-                palette={"AL": "#1f77b4", "NL": "#ff7f0e"}
+                palette={"AL": "#1f77b4", "NL": "#ff7f0e"},
             )
-            
+
             plt.title("MLB Team Wins Comparison", fontsize=16, fontweight="bold")
             plt.xlabel("Team", fontsize=12)
             plt.ylabel("Wins", fontsize=12)
             plt.xticks(rotation=45, ha="right")
             plt.legend(title="League")
             plt.tight_layout()
-            
+
             plt.savefig(f"{output_path}/standings_wins_chart.png", dpi=150)
             plt.close()
-            
+
             print("✓ Created league-wide wins comparison chart")
         else:
-            print(f"Warning: Missing columns for wins chart. Available: {combined.columns.tolist()}")
+            print(
+                f"Warning: Missing columns for wins chart. Available: {combined.columns.tolist()}"
+            )
     except Exception as e:
         print(f"Error creating wins charts: {e}")
 
