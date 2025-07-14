@@ -1,5 +1,5 @@
 {
-  "total_predictions": 1,
+  "total_predictions": 2,
   "awards": [
     "al_mvp",
     "nl_mvp",
@@ -9,11 +9,16 @@
   "accuracy_by_award": {
     "al_mvp": {
       "correct_predictions": 0,
-      "total_days": 1,
+      "total_days": 2,
       "accuracy_percentage": 0,
       "prediction_history": [
         {
           "date": "2025-07-09",
+          "predicted_leader": "Aaron Judge",
+          "correct": null
+        },
+        {
+          "date": "2025-07-14",
           "predicted_leader": "Aaron Judge",
           "correct": null
         }
@@ -22,11 +27,16 @@
     },
     "nl_mvp": {
       "correct_predictions": 0,
-      "total_days": 1,
+      "total_days": 2,
       "accuracy_percentage": 0,
       "prediction_history": [
         {
           "date": "2025-07-09",
+          "predicted_leader": "Shohei Ohtani",
+          "correct": null
+        },
+        {
+          "date": "2025-07-14",
           "predicted_leader": "Shohei Ohtani",
           "correct": null
         }
@@ -35,11 +45,16 @@
     },
     "al_cy": {
       "correct_predictions": 0,
-      "total_days": 1,
+      "total_days": 2,
       "accuracy_percentage": 0,
       "prediction_history": [
         {
           "date": "2025-07-09",
+          "predicted_leader": "Tarik Skubal",
+          "correct": null
+        },
+        {
+          "date": "2025-07-14",
           "predicted_leader": "Tarik Skubal",
           "correct": null
         }
@@ -48,11 +63,16 @@
     },
     "nl_cy": {
       "correct_predictions": 0,
-      "total_days": 1,
+      "total_days": 2,
       "accuracy_percentage": 0,
       "prediction_history": [
         {
           "date": "2025-07-09",
+          "predicted_leader": "Zack Wheeler",
+          "correct": null
+        },
+        {
+          "date": "2025-07-14",
           "predicted_leader": "Zack Wheeler",
           "correct": null
         }

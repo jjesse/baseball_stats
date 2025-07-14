@@ -1,0 +1,61 @@
+{
+  "2025": {
+    "division_winners": {
+      "al_east": {
+        "winner": "TBD",
+        "final_date": "TBD"
+      },
+      "al_central": {
+        "winner": "TBD",
+        "final_date": "TBD"
+      },
+      "al_west": {
+        "winner": "TBD",
+        "final_date": "TBD"
+      },
+      "nl_east": {
+        "winner": "TBD",
+        "final_date": "TBD"
+      },
+      "nl_central": {
+        "winner": "TBD",
+        "final_date": "TBD"
+      },
+      "nl_west": {
+        "winner": "TBD",
+        "final_date": "TBD"
+      }
+    },
+    "wild_card_teams": {
+      "al_wc1": {
+        "team": "TBD",
+        "final_date": "TBD"
+      },
+      "al_wc2": {
+        "team": "TBD",
+        "final_date": "TBD"
+      },
+      "al_wc3": {
+        "team": "TBD",
+        "final_date": "TBD"
+      },
+      "nl_wc1": {
+        "team": "TBD",
+        "final_date": "TBD"
+      },
+      "nl_wc2": {
+        "team": "TBD",
+        "final_date": "TBD"
+      },
+      "nl_wc3": {
+        "team": "TBD",
+        "final_date": "TBD"
+      }
+    },
+    "world_series_winner": {
+      "team": "TBD",
+      "final_date": "TBD"
+    },
+    "season_end_date": "2025-10-01"
+  }
+}
