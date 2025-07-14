@@ -352,32 +352,43 @@ def generate_playoff_summary():
     return insights, playoff_scenarios, team_strength
 
 if __name__ == "__main__":
-    # Generate all playoff predictions
-    insights, playoff_scenarios, team_strength = generate_playoff_summary()
-    
-    # Save playoff data
-    with open(f"{output_path}/playoff_predictions.json", "w") as f:
-        json.dump({
-            'insights': insights,
-            'playoff_scenarios': playoff_scenarios,
-            'team_strength': team_strength
-        }, f, indent=2)
-    
-    # Create visualizations
-    create_playoff_visualizations(playoff_scenarios, team_strength)
-    
-    print("✓ Playoff predictions and visualizations generated successfully!")
-    insights, playoff_scenarios, team_strength = generate_playoff_summary()
-    
-    # Save playoff data
-    with open(f"{output_path}/playoff_predictions.json", "w") as f:
-        json.dump({
-            'insights': insights,
-            'playoff_scenarios': playoff_scenarios,
-            'team_strength': team_strength
-        }, f, indent=2)
-    
-    # Create visualizations
-    create_playoff_visualizations(playoff_scenarios, team_strength)
-    
-    print("✓ Playoff predictions and visualizations generated successfully!")
+    try:
+        # Generate all playoff predictions
+        insights, playoff_scenarios, team_strength = generate_playoff_summary()
+        
+        # Save playoff data
+        with open(f"{output_path}/playoff_predictions.json", "w") as f:
+            json.dump({
+                'insights': insights,
+                'playoff_scenarios': playoff_scenarios,
+                'team_strength': team_strength
+            }, f, indent=2)
+        
+        # Create visualizations
+        create_playoff_visualizations(playoff_scenarios, team_strength)
+        
+        print("✓ Playoff predictions and visualizations generated successfully!")
+    except Exception as e:
+        print(f"Error generating playoff predictions: {e}")
+        # Create minimal fallback
+        fallback_data = {
+            'insights': {
+                'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'closest_division_races': [],
+                'wild_card_battles': [],
+                'world_series_favorites': []
+            },
+            'playoff_scenarios': {
+                'al_division_winners': {},
+                'nl_division_winners': {},
+                'al_wild_card': {},
+                'nl_wild_card': {},
+                'world_series_odds': {}
+            },
+            'team_strength': {}
+        }
+        
+        with open(f"{output_path}/playoff_predictions.json", "w") as f:
+            json.dump(fallback_data, f, indent=2)
+            
+        raise
