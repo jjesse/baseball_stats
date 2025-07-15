@@ -2,139 +2,119 @@
         <!DOCTYPE html>
         <html>
         <head>
+            <title>MLB Unknown</title>
             <style>
                 :root {
-                    --bg: #ffffff;
-                    --text: #333333;
-                    --border: #dddddd;
-                    --header-bg: #f8f9fa;
+                    --text-color: #333;
+                    --bg-color: #fff;
+                    --header-bg: #f2f2f2;
+                    --border-color: #ddd;
+                    --hover-color: #f5f5f5;
                 }
                 
-                [data-theme='dark'] {
-                    --bg: #1f1f1f;
-                    --text: #ffffff;
-                    --border: #555555;
-                    --header-bg: #2d2d2d;
-                    --row-even: #2a2a2a;
+                @media (prefers-color-scheme: dark) {
+                    :root {
+                        --text-color: #eee;
+                        --bg-color: #222;
+                        --header-bg: #333;
+                        --border-color: #444;
+                        --hover-color: #2a2a2a;
+                    }
                 }
                 
-                body { 
-                    font-family: Arial, sans-serif; 
-                    margin: 0; 
-                    padding: 10px;
-                    background-color: var(--bg);
-                    color: var(--text);
-                    overflow: hidden;
+                body {
+                    font-family: Arial, sans-serif;
+                    color: var(--text-color);
+                    background-color: var(--bg-color);
+                    margin: 0;
+                    padding: 0;
                 }
                 
-                .table-container {
+                table {
                     width: 100%;
-                    max-width: 100%;
-                    overflow-x: auto;
+                    border-collapse: collapse;
+                    margin: 1rem 0;
                 }
                 
-                table { 
-                    width: 100%; 
-                    border-collapse: collapse; 
-                    background-color: var(--bg);
-                    margin: 0 auto;
-                    font-size: 14px;
+                th, td {
+                    padding: 0.5rem;
+                    text-align: left;
+                    border-bottom: 1px solid var(--border-color);
                 }
                 
-                th, td { 
-                    border: 1px solid var(--border); 
-                    padding: 6px; 
-                    text-align: center;
-                    color: var(--text) !important;
-                }
-                
-                th { 
-                    background-color: var(--header-bg) !important;
+                th {
+                    background-color: var(--header-bg);
                     font-weight: bold;
-                    color: var(--text) !important;
                 }
                 
-                tr:nth-child(even) td { 
-                    background-color: var(--row-even, #f9f9f9) !important;
-                    color: var(--text) !important;
+                tr:hover {
+                    background-color: var(--hover-color);
                 }
                 
-                tr:nth-child(odd) td { 
-                    background-color: var(--bg) !important;
-                    color: var(--text) !important;
+                .al-team {
+                    color: #0099cc;
                 }
                 
-                h3 {
-                    color: var(--text);
-                    text-align: center;
-                    margin-top: 0;
+                .nl-team {
+                    color: #cc0000;
                 }
             </style>
-            <script>
-                window.onload = function() {
-                    try {
-                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                        if (parentTheme) {
-                            document.documentElement.setAttribute('data-theme', parentTheme);
-                        }
-                    } catch(e) {
-                        // Cross-origin issues, use default
-                    }
-                };
-            </script>
         </head>
         <body>
-            <div class="table-container">
-                <h3>AL WEST Standings</h3>
-                <table border="1" class="dataframe stats-table">
-  <thead>
-    <tr style="text-align: right;">
-      <th>Team</th>
-      <th>W</th>
-      <th>L</th>
-      <th>GB</th>
-      <th>PCT</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Unknown</td>
-      <td>56</td>
-      <td>40</td>
-      <td>-</td>
-      <td>0.583</td>
-    </tr>
-    <tr>
-      <td>Unknown</td>
-      <td>51</td>
-      <td>45</td>
-      <td>5.0</td>
-      <td>0.531</td>
-    </tr>
-    <tr>
-      <td>Unknown</td>
-      <td>48</td>
-      <td>49</td>
-      <td>8.5</td>
-      <td>0.495</td>
-    </tr>
-    <tr>
-      <td>Unknown</td>
-      <td>47</td>
-      <td>49</td>
-      <td>9.0</td>
-      <td>0.490</td>
-    </tr>
-    <tr>
-      <td>Unknown</td>
-      <td>41</td>
-      <td>57</td>
-      <td>16.0</td>
-      <td>0.418</td>
-    </tr>
-  </tbody>
-</table>
-            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th>W</th>
+                        <th>L</th>
+                        <th>PCT</th>
+                        <th>GB</th>
+                    </tr>
+                </thead>
+                <tbody>
+        
+                    <tr>
+                        <td class="nl-team">N/A</td>
+                        <td>56</td>
+                        <td>40</td>
+                        <td>0.583</td>
+                        <td>-</td>
+                    </tr>
+            
+                    <tr>
+                        <td class="nl-team">N/A</td>
+                        <td>51</td>
+                        <td>45</td>
+                        <td>0.531</td>
+                        <td>5.0</td>
+                    </tr>
+            
+                    <tr>
+                        <td class="nl-team">N/A</td>
+                        <td>48</td>
+                        <td>49</td>
+                        <td>0.495</td>
+                        <td>8.5</td>
+                    </tr>
+            
+                    <tr>
+                        <td class="nl-team">N/A</td>
+                        <td>47</td>
+                        <td>49</td>
+                        <td>0.490</td>
+                        <td>9.0</td>
+                    </tr>
+            
+                    <tr>
+                        <td class="nl-team">N/A</td>
+                        <td>41</td>
+                        <td>57</td>
+                        <td>0.418</td>
+                        <td>16.0</td>
+                    </tr>
+            
+                </tbody>
+            </table>
         </body>
         </html>
         
