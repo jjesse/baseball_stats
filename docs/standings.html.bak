@@ -266,20 +266,44 @@
 
     <div class="overview-stats">
       <div class="stat-card">
-        <h3>AL Leader <span class="tooltip info-icon">?<span class="tooltiptext">The team with the most wins in the American League</span></span></h3>
-        <div id="al-leader">Loading...</div>
+        <h3>
+          AL Leader
+          <span class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">Team with the best record in the American League.</span>
+          </span>
+        </h3>
+        <div class="stat-value" id="al-leader">Loading...</div>
       </div>
       <div class="stat-card">
-        <h3>NL Leader <span class="tooltip info-icon">?<span class="tooltiptext">The team with the most wins in the National League</span></span></h3>
-        <div id="nl-leader">Loading...</div>
+        <h3>
+          NL Leader
+          <span class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">Team with the best record in the National League.</span>
+          </span>
+        </h3>
+        <div class="stat-value" id="nl-leader">Loading...</div>
       </div>
       <div class="stat-card">
-        <h3>Closest AL Race <span class="tooltip info-icon">?<span class="tooltiptext">The division with the smallest games back gap between 1st and 2nd place</span></span></h3>
-        <div id="closest-al">Loading...</div>
+        <h3>
+          Closest Division Race
+          <span class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">The division with the smallest gap between first and second place.</span>
+          </span>
+        </h3>
+        <div class="stat-value" id="closest-race">Loading...</div>
       </div>
       <div class="stat-card">
-        <h3>Closest NL Race <span class="tooltip info-icon">?<span class="tooltiptext">The division with the smallest games back gap between 1st and 2nd place</span></span></h3>
-        <div id="closest-nl">Loading...</div>
+        <h3>
+          Teams Tracked
+          <span class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">Total number of MLB teams tracked in our standings.</span>
+          </span>
+        </h3>
+        <div class="stat-value" id="total-teams">Loading...</div>
       </div>
     </div>
 
@@ -401,67 +425,70 @@
       if (savedTheme) {
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
-      
-      // Set the active tab
-      switchTab('overview');
-      
-      // Load the timestamp
+      switchTab("overview");
       fetch("last_updated_standings.txt")
         .then(response => response.text())
-        .then(text => {
-          document.getElementById("last-updated").textContent = text;
+        .then(data => {
+          document.getElementById("last-updated").textContent = data;
         })
         .catch(error => {
+          console.error('Error fetching update time:', error);
           document.getElementById("last-updated").textContent = "Last updated: Unknown";
         });
-        
-      // Load the standings summary
+      
+      // Load overview stats
       loadOverviewStats();
     };
 
     async function loadOverviewStats() {
       try {
         const response = await fetch('standings_summary.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         
-        // Update AL Leader
-        const alLeader = document.getElementById('al-leader');
-        if (data.al_leader && data.al_leader.team) {
-          alLeader.innerHTML = `
-            <div class="stat-value">${data.al_leader.team}</div>
-            <div>${data.al_leader.wins}W - ${data.al_leader.losses}L</div>
-            <div>${data.al_leader.division}</div>
+        // AL Leader
+        const alLeaderCard = document.getElementById('al-leader');
+        if (alLeaderCard) {
+          alLeaderCard.innerHTML = `
+            <strong>${data.al_leader.team}</strong><br>
+            ${data.al_leader.wins}-${data.al_leader.losses} (.${(data.al_leader.pct * 1000).toFixed(0).padStart(3, '0')})
           `;
-        } else {
-          alLeader.textContent = "No data available";
         }
         
-        // Update NL Leader
-        const nlLeader = document.getElementById('nl-leader');
-        if (data.nl_leader && data.nl_leader.team) {
-          nlLeader.innerHTML = `
-            <div class="stat-value">${data.nl_leader.team}</div>
-            <div>${data.nl_leader.wins}W - ${data.nl_leader.losses}L</div>
-            <div>${data.nl_leader.division}</div>
+        // NL Leader
+        const nlLeaderCard = document.getElementById('nl-leader');
+        if (nlLeaderCard) {
+          nlLeaderCard.innerHTML = `
+            <strong>${data.nl_leader.team}</strong><br>
+            ${data.nl_leader.wins}-${data.nl_leader.losses} (.${(data.nl_leader.pct * 1000).toFixed(0).padStart(3, '0')})
           `;
-        } else {
-          nlLeader.textContent = "No data available";
         }
         
-        // Find closest AL race
-        const closestAl = document.getElementById('closest-al');
-        closestAl.textContent = "Data coming soon";
+        // Closest Division Race
+        const closestRaceCard = document.getElementById('closest-race');
+        if (closestRaceCard) {
+          closestRaceCard.innerHTML = `
+            <strong>${data.closest_division.name}</strong><br>
+            ${data.closest_division.leader} leads ${data.closest_division.second} by ${data.closest_division.games_back} games
+          `;
+        }
         
-        // Find closest NL race
-        const closestNl = document.getElementById('closest-nl');
-        closestNl.textContent = "Data coming soon";
+        // Total Teams
+        const totalTeamsCard = document.getElementById('total-teams');
+        if (totalTeamsCard) {
+          totalTeamsCard.innerHTML = `
+            <strong>${data.total_teams}</strong><br>
+            Total MLB Teams
+          `;
+        }
         
       } catch (error) {
-        console.error("Error loading standings data:", error);
-        document.getElementById('al-leader').textContent = "Error loading data";
-        document.getElementById('nl-leader').textContent = "Error loading data";
-        document.getElementById('closest-al').textContent = "Error loading data";
-        document.getElementById('closest-nl').textContent = "Error loading data";
+        console.error('Error loading standings data:', error);
+        document.querySelectorAll('.stat-card .stat-value').forEach(el => {
+          el.innerHTML = 'Error loading data';
+        });
       }
     }
   </script>
