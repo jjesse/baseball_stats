@@ -397,6 +397,8 @@
     <button id="nl-mvp-btn" onclick="switchTab('nl-mvp')">NL MVP</button>
     <button id="al-cy-btn" onclick="switchTab('al-cy')">AL Cy Young</button>
     <button id="nl-cy-btn" onclick="switchTab('nl-cy')">NL Cy Young</button>
+    <button id="al-roy-btn" onclick="switchTab('al-roy')">AL Rookie</button>
+    <button id="nl-roy-btn" onclick="switchTab('nl-roy')">NL Rookie</button>
     <button id="accuracy-btn" onclick="switchTab('accuracy')">Accuracy</button>
     <button id="methodology-btn" onclick="switchTab('methodology')">Methodology</button>
   </div>
@@ -458,6 +460,30 @@
       </div>
       <div id="nl-cy-predictions" class="predictions-grid">
         <div class="loading">Loading NL Cy Young predictions...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="al-roy" class="content">
+    <div class="award-section">
+      <div class="award-header">
+        <div class="award-title">American League Rookie of the Year</div>
+        <div class="league-badge">AL</div>
+      </div>
+      <div id="al-roy-predictions" class="predictions-grid">
+        <div class="loading">Loading AL Rookie predictions...</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="nl-roy" class="content">
+    <div class="award-section">
+      <div class="award-header">
+        <div class="award-title">National League Rookie of the Year</div>
+        <div class="league-badge">NL</div>
+      </div>
+      <div id="nl-roy-predictions" class="predictions-grid">
+        <div class="loading">Loading NL Rookie predictions...</div>
       </div>
     </div>
   </div>
@@ -576,31 +602,6 @@
       localStorage.setItem("theme", next);
     }
 
-    function createPredictionCard(player, rank, type) {
-      const probabilityField = type === 'mvp' ? 'MVP_Probability' : 'CyYoung_Probability';
-      const probability = player[probabilityField];
-      
-      let probabilityClass = 'low';
-      if (probability >= 50) probabilityClass = 'high';
-      else if (probability >= 20) probabilityClass = 'medium';
-
-      return `
-        <div class="prediction-card rank-${rank}">
-          <div class="player-info">
-            <div class="player-name">${player.Name}</div>
-            <div class="player-team">${player.Team}</div>
-            <div class="player-stats">${player.Key_Stats}</div>
-          </div>
-          <div class="probability-section">
-            <div class="probability-text">${probability}%</div>
-            <div class="probability-bar">
-              <div class="probability-fill ${probabilityClass}" style="width: ${probability}%"></div>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
     function renderPredictions(data) {
       // AL MVP
       const alMvpContainer = document.getElementById('al-mvp-predictions');
@@ -625,6 +626,26 @@
       nlCyContainer.innerHTML = data.nl_cy_young.map((player, index) => 
         createPredictionCard(player, index + 1, 'cy')
       ).join('');
+
+      // AL Rookie
+      const alRoyContainer = document.getElementById('al-roy-predictions');
+      if (data.al_roy && data.al_roy.length > 0) {
+        alRoyContainer.innerHTML = data.al_roy.map((player, index) =>
+          createPredictionCard(player, index + 1, 'roy')
+        ).join('');
+      } else {
+        alRoyContainer.innerHTML = '<div class="loading">No AL Rookie predictions available.</div>';
+      }
+
+      // NL Rookie
+      const nlRoyContainer = document.getElementById('nl-roy-predictions');
+      if (data.nl_roy && data.nl_roy.length > 0) {
+        nlRoyContainer.innerHTML = data.nl_roy.map((player, index) =>
+          createPredictionCard(player, index + 1, 'roy')
+        ).join('');
+      } else {
+        nlRoyContainer.innerHTML = '<div class="loading">No NL Rookie predictions available.</div>';
+      }
 
       // Update timestamp
       document.getElementById('last-updated').textContent = `Last Updated: ${data.last_updated}`;
@@ -652,6 +673,33 @@
         // Keep the default "Starting Prediction Tracking" message
         console.log('Accuracy data not yet available - this is expected for new installations');
       }
+    }
+
+    function createPredictionCard(player, rank, type) {
+      let probabilityField = 'MVP_Probability';
+      if (type === 'cy') probabilityField = 'CyYoung_Probability';
+      if (type === 'roy') probabilityField = 'ROY_Probability';
+      const probability = player[probabilityField];
+
+      let probabilityClass = 'low';
+      if (probability >= 50) probabilityClass = 'high';
+      else if (probability >= 20) probabilityClass = 'medium';
+
+      return `
+        <div class="prediction-card rank-${rank}">
+          <div class="player-info">
+            <div class="player-name">${player.Name}</div>
+            <div class="player-team">${player.Team}</div>
+            <div class="player-stats">${player.Key_Stats}</div>
+          </div>
+          <div class="probability-section">
+            <div class="probability-text">${probability}%</div>
+            <div class="probability-bar">
+              <div class="probability-fill ${probabilityClass}" style="width: ${probability}%"></div>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     async function loadPredictions() {
@@ -696,6 +744,20 @@
             {Name: 'Max Scherzer', Team: 'NYM', CyYoung_Probability: 68.5, Key_Stats: '11W/2.29ERA/173K'},
             {Name: 'Carlos Rodón', Team: 'SFG', CyYoung_Probability: 55.2, Key_Stats: '14W/2.88ERA/237K'},
             {Name: 'Alek Manoah', Team: 'TOR', CyYoung_Probability: 47.6, Key_Stats: '16W/2.24ERA/180K'}
+          ],
+          al_roy: [
+            {Name: 'Gunnar Henderson', Team: 'BAL', ROY_Probability: 65.4, Key_Stats: '.253AVG/15HR/50RBI'},
+            {Name: 'Masataka Yoshida', Team: 'BOS', ROY_Probability: 60.2, Key_Stats: '.290AVG/13HR/54RBI'},
+            {Name: 'Jordan Walker', Team: 'STL', ROY_Probability: 55.1, Key_Stats: '.274AVG/12HR/48RBI'},
+            {Name: 'Bobby Witt Jr.', Team: 'KC', ROY_Probability: 50.3, Key_Stats: '.285AVG/20HR/73RBI'},
+            {Name: 'Anthony Volpe', Team: 'NYY', ROY_Probability: 45.8, Key_Stats: '.241AVG/10HR/40RBI'}
+          ],
+          nl_roy: [
+            {Name: 'Corbin Carroll', Team: 'ARI', ROY_Probability: 75.3, Key_Stats: '.260AVG/18HR/62RBI'},
+            {Name: 'James Outman', Team: 'LAD', ROY_Probability: 70.1, Key_Stats: '.295AVG/15HR/55RBI'},
+            {Name: 'Jordan Lawlar', Team: 'ARI', ROY_Probability: 65.7, Key_Stats: '.250AVG/14HR/58RBI'},
+            {Name: 'Zac Veen', Team: 'COL', ROY_Probability: 60.4, Key_Stats: '.270AVG/12HR/50RBI'},
+            {Name: 'Matt McLain', Team: 'CIN', ROY_Probability: 55.2, Key_Stats: '.280AVG/11HR/45RBI'}
           ],
           last_updated: new Date().toLocaleString()
         };

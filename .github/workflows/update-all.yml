@@ -161,7 +161,12 @@ jobs:
             git config user.email "github-actions[bot]@users.noreply.github.com"
             
             git add docs/*.png docs/*.html docs/*.json docs/*.txt docs/prediction_history/*.json archive/*.csv playoff_predictor.py
-            
+            # Add ROY CSVs if present (main and preview)
+            if [ -f docs/al_roy_predictions.csv ]; then git add docs/al_roy_predictions.csv; fi
+            if [ -f docs/nl_roy_predictions.csv ]; then git add docs/nl_roy_predictions.csv; fi
+            if [ -f docs/preview/al_roy_predictions.csv ]; then git add docs/preview/al_roy_predictions.csv; fi
+            if [ -f docs/preview/nl_roy_predictions.csv ]; then git add docs/preview/nl_roy_predictions.csv; fi
+
             git commit -m "Complete stats rebuild [skip ci]"
             
             # Try to push with retry logic

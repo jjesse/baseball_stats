@@ -156,7 +156,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 ### 🔍 **Regular Monitoring** (Ongoing)
 - [ ] **Monitor workflow success** - Check GitHub Actions logs for any failures across all 6 workflows
 - [ ] **Verify data accuracy** - Ensure standings reflect current 2025 season correctly
-- [ ] **Test award predictions** - Validate MVP/Cy Young calculations against current player performance
+- [ ] **Test award predictions** - Validate MVP/Cy Young/ROY calculations against current player performance
 - [ ] **Check playoff probabilities** - Ensure playoff odds reflect current standings and team performance
 - [ ] **Check prediction tracking** - Ensure daily predictions are being saved correctly
 - [ ] **Monitor accuracy calculations** - Verify tracking system is working as expected
@@ -165,14 +165,14 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 ### 🧪 **Periodic Testing** (Monthly)
 - [ ] **Test complete rebuild workflow** - Run "Update All Stats" to verify all 6 workflows
 - [ ] **Validate data sources** - Ensure MLB.com, ESPN, and Baseball Reference APIs still functional
-- [ ] **Test prediction accuracy system** - Verify daily archiving and accuracy calculations
+- [ ] **Test prediction accuracy system** - Verify daily archiving and accuracy calculations (MVP/Cy Young/ROY)
 - [ ] **Validate playoff calculations** - Check playoff probability math against manual calculations
 - [ ] **Cross-browser testing** - Verify compatibility across different browsers
 - [ ] **Mobile responsiveness check** - Test on various device sizes
 
 ### 📊 **End-of-Season Tasks** (November 2025)
-- [ ] **Update actual winners** - Manually update `actual_winners.json` with official award winners
-- [ ] **Generate final accuracy report** - Run comprehensive accuracy analysis for awards
+- [ ] **Update actual winners** - Manually update `actual_winners.json` with official award winners (MVP, Cy Young, ROY)
+- [ ] **Generate final accuracy report** - Run comprehensive accuracy analysis for awards (including ROY)
 - [ ] **Validate playoff predictions** - Compare playoff probability accuracy to actual postseason results
 - [ ] **Create season summary** - Generate final prediction performance report
 - [ ] **Document lessons learned** - Update methodology based on accuracy results
@@ -183,8 +183,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 ## 🚀 Future Enhancement Opportunities
 
 ### 📊 **Prediction System Enhancements** (Optional)
-- [ ] Add Rookie of the Year predictions with accuracy tracking
-- [ ] Include Manager of the Year award predictions
+- [ ] Add Manager of the Year award predictions
 - [ ] Build trade deadline impact analysis on playoff odds
 - [ ] Create injury impact prediction models for teams and awards
 - [ ] Add playoff series prediction (who beats who in each round)
@@ -263,4 +262,5 @@ The latest major enhancement adds comprehensive playoff analytics:
 
 ---
 
+*This TODO.md serves as both a completion tracker and maintenance guide for the fully-featured MLB Stats Dashboard with comprehensive playoff predictions and accuracy tracking.*
 *This TODO.md serves as both a completion tracker and maintenance guide for the fully-featured MLB Stats Dashboard with comprehensive playoff predictions and accuracy tracking.*

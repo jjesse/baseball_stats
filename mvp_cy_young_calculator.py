@@ -196,11 +196,88 @@ def calculate_cy_young_predictions():
         return None, None
 
 
+def calculate_rookie_of_the_year_predictions():
+    """Calculate Rookie of the Year predictions based on current stats"""
+    try:
+        df = batting_stats(2025)
+
+        # Attempt to identify rookies
+        # pybaseball may have a 'Rookie' or 'is_rookie' column, otherwise fallback to service time or age
+        rookie_col = None
+        for col in ["Rookie", "is_rookie", "rookie"]:
+            if col in df.columns:
+                rookie_col = col
+                break
+
+        if rookie_col:
+            rookies = df[df[rookie_col] == True]
+        else:
+            # Fallback: Use age <= 25 and AB < 200 as a rough proxy (not perfect)
+            rookies = df[(df.get("AB", pd.Series([0]*len(df))) < 200) & (df.get("age", pd.Series([26]*len(df))) <= 25)]
+
+        if rookies.empty:
+            print("No rookies found for ROY prediction")
+            return None, None
+
+        # Filter by minimum at-bats if available
+        if "AB" in rookies.columns:
+            rookies = rookies[rookies["AB"] >= 30]  # Lower threshold for rookies
+
+        # Core stats for ROY scoring
+        roy_score = 0
+        roy_score += rookies.get("HR", 0) * 0.18
+        roy_score += rookies.get("RBI", 0) * 0.13
+        roy_score += rookies.get("AVG", 0) * 100 * 0.10
+        roy_score += rookies.get("SB", 0) * 0.08
+        if "wRC+" in rookies.columns:
+            roy_score += rookies["wRC+"] * 0.22
+        elif "OPS" in rookies.columns:
+            roy_score += rookies["OPS"] * 50 * 0.22
+        if "wOBA" in rookies.columns:
+            roy_score += rookies["wOBA"] * 50 * 0.15
+
+        rookies["ROY_Score"] = roy_score
+
+        # Probability calculation
+        if rookies["ROY_Score"].max() > 0:
+            rookies["ROY_Probability"] = (
+                rookies["ROY_Score"] / rookies["ROY_Score"].max() * 100
+            ).round(1)
+        else:
+            rookies["ROY_Probability"] = 0
+
+        # Key stats for display
+        rookies["Key_Stats"] = rookies.apply(
+            lambda row: f"{row.get('HR',0)}HR/{row.get('RBI',0)}RBI/{row.get('AVG',0):.3f}AVG", axis=1
+        )
+
+        # Separate by league
+        al_teams = [
+            "NYY", "BOS", "TOR", "TB", "BAL", "CLE", "DET", "KC", "CWS", "MIN",
+            "HOU", "LAA", "OAK", "SEA", "TEX"
+        ]
+        al_roy = rookies[rookies["Team"].isin(al_teams)].nlargest(10, "ROY_Score")
+        nl_roy = rookies[~rookies["Team"].isin(al_teams)].nlargest(10, "ROY_Score")
+
+        # Save predictions
+        if not al_roy.empty:
+            al_roy.to_csv(f"{output_path}/al_roy_predictions.csv", index=False)
+        if not nl_roy.empty:
+            nl_roy.to_csv(f"{output_path}/nl_roy_predictions.csv", index=False)
+
+        return al_roy, nl_roy
+
+    except Exception as e:
+        print(f"Error calculating Rookie of the Year predictions: {e}")
+        return None, None
+
+
 if __name__ == "__main__":
     try:
         # Calculate predictions
         al_mvp, nl_mvp = calculate_mvp_predictions()
         al_cy, nl_cy = calculate_cy_young_predictions()
+        al_roy, nl_roy = calculate_rookie_of_the_year_predictions()
 
         # Create summary JSON
         summary = {
@@ -225,6 +302,16 @@ if __name__ == "__main__":
                 if nl_cy is not None and not nl_cy.empty
                 else []
             ),
+            "al_roy": (
+                al_roy.to_dict("records")
+                if al_roy is not None and not al_roy.empty
+                else []
+            ),
+            "nl_roy": (
+                nl_roy.to_dict("records")
+                if nl_roy is not None and not nl_roy.empty
+                else []
+            ),
             "al_mvp_leader": (
                 al_mvp.iloc[0]["Name"]
                 if al_mvp is not None and not al_mvp.empty
@@ -245,12 +332,22 @@ if __name__ == "__main__":
                 if nl_cy is not None and not nl_cy.empty
                 else "N/A"
             ),
+            "al_roy_leader": (
+                al_roy.iloc[0]["Name"]
+                if al_roy is not None and not al_roy.empty
+                else "N/A"
+            ),
+            "nl_roy_leader": (
+                nl_roy.iloc[0]["Name"]
+                if nl_roy is not None and not nl_roy.empty
+                else "N/A"
+            ),
         }
 
         with open(f"{output_path}/award_predictions.json", "w") as f:
             json.dump(summary, f, indent=2)
 
-        print("✓ MVP and Cy Young predictions calculated successfully!")
+        print("✓ MVP, Cy Young, and Rookie of the Year predictions calculated successfully!")
 
     except Exception as e:
         print(f"Critical error in mvp_cy_young_calculator.py: {e}")
@@ -262,10 +359,14 @@ if __name__ == "__main__":
             "nl_mvp": [],
             "al_cy_young": [],
             "nl_cy_young": [],
+            "al_roy": [],
+            "nl_roy": [],
             "al_mvp_leader": "Error",
             "nl_mvp_leader": "Error",
             "al_cy_leader": "Error",
             "nl_cy_leader": "Error",
+            "al_roy_leader": "Error",
+            "nl_roy_leader": "Error",
         }
 
         with open(f"{output_path}/award_predictions.json", "w") as f:

@@ -39,6 +39,7 @@ A comprehensive MLB statistics dashboard that automatically tracks pitching, bat
 ### 🏆 Award Predictions
 - **MVP Tracking**: Real-time American League and National League MVP probability calculations
 - **Cy Young Tracking**: AL and NL Cy Young Award probability calculations
+- **Rookie of the Year Tracking**: AL and NL Rookie of the Year probability calculations
 - **Historical Accuracy**: Based on 20+ years of BBWAA voting patterns and statistical analysis
 - **Multi-factor Analysis**: Combines individual performance, team success, and narrative factors
 - **Visual Probability Charts**: Color-coded probability bars and trend visualizations
@@ -74,9 +75,9 @@ baseball_stats/
 │   ├── batting.html               # Batting stats dashboard with trends  
 │   ├── standings.html             # Enhanced team standings with league tabs
 │   ├── mvp-cy-young.html          # MVP & Cy Young award predictions
-│   ├── playoffs.html              # Playoff picture and World Series predictions
-│   ├── prediction_accuracy.html   # Award prediction accuracy dashboard
 │   ├── award_predictions.json     # Real-time award prediction data
+│   ├── al_roy_predictions.csv     # AL Rookie of the Year predictions
+│   ├── nl_roy_predictions.csv     # NL Rookie of the Year predictions
 │   ├── playoff_predictions.json   # Real-time playoff probability data
 │   ├── prediction_accuracy_report.json # Prediction accuracy analysis
 │   ├── actual_winners.json        # Actual award winners (updated at season end)
@@ -224,7 +225,8 @@ Once the 2025 MLB awards are announced in November, our system will provide:
 ### Award Prediction Factors
 - **Individual Performance**: Core statistical metrics and advanced analytics
 - **Team Success**: Win-loss record, playoff positioning, division standings
-- **Narrative Factors**: MVP/Cy Young voting history and voter preferences
+- **Rookie Status**: For Rookie of the Year, only eligible players are considered
+- **Narrative Factors**: MVP/Cy Young/ROY voting history and voter preferences
 - **Historical Patterns**: 20+ years of BBWAA voting data analysis
 
 ### Accuracy Tracking Methodology

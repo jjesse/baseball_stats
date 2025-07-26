@@ -24,6 +24,8 @@ def create_award_charts():
             ("nl_mvp", "National League MVP Race", "Reds"),
             ("al_cy_young", "American League Cy Young Race", "Greens"),
             ("nl_cy_young", "National League Cy Young Race", "Purples"),
+            ("al_roy", "American League Rookie Race", "Oranges"),
+            ("nl_roy", "National League Rookie Race", "BuGn"),
         ]
 
         for award_key, title, color_palette in awards:
@@ -40,9 +42,14 @@ def create_award_charts():
             df = pd.DataFrame(candidates)
 
             # Determine probability field
-            prob_field = (
-                "MVP_Probability" if "mvp" in award_key else "CyYoung_Probability"
-            )
+            if "mvp" in award_key:
+                prob_field = "MVP_Probability"
+            elif "cy_young" in award_key:
+                prob_field = "CyYoung_Probability"
+            elif "roy" in award_key:
+                prob_field = "ROY_Probability"
+            else:
+                prob_field = "Probability"
 
             # Create horizontal bar chart
             plt.figure(figsize=(12, 8))
@@ -112,6 +119,8 @@ def create_summary_chart(data):
             ("nl_mvp", "NL MVP", "MVP_Probability"),
             ("al_cy_young", "AL Cy Young", "CyYoung_Probability"),
             ("nl_cy_young", "NL Cy Young", "CyYoung_Probability"),
+            ("al_roy", "AL Rookie", "ROY_Probability"),
+            ("nl_roy", "NL Rookie", "ROY_Probability"),
         ]
 
         for race_key, race_name, prob_field in races:
@@ -121,8 +130,8 @@ def create_summary_chart(data):
                     {
                         "Award": race_name,
                         "Player": f"{leader['Name']} ({leader['Team']})",
-                        "Probability": leader[prob_field],
-                        "Stats": leader["Key_Stats"],
+                        "Probability": leader.get(prob_field, 0),
+                        "Stats": leader.get("Key_Stats", ""),
                     }
                 )
 
