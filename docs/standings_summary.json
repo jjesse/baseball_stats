@@ -1,0 +1,31 @@
+{
+  "last_updated": "2025-07-27 02:30:46",
+  "al_leader": {
+    "team": "N/A",
+    "wins": 0,
+    "losses": 0,
+    "pct": 0.0,
+    "division": "N/A"
+  },
+  "nl_leader": {
+    "team": "N/A",
+    "wins": 0,
+    "losses": 0,
+    "pct": 0.0,
+    "division": "N/A"
+  },
+  "closest_race": {
+    "division": "N/A",
+    "leader": {
+      "team": "N/A",
+      "wins": 0,
+      "losses": 0
+    },
+    "second": {
+      "team": "N/A",
+      "wins": 0,
+      "losses": 0
+    },
+    "games_behind": 0.0
+  }
+}
