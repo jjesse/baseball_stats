@@ -20,7 +20,7 @@
       },
       {
         "team": NaN,
-        "odds": 11.7
+        "odds": 11.8
       },
       {
         "team": NaN,
@@ -28,7 +28,7 @@
       }
     ],
     "elimination_watch": [],
-    "last_updated": "2025-08-04 13:46:21"
+    "last_updated": "2025-08-05 02:17:46"
   },
   "playoff_scenarios": {
     "al_division_winners": {},
@@ -39,13 +39,13 @@
       "NaN": 12.3,
       "NaN": 11.9,
       "NaN": 11.8,
-      "NaN": 11.7,
+      "NaN": 11.8,
       "NaN": 11.7,
       "NaN": 11.6,
-      "NaN": 8.5,
+      "NaN": 8.4,
+      "NaN": 8.4,
       "NaN": 8.3,
       "NaN": 8.3,
-      "NaN": 8.2,
       "NaN": 7.9,
       "NaN": 7.9
     }
@@ -61,12 +61,12 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 62,
+      "wins": 63,
       "losses": 51,
-      "win_pct": 0.549,
-      "projected_wins": 88.9,
-      "strength_score": 0.413,
-      "games_remaining": 49,
+      "win_pct": 0.553,
+      "projected_wins": 89.5,
+      "strength_score": 0.418,
+      "games_remaining": 48,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -89,47 +89,47 @@
     },
     "NaN": {
       "wins": 51,
-      "losses": 61,
-      "win_pct": 0.455,
-      "projected_wins": 73.8,
-      "strength_score": 0.292,
-      "games_remaining": 50,
-      "division": "MLB Unknown"
-    },
-    "NaN": {
-      "wins": 65,
-      "losses": 48,
-      "win_pct": 0.575,
-      "projected_wins": 93.2,
-      "strength_score": 0.448,
+      "losses": 62,
+      "win_pct": 0.451,
+      "projected_wins": 73.1,
+      "strength_score": 0.287,
       "games_remaining": 49,
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 56,
-      "losses": 55,
-      "win_pct": 0.505,
-      "projected_wins": 81.7,
-      "strength_score": 0.356,
-      "games_remaining": 51,
+      "wins": 66,
+      "losses": 48,
+      "win_pct": 0.579,
+      "projected_wins": 93.8,
+      "strength_score": 0.453,
+      "games_remaining": 48,
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 56,
-      "losses": 56,
-      "win_pct": 0.5,
-      "projected_wins": 81.0,
-      "strength_score": 0.35,
+      "wins": 57,
+      "losses": 55,
+      "win_pct": 0.509,
+      "projected_wins": 82.4,
+      "strength_score": 0.362,
       "games_remaining": 50,
       "division": "MLB Unknown"
     },
     "NaN": {
+      "wins": 56,
+      "losses": 57,
+      "win_pct": 0.496,
+      "projected_wins": 80.3,
+      "strength_score": 0.344,
+      "games_remaining": 49,
+      "division": "MLB Unknown"
+    },
+    "NaN": {
       "wins": 52,
-      "losses": 59,
-      "win_pct": 0.468,
-      "projected_wins": 75.9,
-      "strength_score": 0.309,
-      "games_remaining": 51,
+      "losses": 60,
+      "win_pct": 0.464,
+      "projected_wins": 75.2,
+      "strength_score": 0.304,
+      "games_remaining": 50,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -142,12 +142,12 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 62,
+      "wins": 63,
       "losses": 50,
-      "win_pct": 0.554,
-      "projected_wins": 89.7,
-      "strength_score": 0.42,
-      "games_remaining": 50,
+      "win_pct": 0.558,
+      "projected_wins": 90.3,
+      "strength_score": 0.425,
+      "games_remaining": 49,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -187,39 +187,39 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 63,
+      "wins": 64,
       "losses": 48,
-      "win_pct": 0.568,
-      "projected_wins": 91.9,
-      "strength_score": 0.438,
-      "games_remaining": 51,
-      "division": "MLB Unknown"
-    },
-    "NaN": {
-      "wins": 63,
-      "losses": 49,
-      "win_pct": 0.562,
-      "projected_wins": 91.1,
-      "strength_score": 0.431,
+      "win_pct": 0.571,
+      "projected_wins": 92.6,
+      "strength_score": 0.443,
       "games_remaining": 50,
       "division": "MLB Unknown"
     },
     "NaN": {
+      "wins": 63,
+      "losses": 50,
+      "win_pct": 0.558,
+      "projected_wins": 90.3,
+      "strength_score": 0.425,
+      "games_remaining": 49,
+      "division": "MLB Unknown"
+    },
+    "NaN": {
       "wins": 55,
-      "losses": 55,
-      "win_pct": 0.5,
-      "projected_wins": 81.0,
-      "strength_score": 0.35,
-      "games_remaining": 52,
+      "losses": 56,
+      "win_pct": 0.495,
+      "projected_wins": 80.3,
+      "strength_score": 0.344,
+      "games_remaining": 51,
       "division": "MLB Unknown"
     },
     "NaN": {
       "wins": 47,
-      "losses": 63,
-      "win_pct": 0.427,
-      "projected_wins": 69.2,
-      "strength_score": 0.255,
-      "games_remaining": 52,
+      "losses": 64,
+      "win_pct": 0.423,
+      "projected_wins": 68.6,
+      "strength_score": 0.25,
+      "games_remaining": 51,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -232,12 +232,12 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 67,
+      "wins": 68,
       "losses": 44,
-      "win_pct": 0.604,
-      "projected_wins": 97.8,
-      "strength_score": 0.485,
-      "games_remaining": 51,
+      "win_pct": 0.607,
+      "projected_wins": 98.4,
+      "strength_score": 0.489,
+      "games_remaining": 50,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -268,12 +268,12 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 48,
+      "wins": 49,
       "losses": 64,
-      "win_pct": 0.429,
-      "projected_wins": 69.4,
-      "strength_score": 0.257,
-      "games_remaining": 50,
+      "win_pct": 0.434,
+      "projected_wins": 70.2,
+      "strength_score": 0.264,
+      "games_remaining": 49,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -296,11 +296,11 @@
     },
     "NaN": {
       "wins": 56,
-      "losses": 56,
-      "win_pct": 0.5,
-      "projected_wins": 81.0,
-      "strength_score": 0.35,
-      "games_remaining": 50,
+      "losses": 57,
+      "win_pct": 0.496,
+      "projected_wins": 80.3,
+      "strength_score": 0.344,
+      "games_remaining": 49,
       "division": "MLB Unknown"
     },
     "NaN": {
