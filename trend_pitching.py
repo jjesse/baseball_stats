@@ -2,92 +2,92 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-from glob import glob
+import glob
+from datetime import datetime
 
-# Set up style and output path
-sns.set(style="whitegrid")
+# Ensure output directory exists
 output_path = os.environ.get("OUTPUT_PATH", "docs")
 os.makedirs(output_path, exist_ok=True)
 
-try:
-    # Load historical data files
-    archive_files = sorted(glob("archive/pitching_*.csv"))
-    if not archive_files:
-        print("No pitching archive files found.")
-        exit()
-
-    # Stats to track trends for - matching batting format
-    tracked_stats = ["WHIP", "ERA", "SO", "K/BB", "HR/9", "FIP"]
-    min_appearances = 3
-
-    # Combine valid CSVs
-    dfs = []
-    for file in archive_files:
-        try:
-            df = pd.read_csv(file)
-            if df.empty or "Name" not in df.columns:
-                print(f"Skipping empty or malformed file: {file}")
+def create_pitching_trends():
+    """Create trend charts for pitching statistics"""
+    try:
+        # Look for archived pitching data
+        archive_files = sorted(glob.glob("archive/pitching_*.csv"))
+        
+        if len(archive_files) < 2:
+            print("Not enough historical data for trends (need at least 2 data points)")
+            return
+        
+        # Load and combine historical data
+        all_data = []
+        for file in archive_files[-10:]:  # Last 10 data points
+            try:
+                df = pd.read_csv(file)
+                date = file.split('_')[-1].replace('.csv', '')
+                df['Date'] = date
+                all_data.append(df)
+            except Exception as e:
+                print(f"Error reading {file}: {e}")
                 continue
-            date = os.path.basename(file).replace(".csv", "").replace("pitching_", "")
-            df = df[
-                ["Name"] + [col for col in tracked_stats if col in df.columns]
-            ].copy()
-            df["Date"] = date
-            dfs.append(df)
-        except Exception as e:
-            print(f"Error reading {file}: {e}")
-            continue
-
-    if not dfs:
-        print("No valid pitching data found in archive.")
-        exit()
-
-    # Combine into full dataset
-    all_data = pd.concat(dfs)
-    all_data["Date"] = pd.to_datetime(all_data["Date"])
-
-    # Create charts for each stat
-    for stat in tracked_stats:
-        try:
-            stat_df = all_data.pivot_table(index="Date", columns="Name", values=stat)
-            valid_players = stat_df.count()[stat_df.count() >= min_appearances].index
-            filtered = stat_df[valid_players]
-
-            # Skip if no valid players for this stat
-            if filtered.empty or len(filtered.columns) == 0:
-                print(f"No valid data for {stat}, skipping chart generation")
+        
+        if not all_data:
+            print("No valid historical pitching data found")
+            return
+        
+        combined_df = pd.concat(all_data, ignore_index=True)
+        combined_df['Date'] = pd.to_datetime(combined_df['Date'])
+        
+        # Stats to track trends for
+        trend_stats = ['ERA', 'WHIP', 'SO', 'K/BB', 'FIP', 'HR/9']
+        
+        for stat in trend_stats:
+            if stat not in combined_df.columns:
                 continue
+                
+            try:
+                # Get top 5 players by latest performance
+                latest_date = combined_df['Date'].max()
+                latest_data = combined_df[combined_df['Date'] == latest_date]
+                
+                if stat in ['ERA', 'WHIP', 'HR/9']:  # Lower is better
+                    top_players = latest_data.nsmallest(5, stat)['Name'].tolist()
+                else:  # Higher is better
+                    top_players = latest_data.nlargest(5, stat)['Name'].tolist()
+                
+                # Create trend chart
+                plt.figure(figsize=(12, 8))
+                
+                for player in top_players:
+                    player_data = combined_df[combined_df['Name'] == player].sort_values('Date')
+                    if len(player_data) >= 2:
+                        plt.plot(player_data['Date'], player_data[stat], marker='o', label=player, linewidth=2)
+                
+                plt.title(f'Pitching Trends - {stat}', fontsize=16, fontweight='bold')
+                plt.xlabel('Date', fontsize=12)
+                plt.ylabel(stat, fontsize=12)
+                plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+                plt.grid(True, alpha=0.3)
+                plt.xticks(rotation=45)
+                plt.tight_layout()
+                
+                # Save chart
+                chart_path = f"{output_path}/trend_pitching_{stat.lower().replace('/', '_')}.png"
+                plt.savefig(chart_path, dpi=150, bbox_inches='tight')
+                plt.close()
+                
+                print(f"✓ Created trend chart for {stat}")
+                
+            except Exception as e:
+                print(f"Error creating trend chart for {stat}: {e}")
+        
+        print("✓ Pitching trend analysis completed")
+        
+    except Exception as e:
+        print(f"Error in pitching trend analysis: {e}")
 
-            # For ERA, WHIP, HR/9, FIP lower is better, so sort ascending; others descending
-            if stat in ["ERA", "WHIP", "HR/9", "FIP"]:
-                top_players = filtered.mean().sort_values().head(5).index
-            else:
-                top_players = filtered.mean().sort_values(ascending=False).head(5).index
-
-            trend = filtered[top_players]
-
-            # Skip if no trend data
-            if trend.empty or len(trend.columns) == 0:
-                print(f"No trend data for {stat}, skipping chart generation")
-                continue
-
-            plt.figure(figsize=(12, 6))
-            lines_plotted = False
-            colors = plt.cm.Set1(range(len(trend.columns)))
-
-            for i, player in enumerate(trend.columns):
-                player_data = trend[player].dropna()
-                if not player_data.empty and len(player_data) >= 2:
-                    plt.plot(
-                        player_data.index,
-                        player_data.values,
-                        marker="o",
-                        label=player,
-                        color=colors[i],
-                        linewidth=2,
-                    )
-                    lines_plotted = True
-
+if __name__ == "__main__":
+    create_pitching_trends()
             if lines_plotted:
                 plt.title(f"{stat} Trends Over Time", fontsize=14, fontweight="bold")
                 plt.xlabel("Date", fontsize=12)

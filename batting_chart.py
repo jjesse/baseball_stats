@@ -10,62 +10,34 @@ output_path = os.environ.get("OUTPUT_PATH", "docs")
 os.makedirs(output_path, exist_ok=True)
 
 try:
-    # Fetch current season batting data
+    # Fetch current season data
     df = batting_stats(2025)
 
-    # Select relevant batting stats
+    # Select relevant stats
     df = df[
-        [
-            "Name",
-            "Team",
-            "G",
-            "AB",
-            "R",
-            "H",
-            "HR",
-            "RBI",
-            "SB",
-            "BB",
-            "SO",
-            "AVG",
-            "OBP",
-            "SLG",
-            "OPS",
-            "wOBA",
-            "wRC+",
-            "BABIP",
-            "ISO",
-            "K%",
-            "BB%",
-        ]
+        ["Name", "Team", "AVG", "HR", "RBI", "OBP", "SLG", "SB", "wOBA", "wRC+", "BABIP", "ISO", "K%", "BB%"]
     ]
 
-    # Filter out players with minimal playing time
-    df = df[df["AB"] >= 50]  # At least 50 at-bats
-
-    # Save CSV for archiving
+    # Save CSV backup
     df.to_csv(f"{output_path}/batting_stats.csv", index=False)
 
-    def create_chart_and_table(df, stat, title, color, ascending):
-        """Create chart and HTML table for a given stat"""
+    # Define chart creation
+    def create_chart_and_table(df, stat, title, color, ascending=False):
         try:
             top = df.sort_values(stat, ascending=ascending).head(10)
 
-            # Create chart
-            plt.figure(figsize=(12, 8))
+            # Chart
+            plt.figure(figsize=(10, 6))
             sns.barplot(
                 data=top, x=stat, y="Name", hue="Name", palette=color, legend=False
             )
-            plt.title(title, fontsize=14, fontweight="bold")
-            plt.xlabel(stat, fontsize=12)
-            plt.ylabel("Player", fontsize=12)
+            plt.title(title)
             plt.tight_layout()
-
-            chart_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct').replace('/', '_')}_chart.png"
-            plt.savefig(chart_path, dpi=150, bbox_inches="tight")
+            chart_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct')}_chart.png"
+            plt.savefig(chart_path)
             plt.close()
 
-            # Create HTML table with dark mode support
+            # Table HTML with dark mode support
             html_content = f"""
             <!DOCTYPE html>
             <html>
@@ -153,7 +125,7 @@ try:
             </html>
             """
 
-            table_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct').replace('/', '_')}_table.html"
+            table_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct')}_table.html"
             with open(table_path, "w") as f:
                 f.write(html_content)
 
@@ -162,10 +134,38 @@ try:
         except Exception as e:
             print(f"Error creating chart for {stat}: {e}")
 
-    # List of batting stats to chart
+    # List of stats to chart
     stats_to_plot = [
-        ("AVG", "Top 10 Hitters by Batting Average", "Blues", False),
-        ("HR", "Top 10 Hitters by Home Runs", "Reds", False),
+        ("AVG", "Top 10 Hitters by Average", "Blues", False),
+        ("HR", "Top 10 Hitters by Home Runs", "Oranges", False),
+        ("RBI", "Top 10 Hitters by RBIs", "Greens", False),
+        ("OBP", "Top 10 Hitters by On-Base Percentage", "Purples", False),
+        ("SLG", "Top 10 Hitters by Slugging", "Reds", False),
+        ("SB", "Top 10 Hitters by Stolen Bases", "BuGn", False),
+        ("wOBA", "Top 10 Hitters by wOBA", "viridis", False),
+        ("wRC+", "Top 10 Hitters by wRC+", "plasma", False),
+        ("BABIP", "Top 10 Hitters by BABIP", "cividis", False),
+        ("ISO", "Top 10 Hitters by ISO", "coolwarm", False),
+        ("K%", "Bottom 10 Hitters by Strikeout Rate", "Greys", True),
+        ("BB%", "Top 10 Hitters by Walk Rate", "Blues", False),
+    ]
+
+    for stat, title, color, ascending in stats_to_plot:
+        if stat in df.columns:
+            create_chart_and_table(df, stat, title, color, ascending)
+
+    # Write last updated timestamp
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("✓ Batting charts and tables generated successfully!")
+
+except Exception as e:
+    print(f"Error in batting_chart.py: {e}")
+    # Create a minimal fallback file so the workflow doesn't fail completely
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    raise
         ("RBI", "Top 10 Hitters by RBIs", "Greens", False),
         ("OBP", "Top 10 Hitters by On-Base Percentage", "Purples", False),
         ("SLG", "Top 10 Hitters by Slugging Percentage", "Oranges", False),
