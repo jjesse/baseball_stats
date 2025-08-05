@@ -14,26 +14,25 @@ try:
     df = batting_stats(2025)
 
     # Select relevant stats
-    df = df[
-        ["Name", "Team", "AVG", "HR", "RBI", "OBP", "SLG", "SB", "wOBA", "wRC+", "BABIP", "ISO", "K%", "BB%"]
-    ]
+    df = df[["Name", "Team", "AVG", "HR", "RBI", "OBP", "SLG", "SB", "wOBA", "wRC+", "BABIP", "ISO", "K%", "BB%"]]
+
+    # Filter minimum plate appearances
+    df = df[df.index < 200]  # Top 200 qualified batters
 
     # Save CSV backup
     df.to_csv(f"{output_path}/batting_stats.csv", index=False)
 
-    # Define chart creation
-    def create_chart_and_table(df, stat, title, color, ascending=False):
+    # Define chart creation function
+    def create_chart_and_table(df, stat, title, color):
         try:
-            top = df.sort_values(stat, ascending=ascending).head(10)
+            top = df.sort_values(stat, ascending=False).head(10)
 
             # Chart
             plt.figure(figsize=(10, 6))
-            sns.barplot(
-                data=top, x=stat, y="Name", hue="Name", palette=color, legend=False
-            )
+            sns.barplot(data=top, x=stat, y="Name", hue="Name", palette=color, legend=False)
             plt.title(title)
             plt.tight_layout()
-            chart_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct')}_chart.png"
+            chart_path = f"{output_path}/{stat.lower().replace('%', '_percent').replace('/', '_')}_chart.png"
             plt.savefig(chart_path)
             plt.close()
 
@@ -125,7 +124,7 @@ try:
             </html>
             """
 
-            table_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct')}_table.html"
+            table_path = f"{output_path}/{stat.lower().replace('%', '_percent').replace('/', '_')}_table.html"
             with open(table_path, "w") as f:
                 f.write(html_content)
 
@@ -136,25 +135,24 @@ try:
 
     # List of stats to chart
     stats_to_plot = [
-        ("AVG", "Top 10 Hitters by Average", "Blues", False),
-        ("HR", "Top 10 Hitters by Home Runs", "Oranges", False),
-        ("RBI", "Top 10 Hitters by RBIs", "Greens", False),
-        ("OBP", "Top 10 Hitters by On-Base Percentage", "Purples", False),
-        ("SLG", "Top 10 Hitters by Slugging", "Reds", False),
-        ("SB", "Top 10 Hitters by Stolen Bases", "BuGn", False),
-        ("wOBA", "Top 10 Hitters by wOBA", "viridis", False),
-        ("wRC+", "Top 10 Hitters by wRC+", "plasma", False),
-        ("BABIP", "Top 10 Hitters by BABIP", "cividis", False),
-        ("ISO", "Top 10 Hitters by ISO", "coolwarm", False),
-        ("K%", "Bottom 10 Hitters by Strikeout Rate", "Greys", True),
-        ("BB%", "Top 10 Hitters by Walk Rate", "Blues", False),
+        ("AVG", "Top 10 Batters by Average", "Blues"),
+        ("HR", "Top 10 Batters by Home Runs", "Reds"),
+        ("RBI", "Top 10 Batters by RBIs", "Greens"),
+        ("OBP", "Top 10 Batters by On-Base Percentage", "Purples"),
+        ("SLG", "Top 10 Batters by Slugging", "Oranges"),
+        ("wOBA", "Top 10 Batters by wOBA", "BuGn"),
+        ("wRC+", "Top 10 Batters by wRC+", "viridis"),
+        ("BABIP", "Top 10 Batters by BABIP", "plasma"),
+        ("ISO", "Top 10 Batters by Isolated Power", "magma"),
+        ("K%", "Lowest K% (Best Contact)", "coolwarm"),
+        ("BB%", "Top 10 Batters by Walk Rate", "Spectral"),
+        ("SB", "Top 10 Batters by Stolen Bases", "Set2"),
     ]
 
-    for stat, title, color, ascending in stats_to_plot:
-        if stat in df.columns:
-            create_chart_and_table(df, stat, title, color, ascending)
+    for stat, title, color in stats_to_plot:
+        create_chart_and_table(df, stat, title, color)
 
-    # Write last updated timestamp
+    # Write timestamp
     with open(f"{output_path}/last_updated_batting.txt", "w") as f:
         f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
 
@@ -162,12 +160,14 @@ try:
 
 except Exception as e:
     print(f"Error in batting_chart.py: {e}")
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    raise
+    print(f"Error in batting_chart.py: {e}")
     # Create a minimal fallback file so the workflow doesn't fail completely
     with open(f"{output_path}/last_updated_batting.txt", "w") as f:
         f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     raise
-        ("RBI", "Top 10 Hitters by RBIs", "Greens", False),
-        ("OBP", "Top 10 Hitters by On-Base Percentage", "Purples", False),
         ("SLG", "Top 10 Hitters by Slugging Percentage", "Oranges", False),
         ("SB", "Top 10 Hitters by Stolen Bases", "BuGn", False),
         ("wOBA", "Top 10 Hitters by wOBA", "viridis", False),

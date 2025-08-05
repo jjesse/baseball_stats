@@ -10,6 +10,11 @@
       --text: #333;
       --card-bg: #fff;
       --header-bg: #222;
+      --tab-bg: #ddd;
+      --tab-active: #fff;
+      --tab-border: #333;
+      --link-hover: rgba(255, 255, 255, 0.1);
+      --link-active: rgba(255, 255, 255, 0.2);
       --link-shadow: rgba(0, 0, 0, 0.1);
     }
 
@@ -18,6 +23,11 @@
       --text: #eee;
       --card-bg: #1f1f1f;
       --header-bg: #000;
+      --tab-bg: #333;
+      --tab-active: #222;
+      --tab-border: #fff;
+      --link-hover: rgba(255, 255, 255, 0.15);
+      --link-active: rgba(255, 255, 255, 0.25);
       --link-shadow: rgba(255, 255, 255, 0.1);
     }
 
@@ -48,11 +58,11 @@
     }
 
     .nav-bar a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--link-hover);
     }
 
     .nav-bar a.active {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: var(--link-active);
     }
 
     header {
@@ -75,15 +85,44 @@
       cursor: pointer;
     }
 
-    main {
+    .sub-tabs {
+      display: flex;
+      justify-content: center;
+      background-color: var(--tab-bg);
+      flex-wrap: wrap;
+      border-bottom: 2px solid var(--tab-border);
+    }
+
+    .sub-tabs button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      background-color: inherit;
+      cursor: pointer;
+      font-size: 1rem;
+      min-width: 100px;
+      color: var(--text);
+    }
+
+    .sub-tabs button.active {
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
+      font-weight: bold;
+    }
+
+    .content {
+      display: none;
       padding: 2rem;
       max-width: 1200px;
       margin: 0 auto;
     }
 
+    .content.active {
+      display: block;
+    }
+
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
       margin: 2rem 0;
     }
@@ -105,12 +144,11 @@
       font-weight: bold;
       margin-bottom: 1rem;
       color: var(--text);
-      text-align: center;
       border-bottom: 2px solid #007bff;
       padding-bottom: 0.5rem;
     }
 
-    .stat-table iframe {
+    .stat-content iframe {
       width: 100%;
       height: 300px;
       border: 1px solid var(--border, #ddd);
@@ -129,18 +167,78 @@
       box-shadow: 0 4px 8px var(--link-shadow);
     }
 
-    .update-info {
-      text-align: center;
-      padding: 1rem;
-      background-color: rgba(0, 122, 204, 0.1);
-      border-radius: 8px;
-      border: 1px solid #007acc;
+    .glossary-section {
+      background-color: var(--card-bg);
+      padding: 2rem;
+      border-radius: 10px;
+      border: 1px solid #ddd;
       margin: 2rem 0;
+    }
+
+    [data-theme='dark'] .glossary-section {
+      border: 1px solid #555;
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .glossary-item {
+      background-color: rgba(0, 123, 255, 0.1);
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 4px solid #007bff;
+    }
+
+    .glossary-term {
+      font-weight: bold;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+
+    .glossary-definition {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .tooltip {
+      position: relative;
+      cursor: help;
+      color: #007bff;
+      font-weight: bold;
+    }
+
+    .tooltip-content {
+      visibility: hidden;
+      background-color: var(--card-bg);
+      color: var(--text);
+      text-align: center;
+      border-radius: 6px;
+      padding: 0.5rem;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -60px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      border: 1px solid #ddd;
+      width: 200px;
+    }
+
+    .tooltip:hover .tooltip-content {
+      visibility: visible;
     }
 
     @media (max-width: 768px) {
       .stats-grid {
         grid-template-columns: 1fr;
+      }
+      
+      .nav-bar {
+        justify-content: center;
       }
     }
   </style>
@@ -152,15 +250,13 @@
       localStorage.setItem("theme", next);
     }
 
-    function loadLastUpdated() {
-      fetch('last_updated_pitching.txt')
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById('last-updated').textContent = data;
-        })
-        .catch(error => {
-          document.getElementById('last-updated').textContent = 'Last Updated: Data loading...';
-        });
+    function switchSubTab(tabName) {
+      const tabs = document.querySelectorAll(".sub-tabs button");
+      const contents = document.querySelectorAll(".content");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      contents.forEach(content => content.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName + "-btn").classList.add("active");
     }
 
     window.onload = () => {
@@ -168,7 +264,8 @@
       if (savedTheme) {
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
-      loadLastUpdated();
+      
+      switchSubTab("basic");
     };
   </script>
 </head>
@@ -183,60 +280,153 @@
       <a href="playoffs.html">Playoff Picture</a>
     </div>
     <h1>⚾ MLB Pitching Stats</h1>
-    <p>Current pitching leaders and advanced metrics for the 2025 season</p>
+    <p>Comprehensive pitching analytics for the 2025 season</p>
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
-  <main>
-    <div class="update-info">
-      <h3>📊 Latest Pitching Data</h3>
-      <p id="last-updated">Last Updated: Loading...</p>
-      <p><strong>Updated:</strong> Weekly on Mondays with complete statistical analysis</p>
-    </div>
+  <div class="sub-tabs">
+    <button id="basic-btn" onclick="switchSubTab('basic')">Basic</button>
+    <button id="advanced-btn" onclick="switchSubTab('advanced')">Advanced</button>
+    <button id="glossary-btn" onclick="switchSubTab('glossary')">Glossary</button>
+  </div>
 
+  <div id="basic" class="content active">
+    <h2>📈 Basic Pitching Stats</h2>
+    
     <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-title">WHIP Leaders</div>
-        <div class="stat-table">
-          <iframe src="whip_table.html" title="WHIP Leaders"></iframe>
+        <div class="stat-title">
+          ERA <span class="tooltip">?
+            <span class="tooltip-content">Earned Run Average - Average runs allowed per 9 innings</span>
+          </span>
         </div>
-        <div class="chart-container">
-          <img src="whip_chart.png" alt="WHIP Chart" onerror="this.style.display='none'">
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-title">ERA Leaders</div>
-        <div class="stat-table">
+        <div class="stat-content">
           <iframe src="era_table.html" title="ERA Leaders"></iframe>
         </div>
         <div class="chart-container">
           <img src="era_chart.png" alt="ERA Chart" onerror="this.style.display='none'">
         </div>
       </div>
-
+      
       <div class="stat-card">
-        <div class="stat-title">Strikeout Leaders</div>
-        <div class="stat-table">
+        <div class="stat-title">
+          WHIP <span class="tooltip">?
+            <span class="tooltip-content">Walks + Hits per Inning Pitched</span>
+          </span>
+        </div>
+        <div class="stat-content">
+          <iframe src="whip_table.html" title="WHIP Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="whip_chart.png" alt="WHIP Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-title">
+          Strikeouts <span class="tooltip">?
+            <span class="tooltip-content">Total strikeouts pitched</span>
+          </span>
+        </div>
+        <div class="stat-content">
           <iframe src="so_table.html" title="Strikeout Leaders"></iframe>
         </div>
         <div class="chart-container">
           <img src="so_chart.png" alt="Strikeouts Chart" onerror="this.style.display='none'">
         </div>
       </div>
+    </div>
+  </div>
 
+  <div id="advanced" class="content">
+    <h2>🔬 Advanced Pitching Metrics</h2>
+    
+    <div class="stats-grid">
       <div class="stat-card">
-        <div class="stat-title">K/BB Ratio Leaders</div>
-        <div class="stat-table">
-          <iframe src="k_bb_table.html" title="K/BB Ratio Leaders"></iframe>
+        <div class="stat-title">
+          FIP <span class="tooltip">?
+            <span class="tooltip-content">Fielding Independent Pitching - ERA-like stat focusing on outcomes a pitcher can control</span>
+          </span>
+        </div>
+        <div class="stat-content">
+          <iframe src="fip_table.html" title="FIP Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="fip_chart.png" alt="FIP Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-title">
+          K/BB Ratio <span class="tooltip">?
+            <span class="tooltip-content">Strikeout to Walk ratio - measures command</span>
+          </span>
+        </div>
+        <div class="stat-content">
+          <iframe src="k_bb_table.html" title="K/BB Leaders"></iframe>
         </div>
         <div class="chart-container">
           <img src="k_bb_chart.png" alt="K/BB Chart" onerror="this.style.display='none'">
         </div>
       </div>
-
+      
       <div class="stat-card">
-        <div class="stat-title">HR/9 Leaders (Lowest)</div>
+        <div class="stat-title">
+          HR/9 <span class="tooltip">?
+            <span class="tooltip-content">Home runs allowed per 9 innings</span>
+          </span>
+        </div>
+        <div class="stat-content">
+          <iframe src="hr_9_table.html" title="HR/9 Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="hr_9_chart.png" alt="HR/9 Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="glossary" class="content">
+    <div class="glossary-section">
+      <h2>📚 Pitching Statistics Glossary</h2>
+      <p>Understanding baseball pitching metrics and what makes a great pitcher.</p>
+      
+      <div class="glossary-grid">
+        <div class="glossary-item">
+          <div class="glossary-term">ERA (Earned Run Average)</div>
+          <div class="glossary-definition">Average earned runs allowed per 9 innings. Lower is better. Under 3.00 is excellent, 3.00-4.00 is good.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">WHIP (Walks + Hits per IP)</div>
+          <div class="glossary-definition">Total walks and hits allowed per inning. Under 1.20 is excellent, 1.20-1.40 is good.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">FIP (Fielding Independent Pitching)</div>
+          <div class="glossary-definition">ERA-like metric focusing only on strikeouts, walks, and home runs. Removes defensive impact.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">K/BB (Strikeout to Walk Ratio)</div>
+          <div class="glossary-definition">Strikeouts divided by walks. Measures command. Above 3.0 is good, above 4.0 is excellent.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">HR/9 (Home Runs per 9 innings)</div>
+          <div class="glossary-definition">Home runs allowed per 9 innings. Lower is better. Under 1.0 is excellent.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">SO (Strikeouts)</div>
+          <div class="glossary-definition">Total strikeouts. Higher is better. 200+ in a season is excellent for starters.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+        </div>
         <div class="stat-table">
           <iframe src="hr_9_table.html" title="HR/9 Leaders"></iframe>
         </div>
@@ -246,7 +436,17 @@
       </div>
 
       <div class="stat-card">
-        <div class="stat-title">FIP Leaders</div>
+        <div class="stat-header">
+          <div class="stat-title">FIP Leaders</div>
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>FIP (Fielding Independent Pitching)</strong><br>
+              ERA-like stat focusing only on strikeouts, walks, and home runs. Lower is better.<br>
+              <em>Removes defense from the equation. Excellent: <3.20 | Good: 3.20-3.90 | Average: 3.90-4.40</em>
+            </span>
+          </div>
+        </div>
         <div class="stat-table">
           <iframe src="fip_table.html" title="FIP Leaders"></iframe>
         </div>
@@ -255,157 +455,32 @@
         </div>
       </div>
     </div>
-  </main>
-
-  <script>
-    function toggleTheme() {
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
-    }
-
-    function loadLastUpdated() {
-      fetch('last_updated_pitching.txt')
-        .then(response => response.text())
-        .then(data => {
-          document.getElementById('last-updated').textContent = data;
-        })
-        .catch(error => {
-          document.getElementById('last-updated').textContent = 'Last Updated: Data loading...';
-        });
-    }
-
-    window.onload = () => {
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme) {
-        document.documentElement.setAttribute("data-theme", savedTheme);
-      }
-      loadLastUpdated();
-    };
-  </script>
-</body>
-</html>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>ERA</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>ERA (Earned Run Average)</strong><br>
-            Average number of earned runs allowed per 9 innings. Lower is better.<br>
-            <em>Excellent: &lt;3.00 | Good: 3.00-4.00 | Average: 4.00-5.00 | Poor: &gt;5.00</em>
-          </span>
-        </div>
-      </div>
-      <img src="era_chart.png" alt="ERA Chart">
-      <iframe src="era_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>Strikeouts (K)</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Strikeouts (K)</strong><br>
-            Total number of batters struck out. Higher is better for pitchers.<br>
-            <em>Shows a pitcher's ability to miss bats and avoid contact.</em>
-          </span>
-        </div>
-      </div>
-      <img src="so_chart.png" alt="Strikeout Chart">
-      <iframe src="so_table.html"></iframe>
-    </div>
-  </div>
-
-  <div id="advanced" class="content">
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>Walks (BB)</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Walks (BB - Base on Balls)</strong><br>
-            Number of batters walked. Lower is better for pitchers.<br>
-            <em>Shows pitcher's control and command of the strike zone.</em>
-          </span>
-        </div>
-      </div>
-      <img src="bb_chart.png" alt="BB Chart">
-      <iframe src="bb_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>K/BB Ratio</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>K/BB Ratio (Strikeout-to-Walk Ratio)</strong><br>
-            Strikeouts divided by walks. Higher is better.<br>
-            <em>Excellent: &gt;4.0 | Good: 3.0-4.0 | Average: 2.0-3.0 | Poor: &lt;2.0</em>
-          </span>
-        </div>
-      </div>
-      <img src="k_bb_chart.png" alt="K/BB Chart">
-      <iframe src="k_bb_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>HR/9</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>HR/9 (Home Runs per 9 Innings)</strong><br>
-            Average home runs allowed per 9 innings. Lower is better.<br>
-            <em>Excellent: &lt;0.80 | Good: 0.80-1.20 | Average: 1.20-1.60 | Poor: &gt;1.60</em>
-          </span>
-        </div>
-      </div>
-      <img src="hr9_chart.png" alt="HR/9 Chart">
-      <iframe src="hr_9_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>FIP</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>FIP (Fielding Independent Pitching)</strong><br>
-            ERA-like stat focusing only on strikeouts, walks, and home runs. Lower is better.<br>
-            <em>Removes defense from the equation. Excellent: &lt;3.20 | Good: 3.20-3.90 | Average: 3.90-4.40</em>
-          </span>
-        </div>
-      </div>
-      <img src="fip_chart.png" alt="FIP Chart">
-      <iframe src="fip_table.html"></iframe>
-    </div>
   </div>
 
   <div id="trends" class="content">
     <div class="chart-container">
       <h2>WHIP Trend</h2>
-      <img src="trend_whip.png" alt="WHIP Trend Chart">
+      <img src="trend_pitching_whip.png" alt="WHIP Trend Chart">
     </div>
     <div class="chart-container">
       <h2>ERA Trend</h2>
-      <img src="trend_era.png" alt="ERA Trend Chart">
+      <img src="trend_pitching_era.png" alt="ERA Trend Chart">
     </div>
     <div class="chart-container">
-      <h2>SO Trend</h2>
-      <img src="trend_so.png" alt="SO Trend Chart">
+      <h2>Strikeouts Trend</h2>
+      <img src="trend_pitching_so.png" alt="SO Trend Chart">
     </div>
     <div class="chart-container">
       <h2>K/BB Trend</h2>
-      <img src="trend_k_bb.png" alt="K/BB Trend Chart">
+      <img src="trend_pitching_k_bb.png" alt="K/BB Trend Chart">
     </div>
     <div class="chart-container">
       <h2>HR/9 Trend</h2>
-      <img src="trend_hr_9.png" alt="HR/9 Trend Chart">
+      <img src="trend_pitching_hr_9.png" alt="HR/9 Trend Chart">
     </div>
     <div class="chart-container">
       <h2>FIP Trend</h2>
-      <img src="trend_fip.png" alt="FIP Trend Chart">
+      <img src="trend_pitching_fip.png" alt="FIP Trend Chart">
     </div>
   </div>
 
@@ -438,8 +513,43 @@
     </div>
   </div>
 
-  <div class="footer">
-    &copy; 2025 MLB Stats Dashboard by jjesse
-  </div>
+  <script>
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll(".tabs button");
+      const contents = document.querySelectorAll(".content");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      contents.forEach(content => content.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName + "-btn").classList.add("active");
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    }
+
+    function loadLastUpdated() {
+      fetch('last_updated_pitching.txt')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('last-updated').textContent = data;
+        })
+        .catch(error => {
+          document.getElementById('last-updated').textContent = 'Last Updated: Data loading...';
+        });
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+      
+      switchTab("basic");
+      loadLastUpdated();
+    };
+  </script>
 </body>
 </html>

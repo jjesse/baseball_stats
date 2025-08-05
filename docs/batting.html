@@ -10,6 +10,12 @@
       --text: #333;
       --card-bg: #fff;
       --header-bg: #222;
+      --nav-bg: #222;
+      --tab-bg: #ddd;
+      --tab-active: #fff;
+      --tab-border: #333;
+      --link-hover: rgba(255, 255, 255, 0.1);
+      --link-active: rgba(255, 255, 255, 0.2);
       --link-shadow: rgba(0, 0, 0, 0.1);
     }
 
@@ -18,6 +24,12 @@
       --text: #eee;
       --card-bg: #1f1f1f;
       --header-bg: #000;
+      --nav-bg: #000;
+      --tab-bg: #333;
+      --tab-active: #222;
+      --tab-border: #fff;
+      --link-hover: rgba(255, 255, 255, 0.15);
+      --link-active: rgba(255, 255, 255, 0.25);
       --link-shadow: rgba(255, 255, 255, 0.1);
     }
 
@@ -48,11 +60,11 @@
     }
 
     .nav-bar a:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--link-hover);
     }
 
     .nav-bar a.active {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: var(--link-active);
     }
 
     header {
@@ -75,10 +87,38 @@
       cursor: pointer;
     }
 
-    main {
+    .tabs {
+      display: flex;
+      justify-content: center;
+      background-color: var(--tab-bg);
+      flex-wrap: wrap;
+    }
+
+    .tabs button {
+      padding: 1rem;
+      border: none;
+      background-color: inherit;
+      cursor: pointer;
+      font-size: 1rem;
+      min-width: 120px;
+      color: var(--text);
+    }
+
+    .tabs button.active {
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
+      font-weight: bold;
+    }
+
+    .content {
+      display: none;
       padding: 2rem;
       max-width: 1200px;
       margin: 0 auto;
+    }
+
+    .content.active {
+      display: block;
     }
 
     .stats-grid {
@@ -138,13 +178,147 @@
       margin: 2rem 0;
     }
 
+    .stat-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+    }
+
+    .tooltip {
+      position: relative;
+    }
+
+    .info-icon {
+      background-color: #007bff;
+      color: white;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: help;
+    }
+
+    .tooltiptext {
+      visibility: hidden;
+      width: 300px;
+      background-color: #333;
+      color: #fff;
+      text-align: left;
+      border-radius: 6px;
+      padding: 10px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -150px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+
     @media (max-width: 768px) {
       .stats-grid {
         grid-template-columns: 1fr;
       }
+      
+      .nav-bar {
+        justify-content: center;
+      }
+
+      .tooltiptext {
+        width: 250px;
+        margin-left: -125px;
+      }
+    }
+
+    .sub-tabs {
+      display: flex;
+      justify-content: center;
+      background-color: var(--tab-bg);
+      margin: 1rem 0;
+    }
+
+    .sub-tabs button {
+      padding: 0.8rem 1.2rem;
+      border: none;
+      background-color: inherit;
+      cursor: pointer;
+      font-size: 1rem;
+      min-width: 100px;
+      color: var(--text);
+    }
+
+    .sub-tabs button.active {
+      background-color: var(--tab-active);
+      border-bottom: 3px solid var(--tab-border);
+      font-weight: bold;
+    }
+
+    .glossary-section {
+      max-width: 800px;
+      margin: 2rem auto;
+      text-align: left;
+    }
+
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .glossary-item {
+      background-color: var(--card-bg);
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px var(--link-shadow);
+      border: 1px solid #ddd;
+    }
+
+    [data-theme='dark'] .glossary-item {
+      border: 1px solid #555;
+    }
+
+    .glossary-term {
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .glossary-definition {
+      color: var(--text);
+      line-height: 1.4;
     }
   </style>
   <script>
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll(".tabs button");
+      const contents = document.querySelectorAll(".content");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      contents.forEach(content => content.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName + "-btn").classList.add("active");
+    }
+
+    function switchSubTab(tabName) {
+      const subTabs = document.querySelectorAll(".sub-tabs button");
+      const subContents = document.querySelectorAll(".sub-content");
+      subTabs.forEach(tab => tab.classList.remove("active"));
+      subContents.forEach(content => content.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName + "-btn").classList.add("active");
+    }
+
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
@@ -168,6 +342,8 @@
       if (savedTheme) {
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
+      
+      switchTab("basic");
       loadLastUpdated();
     };
   </script>
@@ -183,304 +359,228 @@
       <a href="playoffs.html">Playoff Picture</a>
     </div>
     <h1>⚾ MLB Batting Stats</h1>
-    <p>Current batting leaders and offensive metrics for the 2025 season</p>
+    <p>Comprehensive batting analytics for the 2025 season</p>
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
-  <main>
-    <div class="update-info">
-      <h3>📊 Latest Batting Data</h3>
-      <p id="last-updated">Last Updated: Loading...</p>
-      <p><strong>Updated:</strong> Daily with complete statistical analysis</p>
-    </div>
-
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-title">Batting Average Leaders</div>
-        <div class="stat-table">
-          <iframe src="batting_avg_table.html" title="Batting Average Leaders"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="batting_avg_chart.png" alt="AVG Chart" onerror="this.style.display='none'">
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-title">Home Run Leaders</div>
-        <div class="stat-table">
-          <iframe src="batting_hr_table.html" title="Home Run Leaders"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="batting_hr_chart.png" alt="HR Chart" onerror="this.style.display='none'">
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-title">RBI Leaders</div>
-        <div class="stat-table">
-          <iframe src="batting_rbi_table.html" title="RBI Leaders"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="batting_rbi_chart.png" alt="RBI Chart" onerror="this.style.display='none'">
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-title">OBP Leaders</div>
-        <div class="stat-table">
-          <iframe src="batting_obp_table.html" title="OBP Leaders"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="batting_obp_chart.png" alt="OBP Chart" onerror="this.style.display='none'">
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-title">Slugging Leaders</div>
-        <div class="stat-table">
-          <iframe src="batting_slg_table.html" title="Slugging Leaders"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="batting_slg_chart.png" alt="SLG Chart" onerror="this.style.display='none'">
-        </div>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-title">Stolen Base Leaders</div>
-        <div class="stat-table">
-          <iframe src="batting_sb_table.html" title="Stolen Base Leaders"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="batting_sb_chart.png" alt="SB Chart" onerror="this.style.display='none'">
-        </div>
-      </div>
-    </div>
-  </main>
-      <a href="standings.html">Standings</a>
-      <a href="mvp-cy-young.html">MVP & Cy Young</a>
-    </div>
-    <h1>MLB Batting Stats Dashboard</h1>
-    <p id="last-updated">Loading update time...</p>
-    <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
-  </header>
-
-  <div class="tabs">
-    <button id="basic-btn" onclick="switchTab('basic')">Basic Stats</button>
-    <button id="advanced-btn" onclick="switchTab('advanced')">Advanced Stats</button>
-    <button id="trends-btn" onclick="switchTab('trends')">Trends</button>
-    <button id="glossary-btn" onclick="switchTab('glossary')">Glossary</button>
+  <div class="sub-tabs">
+    <button id="basic-btn" onclick="switchSubTab('basic')">Basic</button>
+    <button id="advanced-btn" onclick="switchSubTab('advanced')">Advanced</button>
+    <button id="glossary-btn" onclick="switchSubTab('glossary')">Glossary</button>
   </div>
 
-  <div id="basic" class="content">
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>AVG</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Batting Average (AVG)</strong><br>
-            Hits divided by at-bats. Shows how often a batter gets a hit.<br>
-            <em>Excellent: &gt;.320 | Good: .280-.320 | Average: .250-.280 | Poor: &lt;.250</em>
+  <div id="basic" class="content active">
+    <h2>📈 Basic Batting Stats</h2>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">
+          Batting Average <span class="tooltip">?
+            <span class="tooltip-content">Hits divided by at-bats</span>
           </span>
         </div>
-      </div>
-      <img src="batting_avg_chart.png" alt="AVG Chart">
-      <iframe src="batting_avg_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>HR</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Home Runs (HR)</strong><br>
-            Total number of home runs hit. Shows power hitting ability.<br>
-            <em>Elite: 40+ | Great: 30-39 | Good: 20-29 | Average: 10-19</em>
-          </span>
+        <div class="stat-content">
+          <iframe src="avg_table.html" title="Batting Average Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="avg_chart.png" alt="Batting Average Chart" onerror="this.style.display='none'">
         </div>
       </div>
-      <img src="batting_hr_chart.png" alt="HR Chart">
-      <iframe src="batting_hr_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>RBI</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Runs Batted In (RBI)</strong><br>
-            Number of runs scored as a result of the batter's actions.<br>
-            <em>Shows clutch hitting and ability to drive in teammates.</em>
+      
+      <div class="stat-card">
+        <div class="stat-title">
+          Home Runs <span class="tooltip">?
+            <span class="tooltip-content">Total home runs hit</span>
           </span>
         </div>
-      </div>
-      <img src="batting_rbi_chart.png" alt="RBI Chart">
-      <iframe src="batting_rbi_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>OBP</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>On-Base Percentage (OBP)</strong><br>
-            How often a batter reaches base (hits + walks + hit by pitch).<br>
-            <em>Excellent: &gt;.400 | Good: .360-.400 | Average: .320-.360 | Poor: &lt;.320</em>
-          </span>
+        <div class="stat-content">
+          <iframe src="hr_table.html" title="Home Run Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="hr_chart.png" alt="Home Runs Chart" onerror="this.style.display='none'">
         </div>
       </div>
-      <img src="batting_obp_chart.png" alt="OBP Chart">
-      <iframe src="batting_obp_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>SLG</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Slugging Percentage (SLG)</strong><br>
-            Total bases divided by at-bats. Measures power hitting.<br>
-            <em>Excellent: &gt;.550 | Good: .450-.550 | Average: .400-.450 | Poor: &lt;.400</em>
+      
+      <div class="stat-card">
+        <div class="stat-title">
+          RBIs <span class="tooltip">?
+            <span class="tooltip-content">Runs Batted In</span>
           </span>
         </div>
-      </div>
-      <img src="batting_slg_chart.png" alt="SLG Chart">
-      <iframe src="batting_slg_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>SB</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Stolen Bases (SB)</strong><br>
-            Number of bases stolen. Shows speed and base-running ability.<br>
-            <em>Elite: 30+ | Good: 15-29 | Average: 5-14 | Rare: &lt;5</em>
-          </span>
+        <div class="stat-content">
+          <iframe src="rbi_table.html" title="RBI Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="rbi_chart.png" alt="RBIs Chart" onerror="this.style.display='none'">
         </div>
       </div>
-      <img src="batting_sb_chart.png" alt="SB Chart">
-      <iframe src="batting_sb_table.html"></iframe>
     </div>
   </div>
 
   <div id="advanced" class="content">
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>wOBA</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Weighted On-Base Average (wOBA)</strong><br>
-            Combines all offensive events, weighted by their run value.<br>
-            <em>Excellent: &gt;.400 | Good: .350-.400 | Average: .320-.350 | Poor: &lt;.320</em>
+    <h2>🔬 Advanced Batting Metrics</h2>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">
+          wOBA <span class="tooltip">?
+            <span class="tooltip-content">Weighted On-Base Average - Comprehensive offensive metric</span>
           </span>
         </div>
+        <div class="stat-content">
+          <iframe src="woba_table.html" title="wOBA Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="woba_chart.png" alt="wOBA Chart" onerror="this.style.display='none'">
+        </div>
       </div>
-      <img src="batting_woba_chart.png" alt="wOBA Chart">
-      <iframe src="batting_woba_table.html"></iframe>
+      
+      <div class="stat-card">
+        <div class="stat-title">
+          wRC+ <span class="tooltip">?
+            <span class="tooltip-content">Weighted Runs Created Plus - Park and league adjusted offensive value</span>
+          </span>
+        </div>
+        <div class="stat-content">
+          <iframe src="wrc_table.html" title="wRC+ Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="wrc_chart.png" alt="wRC+ Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-title">
+          BABIP <span class="tooltip">?
+            <span class="tooltip-content">Batting Average on Balls in Play</span>
+          </span>
+        </div>
+        <div class="stat-content">
+          <iframe src="babip_table.html" title="BABIP Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="babip_chart.png" alt="BABIP Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
     </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>wRC+</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Weighted Runs Created Plus (wRC+)</strong><br>
-            Overall offensive value adjusted for park and league. 100 = average.<br>
-            <em>Elite: 140+ | Great: 120-139 | Good: 110-119 | Average: 90-109</em>
-          </span>
+  </div>
+
+  <div id="glossary" class="content">
+    <div class="glossary-section">
+      <h2>📚 Batting Statistics Glossary</h2>
+      <p>Understanding baseball batting metrics and what makes a great hitter.</p>
+      
+      <div class="glossary-grid">
+        <div class="glossary-item">
+          <div class="glossary-term">AVG (Batting Average)</div>
+          <div class="glossary-definition">Hits divided by at-bats. .300+ is excellent, .270+ is good.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">OBP (On-Base Percentage)</div>
+          <div class="glossary-definition">How often a batter reaches base. .400+ is excellent, .350+ is good.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">SLG (Slugging Percentage)</div>
+          <div class="glossary-definition">Total bases divided by at-bats. Measures power. .500+ is excellent.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">wOBA (Weighted On-Base Average)</div>
+          <div class="glossary-definition">Comprehensive offensive metric that weights different hitting outcomes. .400+ is excellent.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">wRC+ (Weighted Runs Created Plus)</div>
+          <div class="glossary-definition">Park and league adjusted offensive value. 100 is average, 130+ is excellent.</div>
+        </div>
+        
+        <div class="glossary-item">
+          <div class="glossary-term">BABIP (Batting Average on Balls in Play)</div>
+          <div class="glossary-definition">Batting average on balls hit into play (excludes HRs and strikeouts). Around .300 is typical.</div>
         </div>
       </div>
-      <img src="batting_wrc+_chart.png" alt="wRC+ Chart">
-      <iframe src="batting_wrc+_table.html"></iframe>
     </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>BABIP</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Batting Average on Balls In Play (BABIP)</strong><br>
-            Batting average on balls that stay in the field of play.<br>
-            <em>League average is typically around .300. Extreme values may regress.</em>
-          </span>
+  </div>
+
+  <div class="footer">
+    &copy; 2025 MLB Stats Dashboard by jjesse
+  </div>
+</body>
+</html>
+        </div>
+        <div class="chart-container">
+          <img src="batting_iso_chart.png" alt="ISO Chart" onerror="this.style.display='none'">
         </div>
       </div>
-      <img src="batting_babip_chart.png" alt="BABIP Chart">
-      <iframe src="batting_babip_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>ISO</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Isolated Power (ISO)</strong><br>
-            Slugging percentage minus batting average. Measures raw power.<br>
-            <em>Excellent: &gt;.250 | Good: .200-.250 | Average: .150-.200 | Poor: &lt;.150</em>
-          </span>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-title">Strikeout Rate (Lowest)</div>
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>Strikeout Rate (K%)</strong><br>
+              Percentage of plate appearances ending in strikeouts. Lower is better.<br>
+              <em>Excellent: <15% | Good: 15-20% | Average: 20-25% | Poor: >25%</em>
+            </span>
+          </div>
+        </div>
+        <div class="stat-table">
+          <iframe src="batting_k_pct_table.html" title="K% Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="batting_k_pct_chart.png" alt="K% Chart" onerror="this.style.display='none'">
         </div>
       </div>
-      <img src="batting_iso_chart.png" alt="ISO Chart">
-      <iframe src="batting_iso_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>K%</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Strikeout Rate (K%)</strong><br>
-            Percentage of plate appearances ending in strikeouts. Lower is better.<br>
-            <em>Excellent: &lt;15% | Good: 15-20% | Average: 20-25% | Poor: &gt;25%</em>
-          </span>
+
+      <div class="stat-card">
+        <div class="stat-header">
+          <div class="stat-title">Walk Rate Leaders</div>
+          <div class="tooltip">
+            <span class="info-icon">?</span>
+            <span class="tooltiptext">
+              <strong>Walk Rate (BB%)</strong><br>
+              Percentage of plate appearances ending in walks. Higher is better.<br>
+              <em>Excellent: >12% | Good: 9-12% | Average: 6-9% | Poor: <6%</em>
+            </span>
+          </div>
+        </div>
+        <div class="stat-table">
+          <iframe src="batting_bb_pct_table.html" title="BB% Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="batting_bb_pct_chart.png" alt="BB% Chart" onerror="this.style.display='none'">
         </div>
       </div>
-      <img src="batting_kpct_chart.png" alt="K% Chart">
-      <iframe src="batting_kpct_table.html"></iframe>
-    </div>
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>BB%</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>Walk Rate (BB%)</strong><br>
-            Percentage of plate appearances ending in walks. Higher is better.<br>
-            <em>Excellent: &gt;12% | Good: 9-12% | Average: 6-9% | Poor: &lt;6%</em>
-          </span>
-        </div>
-      </div>
-      <img src="batting_bbpct_chart.png" alt="BB% Chart">
-      <iframe src="batting_bbpct_table.html"></iframe>
     </div>
   </div>
 
   <div id="trends" class="content">
     <div class="chart-container">
-      <h2>AVG Trend</h2>
-      <img src="batting_avg_trend.png" alt="AVG Trend Chart">
+      <h2>Batting Average Trend</h2>
+      <img src="trend_batting_avg.png" alt="AVG Trend Chart">
     </div>
     <div class="chart-container">
-      <h2>OBP Trend</h2>
-      <img src="batting_obp_trend.png" alt="OBP Trend Chart">
+      <h2>On-Base Percentage Trend</h2>
+      <img src="trend_batting_obp.png" alt="OBP Trend Chart">
     </div>
     <div class="chart-container">
-      <h2>SLG Trend</h2>
-      <img src="batting_slg_trend.png" alt="SLG Trend Chart">
+      <h2>Slugging Percentage Trend</h2>
+      <img src="trend_batting_slg.png" alt="SLG Trend Chart">
     </div>
     <div class="chart-container">
       <h2>wOBA Trend</h2>
-      <img src="batting_woba_trend.png" alt="wOBA Trend Chart">
+      <img src="trend_batting_woba.png" alt="wOBA Trend Chart">
     </div>
     <div class="chart-container">
-      <h2>K% Trend</h2>
-      <img src="batting_kpct_trend.png" alt="K% Trend Chart">
+      <h2>Strikeout Rate Trend</h2>
+      <img src="trend_batting_k_pct.png" alt="K% Trend Chart">
     </div>
     <div class="chart-container">
-      <h2>BB% Trend</h2>
-      <img src="batting_bbpct_trend.png" alt="BB% Trend Chart">
+      <h2>Walk Rate Trend</h2>
+      <img src="trend_batting_bb_pct.png" alt="BB% Trend Chart">
     </div>
   </div>
 
