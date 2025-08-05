@@ -58,15 +58,22 @@ def create_pitching_trends():
                 # Create trend chart
                 plt.figure(figsize=(12, 8))
                 
+                lines_plotted = False  # Track if we plot any lines
+                
                 for player in top_players:
                     player_data = combined_df[combined_df['Name'] == player].sort_values('Date')
                     if len(player_data) >= 2:
                         plt.plot(player_data['Date'], player_data[stat], marker='o', label=player, linewidth=2)
+                        lines_plotted = True
                 
                 plt.title(f'Pitching Trends - {stat}', fontsize=16, fontweight='bold')
                 plt.xlabel('Date', fontsize=12)
                 plt.ylabel(stat, fontsize=12)
-                plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+                
+                # Add legend if we plotted any lines
+                if lines_plotted:
+                    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+                
                 plt.grid(True, alpha=0.3)
                 plt.xticks(rotation=45)
                 plt.tight_layout()
@@ -92,7 +99,11 @@ if __name__ == "__main__":
                 plt.title(f"{stat} Trends Over Time", fontsize=14, fontweight="bold")
                 plt.xlabel("Date", fontsize=12)
                 plt.ylabel(stat, fontsize=12)
-                plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+                
+                # Add legend if we plotted any lines
+                if lines_plotted:
+                    plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+                
                 plt.xticks(rotation=45)
                 plt.grid(True, alpha=0.3)
                 plt.tight_layout()

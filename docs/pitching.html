@@ -3,19 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pitching Stats</title>
+  <title>MLB Pitching Stats</title>
   <style>
     :root {
       --bg: #f9f9f9;
       --text: #333;
       --card-bg: #fff;
       --header-bg: #222;
-      --nav-bg: #222;
-      --tab-bg: #ddd;
-      --tab-active: #fff;
-      --tab-border: #333;
-      --link-hover: rgba(255, 255, 255, 0.1);
-      --link-active: rgba(255, 255, 255, 0.2);
       --link-shadow: rgba(0, 0, 0, 0.1);
     }
 
@@ -24,12 +18,6 @@
       --text: #eee;
       --card-bg: #1f1f1f;
       --header-bg: #000;
-      --nav-bg: #000;
-      --tab-bg: #333;
-      --tab-active: #222;
-      --tab-border: #fff;
-      --link-hover: rgba(255, 255, 255, 0.15);
-      --link-active: rgba(255, 255, 255, 0.25);
       --link-shadow: rgba(255, 255, 255, 0.1);
     }
 
@@ -48,6 +36,7 @@
       display: flex;
       justify-content: center;
       gap: 1rem;
+      flex-wrap: wrap;
     }
 
     .nav-bar a {
@@ -59,11 +48,11 @@
     }
 
     .nav-bar a:hover {
-      background-color: var(--link-hover);
+      background-color: rgba(255, 255, 255, 0.1);
     }
 
     .nav-bar a.active {
-      background-color: var(--link-active);
+      background-color: rgba(255, 255, 255, 0.2);
     }
 
     header {
@@ -86,145 +75,76 @@
       cursor: pointer;
     }
 
-    .tabs {
-      display: flex;
-      justify-content: center;
-      background-color: var(--tab-bg);
+    main {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
     }
-    .tabs button {
-      padding: 1rem;
-      border: none;
-      background-color: inherit;
-      cursor: pointer;
-      font-size: 1rem;
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
     }
-    .tabs button.active {
-      background-color: var(--tab-active);
-      border-bottom: 3px solid var(--tab-border);
+
+    .stat-card {
+      background-color: var(--card-bg);
+      padding: 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px var(--link-shadow);
+      border: 1px solid #ddd;
+    }
+
+    [data-theme='dark'] .stat-card {
+      border: 1px solid #555;
+    }
+
+    .stat-title {
+      font-size: 1.2rem;
       font-weight: bold;
+      margin-bottom: 1rem;
+      color: var(--text);
+      text-align: center;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 0.5rem;
     }
-    .content {
-      display: none;
-      padding: 1rem;
+
+    .stat-table iframe {
+      width: 100%;
+      height: 300px;
+      border: 1px solid var(--border, #ddd);
+      border-radius: 8px;
     }
-    .content.active {
-      display: block;
-    }
+
     .chart-container {
       text-align: center;
-      margin-bottom: 2rem;
+      margin: 1rem 0;
     }
-    
+
     .chart-container img {
       max-width: 100%;
       height: auto;
-      display: block;
-      margin: 0 auto 1rem auto;
-    }
-    
-    iframe {
-      width: 80%;
-      max-width: 800px;
-      height: 320px;
-      border: none;
-      display: block;
-      margin: 0 auto;
-      background-color: var(--card-bg);
       border-radius: 8px;
-      overflow: hidden;
+      box-shadow: 0 4px 8px var(--link-shadow);
     }
 
-    /* Enhanced iframe styling for dark mode tables */
-    .chart-container iframe {
-      background-color: var(--card-bg);
-      border: 1px solid var(--text);
-      opacity: 0.95;
-    }
-
-    [data-theme='dark'] .chart-container iframe {
-      border: 1px solid #555;
-    }
-    .footer {
+    .update-info {
       text-align: center;
       padding: 1rem;
-      font-size: 0.9rem;
-      color: #666;
+      background-color: rgba(0, 122, 204, 0.1);
+      border-radius: 8px;
+      border: 1px solid #007acc;
+      margin: 2rem 0;
     }
 
-    /* Stat explanation styles */
-    .stat-header {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .info-icon {
-      background: #333;
-      color: #fff;
-      border-radius: 50%;
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: all 0.2s;
-      flex-shrink: 0;
-    }
-
-    [data-theme='dark'] .info-icon {
-      background: #666;
-      color: #fff;
-    }
-
-    .info-icon:hover {
-      background: #007acc;
-      transform: scale(1.1);
-    }
-
-    .tooltip {
-      position: relative;
-      display: inline-block;
-    }
-
-    .tooltip .tooltiptext {
-      visibility: hidden;
-      width: 320px;
-      background-color: var(--card-bg);
-      color: var(--text);
-      text-align: left;
-      border-radius: 6px;
-      padding: 1rem;
-      position: absolute;
-      z-index: 1000;
-      bottom: 125%;
-      left: 50%;
-      margin-left: -160px;
-      opacity: 0;
-      transition: opacity 0.3s;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      border: 1px solid #ccc;
-    }
-
-    [data-theme='dark'] .tooltip .tooltiptext {
-      border: 1px solid #555;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
   <script>
-    function switchTab(tabName) {
-      const tabs = document.querySelectorAll(".tabs button");
-      const contents = document.querySelectorAll(".content");
-      tabs.forEach(tab => tab.classList.remove("active"));
-      contents.forEach(content => content.classList.remove("active"));
-      document.getElementById(tabName).classList.add("active");
-      document.getElementById(tabName + "-btn").classList.add("active");
-    }
-
     function toggleTheme() {
       const current = document.documentElement.getAttribute("data-theme");
       const next = current === "dark" ? "light" : "dark";
@@ -232,21 +152,23 @@
       localStorage.setItem("theme", next);
     }
 
+    function loadLastUpdated() {
+      fetch('last_updated_pitching.txt')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('last-updated').textContent = data;
+        })
+        .catch(error => {
+          document.getElementById('last-updated').textContent = 'Last Updated: Data loading...';
+        });
+    }
+
     window.onload = () => {
       const savedTheme = localStorage.getItem('theme');
       if (savedTheme) {
         document.documentElement.setAttribute("data-theme", savedTheme);
       }
-      switchTab("basic");
-      fetch("last_updated_pitching.txt")
-        .then(res => res.text())
-        .then(text => {
-          document.getElementById("last-updated").innerText = text;
-        })
-        .catch(err => {
-          console.error('Error loading update time:', err);
-          document.getElementById("last-updated").innerText = "Update time unavailable";
-        });
+      loadLastUpdated();
     };
   </script>
 </head>
@@ -254,38 +176,116 @@
   <header>
     <div class="nav-bar">
       <a href="index.html">Home</a>
+      <a href="standings.html">Standings</a>
       <a href="pitching.html" class="active">Pitching Stats</a>
       <a href="batting.html">Batting Stats</a>
-      <a href="standings.html">Standings</a>
       <a href="mvp-cy-young.html">MVP & Cy Young</a>
+      <a href="playoffs.html">Playoff Picture</a>
     </div>
-    <h1>Pitching Stats Dashboard</h1>
-    <p id="last-updated">Loading update time...</p>
+    <h1>⚾ MLB Pitching Stats</h1>
+    <p>Current pitching leaders and advanced metrics for the 2025 season</p>
     <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
   </header>
 
-  <div class="tabs">
-    <button id="basic-btn" onclick="switchTab('basic')">Basic Stats</button>
-    <button id="advanced-btn" onclick="switchTab('advanced')">Advanced Stats</button>
-    <button id="trends-btn" onclick="switchTab('trends')">Trends</button>
-    <button id="glossary-btn" onclick="switchTab('glossary')">Glossary</button>
-  </div>
+  <main>
+    <div class="update-info">
+      <h3>📊 Latest Pitching Data</h3>
+      <p id="last-updated">Last Updated: Loading...</p>
+      <p><strong>Updated:</strong> Weekly on Mondays with complete statistical analysis</p>
+    </div>
 
-  <div id="basic" class="content">
-    <div class="chart-container">
-      <div class="stat-header">
-        <h2>WHIP</h2>
-        <div class="tooltip">
-          <span class="info-icon">?</span>
-          <span class="tooltiptext">
-            <strong>WHIP (Walks + Hits per Inning Pitched)</strong><br>
-            Measures how many baserunners a pitcher allows per inning. Lower is better.<br>
-            <em>Excellent: &lt;1.00 | Good: 1.00-1.25 | Average: 1.25-1.40 | Poor: &gt;1.40</em>
-          </span>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">WHIP Leaders</div>
+        <div class="stat-table">
+          <iframe src="whip_table.html" title="WHIP Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="whip_chart.png" alt="WHIP Chart" onerror="this.style.display='none'">
         </div>
       </div>
-      <img src="whip_chart.png" alt="WHIP Chart">
-      <iframe src="whip_table.html"></iframe>
+
+      <div class="stat-card">
+        <div class="stat-title">ERA Leaders</div>
+        <div class="stat-table">
+          <iframe src="era_table.html" title="ERA Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="era_chart.png" alt="ERA Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-title">Strikeout Leaders</div>
+        <div class="stat-table">
+          <iframe src="so_table.html" title="Strikeout Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="so_chart.png" alt="Strikeouts Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-title">K/BB Ratio Leaders</div>
+        <div class="stat-table">
+          <iframe src="k_bb_table.html" title="K/BB Ratio Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="k_bb_chart.png" alt="K/BB Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-title">HR/9 Leaders (Lowest)</div>
+        <div class="stat-table">
+          <iframe src="hr_9_table.html" title="HR/9 Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="hr_9_chart.png" alt="HR/9 Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-title">FIP Leaders</div>
+        <div class="stat-table">
+          <iframe src="fip_table.html" title="FIP Leaders"></iframe>
+        </div>
+        <div class="chart-container">
+          <img src="fip_chart.png" alt="FIP Chart" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
+    }
+
+    function loadLastUpdated() {
+      fetch('last_updated_pitching.txt')
+        .then(response => response.text())
+        .then(data => {
+          document.getElementById('last-updated').textContent = data;
+        })
+        .catch(error => {
+          document.getElementById('last-updated').textContent = 'Last Updated: Data loading...';
+        });
+    }
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+      loadLastUpdated();
+    };
+  </script>
+</body>
+</html>
     </div>
     <div class="chart-container">
       <div class="stat-header">
