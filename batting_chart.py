@@ -16,140 +16,122 @@ try:
     # Select relevant stats
     df = df[["Name", "Team", "AVG", "HR", "RBI", "OBP", "SLG", "SB", "wOBA", "wRC+", "BABIP", "ISO", "K%", "BB%"]]
 
-    # Filter minimum plate appearances
-    df = df[df.index < 200]  # Top 200 qualified batters
-
     # Save CSV backup
     df.to_csv(f"{output_path}/batting_stats.csv", index=False)
 
-    # Define chart creation function
     def create_chart_and_table(df, stat, title, color):
         try:
-            top = df.sort_values(stat, ascending=False).head(10)
+            # For K%, we want the lowest values (best contact hitters)
+            ascending = stat == "K%"
+            top = df.sort_values(stat, ascending=ascending).head(10)
 
-            # Chart
+            # Create chart
             plt.figure(figsize=(10, 6))
             sns.barplot(data=top, x=stat, y="Name", hue="Name", palette=color, legend=False)
             plt.title(title)
             plt.tight_layout()
-            chart_path = f"{output_path}/{stat.lower().replace('%', '_percent').replace('/', '_')}_chart.png"
+            chart_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct')}_chart.png"
             plt.savefig(chart_path)
             plt.close()
 
-            # Table HTML with dark mode support
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    :root {{
-                        --bg: #ffffff;
-                        --text: #333333;
-                        --border: #dddddd;
-                        --header-bg: #f8f9fa;
-                    }}
-                    
-                    [data-theme='dark'] {{
-                        --bg: #1f1f1f;
-                        --text: #ffffff;
-                        --border: #555555;
-                        --header-bg: #2d2d2d;
-                        --row-even: #2a2a2a;
-                    }}
-                    
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        margin: 0; 
-                        padding: 10px;
-                        background-color: var(--bg);
-                        color: var(--text);
-                        overflow: hidden;
-                    }}
-                    
-                    .table-container {{
-                        width: 100%;
-                        max-width: 100%;
-                        overflow-x: auto;
-                    }}
-                    
-                    table {{ 
-                        width: 100%; 
-                        border-collapse: collapse; 
-                        background-color: var(--bg);
-                        margin: 0 auto;
-                        font-size: 14px;
-                    }}
-                    
-                    th, td {{ 
-                        border: 1px solid var(--border); 
-                        padding: 6px; 
-                        text-align: center;
-                        color: var(--text) !important;
-                    }}
-                    
-                    th {{ 
-                        background-color: var(--header-bg) !important;
-                        font-weight: bold;
-                        color: var(--text) !important;
-                    }}
-                    
-                    tr:nth-child(even) td {{ 
-                        background-color: var(--row-even, #f9f9f9) !important;
-                        color: var(--text) !important;
-                    }}
-                    
-                    tr:nth-child(odd) td {{ 
-                        background-color: var(--bg) !important;
-                        color: var(--text) !important;
-                    }}
-                </style>
-                <script>
-                    window.onload = function() {{
-                        try {{
-                            const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                            if (parentTheme) {{
-                                document.documentElement.setAttribute('data-theme', parentTheme);
-                            }}
-                        }} catch(e) {{
-                            // Cross-origin issues, use default
-                        }}
-                    }};
-                </script>
-            </head>
-            <body>
-                <div class="table-container">
-                    {top.to_html(index=False, classes='stats-table', escape=False)}
-                </div>
-            </body>
-            </html>
-            """
+            # Create simple HTML table with dark mode support
+            html = """<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        :root {
+            --bg: #ffffff;
+            --text: #333333;
+            --border: #dddddd;
+            --header-bg: #f8f9fa;
+        }
+        
+        [data-theme='dark'] {
+            --bg: #1f1f1f;
+            --text: #ffffff;
+            --border: #555555;
+            --header-bg: #2d2d2d;
+            --row-even: #2a2a2a;
+        }
+        
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 10px;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+        
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            background-color: var(--bg);
+            margin: 0 auto;
+            font-size: 14px;
+        }
+        
+        th, td { 
+            border: 1px solid var(--border); 
+            padding: 6px; 
+            text-align: center;
+            color: var(--text) !important;
+        }
+        
+        th { 
+            background-color: var(--header-bg) !important;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) td { 
+            background-color: var(--row-even, #f9f9f9) !important;
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            try {
+                const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            } catch(e) {
+                // Cross-origin issues, use default
+            }
+        };
+    </script>
+</head>
+<body>
+"""
+            html += top.to_html(index=False)
+            html += """
+</body>
+</html>"""
 
-            table_path = f"{output_path}/{stat.lower().replace('%', '_percent').replace('/', '_')}_table.html"
+            table_path = f"{output_path}/batting_{stat.lower().replace('%', '_pct')}_table.html"
             with open(table_path, "w") as f:
-                f.write(html_content)
+                f.write(html)
 
             print(f"✓ Created chart and table for {stat}")
-
+            
         except Exception as e:
             print(f"Error creating chart for {stat}: {e}")
 
-    # List of stats to chart
-    stats_to_plot = [
+    # Stats to plot
+    stats = [
         ("AVG", "Top 10 Batters by Average", "Blues"),
         ("HR", "Top 10 Batters by Home Runs", "Reds"),
-        ("RBI", "Top 10 Batters by RBIs", "Greens"),
+        ("RBI", "Top 10 Batters by RBI", "Greens"),
         ("OBP", "Top 10 Batters by On-Base Percentage", "Purples"),
         ("SLG", "Top 10 Batters by Slugging", "Oranges"),
-        ("wOBA", "Top 10 Batters by wOBA", "BuGn"),
-        ("wRC+", "Top 10 Batters by wRC+", "viridis"),
-        ("BABIP", "Top 10 Batters by BABIP", "plasma"),
-        ("ISO", "Top 10 Batters by Isolated Power", "magma"),
-        ("K%", "Lowest K% (Best Contact)", "coolwarm"),
-        ("BB%", "Top 10 Batters by Walk Rate", "Spectral"),
-        ("SB", "Top 10 Batters by Stolen Bases", "Set2"),
+        ("SB", "Top 10 Batters by Stolen Bases", "BuGn"),
+        ("wOBA", "Top 10 Batters by wOBA", "viridis"),
+        ("wRC+", "Top 10 Batters by wRC+", "plasma"),
+        ("BABIP", "Top 10 Batters by BABIP", "magma"),
+        ("ISO", "Top 10 Batters by ISO", "cool"),
+        ("K%", "Best Contact Hitters (Lowest K%)", "hot"),
+        ("BB%", "Top 10 Batters by Walk Rate", "winter")
     ]
 
-    for stat, title, color in stats_to_plot:
+    for stat, title, color in stats:
         create_chart_and_table(df, stat, title, color)
 
     # Write timestamp
@@ -163,15 +145,33 @@ except Exception as e:
     with open(f"{output_path}/last_updated_batting.txt", "w") as f:
         f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     raise
+except Exception as e:
     print(f"Error in batting_chart.py: {e}")
     # Create a minimal fallback file so the workflow doesn't fail completely
     with open(f"{output_path}/last_updated_batting.txt", "w") as f:
         f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     raise
-        ("SLG", "Top 10 Hitters by Slugging Percentage", "Oranges", False),
-        ("SB", "Top 10 Hitters by Stolen Bases", "BuGn", False),
-        ("wOBA", "Top 10 Hitters by wOBA", "viridis", False),
-        ("wRC+", "Top 10 Hitters by wRC+", "plasma", False),
+        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    raise
+        create_chart_and_table(df, stat, title, color)
+
+    # Write last updated timestamp
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    print("✓ Batting charts and tables generated successfully!")
+
+except Exception as e:
+    print(f"Error in batting_chart.py: {e}")
+    # Create a minimal fallback file so the workflow doesn't fail completely
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    raise
+    print(f"Error in batting_chart.py: {e}")
+    # Create a minimal fallback file so the workflow doesn't fail completely
+    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
+        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    raise
         ("BABIP", "Top 10 Hitters by BABIP", "coolwarm", False),
         ("ISO", "Top 10 Hitters by Isolated Power", "YlOrRd", False),
         ("K%", "Lowest K% (Best Contact)", "Greys", True),

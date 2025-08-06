@@ -1,11 +1,13 @@
 {
+<<<<<<< HEAD
   "last_updated": "2025-08-05 14:06:07",
+=======
+>>>>>>> f598f12 (trying to solve a syntax issue)
   "al_mvp": [
     {
-      "IDfg": 15640,
-      "Season": 2025,
       "Name": "Aaron Judge",
       "Team": "NYY",
+<<<<<<< HEAD
       "Age": 33,
       "G": 103,
       "AB": 377,
@@ -3250,10 +3252,21 @@
       "MVP_Score": 52.86000000000001,
       "MVP_Probability": 65.6,
       "Key_Stats": "11HR/41RBI/0.324AVG"
+=======
+      "MVP_Probability": 85.2,
+      "Key_Stats": "37HR/96RBI/.311AVG"
+    },
+    {
+      "Name": "Mike Trout",
+      "Team": "LAA",
+      "MVP_Probability": 72.8,
+      "Key_Stats": "40HR/104RBI/.283AVG"
+>>>>>>> f598f12 (trying to solve a syntax issue)
     }
   ],
   "nl_mvp": [
     {
+<<<<<<< HEAD
       "IDfg": 16478,
       "Season": 2025,
       "Name": "Kyle Schwarber",
@@ -3577,12 +3590,17 @@
       "MVP_Score": 71.29,
       "MVP_Probability": 88.4,
       "Key_Stats": "40HR/94RBI/0.258AVG"
+=======
+      "Name": "Ronald Acu\u00f1a Jr.",
+      "Team": "ATL",
+      "MVP_Probability": 89.3,
+      "Key_Stats": "41HR/106RBI/.304AVG"
+>>>>>>> f598f12 (trying to solve a syntax issue)
     },
     {
-      "IDfg": 19755,
-      "Season": 2025,
-      "Name": "Shohei Ohtani",
+      "Name": "Freddie Freeman",
       "Team": "LAD",
+<<<<<<< HEAD
       "Age": 30,
       "G": 111,
       "AB": 435,
@@ -6502,10 +6520,15 @@
       "MVP_Score": 57.730000000000004,
       "MVP_Probability": 71.6,
       "Key_Stats": "25HR/63RBI/0.250AVG"
+=======
+      "MVP_Probability": 71.5,
+      "Key_Stats": "22HR/89RBI/.298AVG"
+>>>>>>> f598f12 (trying to solve a syntax issue)
     }
   ],
   "al_cy_young": [
     {
+<<<<<<< HEAD
       "IDfg": 22267,
       "Season": 2025,
       "Name": "Tarik Skubal",
@@ -10484,10 +10507,23 @@
       "CY_Score": 180.8,
       "CyYoung_Probability": 62.9,
       "Key_Stats": "8W/3.22ERA/115K"
+=======
+      "Name": "Gerrit Cole",
+      "Team": "NYY",
+      "CyYoung_Probability": 78.4,
+      "Key_Stats": "13W/3.50ERA/222K"
+    },
+    {
+      "Name": "Shane Bieber",
+      "Team": "CLE",
+      "CyYoung_Probability": 71.2,
+      "Key_Stats": "13W/2.88ERA/198K"
+>>>>>>> f598f12 (trying to solve a syntax issue)
     }
   ],
   "nl_cy_young": [
     {
+<<<<<<< HEAD
       "IDfg": 20778,
       "Season": 2025,
       "Name": "Cristopher Sanchez",
@@ -14466,14 +14502,19 @@
       "CY_Score": 201.75,
       "CyYoung_Probability": 70.1,
       "Key_Stats": "9W/2.85ERA/140K"
+=======
+      "Name": "Spencer Strider",
+      "Team": "ATL",
+      "CyYoung_Probability": 92.1,
+      "Key_Stats": "20W/2.67ERA/281K"
+    },
+    {
+      "Name": "Sandy Alcantara",
+      "Team": "MIA",
+      "CyYoung_Probability": 76.8,
+      "Key_Stats": "14W/2.28ERA/207K"
+>>>>>>> f598f12 (trying to solve a syntax issue)
     }
   ],
-  "al_roy": [],
-  "nl_roy": [],
-  "al_mvp_leader": "Aaron Judge",
-  "nl_mvp_leader": "Kyle Schwarber",
-  "al_cy_leader": "Tarik Skubal",
-  "nl_cy_leader": "Cristopher Sanchez",
-  "al_roy_leader": "N/A",
-  "nl_roy_leader": "N/A"
+  "last_updated": "2025-01-17 14:30:00"
 }
