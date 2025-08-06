@@ -1,102 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+:root {
+    --bg: #ffffff;
+    --text: #333333;
+    --border: #dddddd;
+    --header-bg: #f8f9fa;
+}
 
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    :root {
-                        --bg: #ffffff;
-                        --text: #333333;
-                        --border: #dddddd;
-                        --header-bg: #f8f9fa;
-                    }
-                    
-                    [data-theme='dark'] {
-                        --bg: #1f1f1f;
-                        --text: #ffffff;
-                        --border: #555555;
-                        --header-bg: #2d2d2d;
-                        --row-even: #2a2a2a;
-                    }
-                    
-                    body { 
-                        font-family: Arial, sans-serif; 
-                        margin: 0; 
-                        padding: 10px;
-                        background-color: var(--bg);
-                        color: var(--text);
-                        overflow: hidden;
-                    }
-                    
-                    .table-container {
-                        width: 100%;
-                        max-width: 100%;
-                        overflow-x: auto;
-                    }
-                    
-                    table { 
-                        width: 100%; 
-                        border-collapse: collapse; 
-                        background-color: var(--bg);
-                        margin: 0 auto;
-                        font-size: 14px;
-                    }
-                    
-                    th, td { 
-                        border: 1px solid var(--border); 
-                        padding: 6px; 
-                        text-align: center;
-                        color: var(--text) !important;
-                    }
-                    
-                    th { 
-                        background-color: var(--header-bg) !important;
-                        font-weight: bold;
-                        color: var(--text) !important;
-                    }
-                    
-                    tr:nth-child(even) td { 
-                        background-color: var(--row-even, #f9f9f9) !important;
-                        color: var(--text) !important;
-                    }
-                    
-                    tr:nth-child(odd) td { 
-                        background-color: var(--bg) !important;
-                        color: var(--text) !important;
-                    }
-                </style>
-                <script>
-                    window.onload = function() {
-                        try {
-                            const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                            if (parentTheme) {
-                                document.documentElement.setAttribute('data-theme', parentTheme);
-                            }
-                        } catch(e) {
-                            // Cross-origin issues, use default
-                        }
-                    };
-                </script>
-            </head>
-            <body>
-                <div class="table-container">
-                    <table border="1" class="dataframe stats-table">
+[data-theme='dark'] {
+    --bg: #1f1f1f;
+    --text: #ffffff;
+    --border: #555555;
+    --header-bg: #2d2d2d;
+    --row-even: #2a2a2a;
+}
+
+body { 
+    font-family: Arial, sans-serif; 
+    margin: 0; 
+    padding: 10px;
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin: 0 auto;
+    font-size: 14px;
+}
+
+th, td { 
+    border: 1px solid var(--border); 
+    padding: 6px; 
+    text-align: center;
+}
+
+th { 
+    background-color: var(--header-bg);
+    font-weight: bold;
+}
+
+tr:nth-child(even) td { 
+    background-color: var(--row-even, #f9f9f9);
+}
+</style>
+<script>
+window.onload = function() {
+    try {
+        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+        if (parentTheme) {
+            document.documentElement.setAttribute('data-theme', parentTheme);
+        }
+    } catch(e) {}
+};
+</script>
+</head>
+<body>
+<table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th>Name</th>
       <th>Team</th>
-      <th>G</th>
-      <th>AB</th>
-      <th>R</th>
-      <th>H</th>
+      <th>AVG</th>
       <th>HR</th>
       <th>RBI</th>
-      <th>SB</th>
-      <th>BB</th>
-      <th>SO</th>
-      <th>AVG</th>
       <th>OBP</th>
       <th>SLG</th>
-      <th>OPS</th>
+      <th>SB</th>
       <th>wOBA</th>
       <th>wRC+</th>
       <th>BABIP</th>
@@ -109,236 +82,164 @@
     <tr>
       <td>Oneil Cruz</td>
       <td>PIT</td>
-      <td>100</td>
-      <td>366</td>
-      <td>56</td>
-      <td>78</td>
+      <td>0.209</td>
       <td>18</td>
       <td>48</td>
+      <td>0.305</td>
+      <td>0.406</td>
       <td>34</td>
-      <td>51</td>
-      <td>135</td>
-      <td>0.213</td>
-      <td>0.311</td>
-      <td>0.415</td>
-      <td>0.726</td>
-      <td>0.314</td>
-      <td>98</td>
-      <td>0.275</td>
-      <td>0.202</td>
-      <td>0.318</td>
-      <td>0.120</td>
+      <td>0.307</td>
+      <td>94</td>
+      <td>0.268</td>
+      <td>0.198</td>
+      <td>0.316</td>
+      <td>0.118</td>
     </tr>
     <tr>
       <td>Jose Ramirez</td>
       <td>CLE</td>
-      <td>108</td>
-      <td>407</td>
-      <td>71</td>
-      <td>123</td>
+      <td>0.296</td>
       <td>23</td>
       <td>61</td>
+      <td>0.372</td>
+      <td>0.523</td>
       <td>32</td>
-      <td>46</td>
-      <td>47</td>
-      <td>0.302</td>
-      <td>0.377</td>
-      <td>0.533</td>
-      <td>0.910</td>
-      <td>0.379</td>
-      <td>146</td>
-      <td>0.292</td>
-      <td>0.231</td>
+      <td>0.372</td>
+      <td>141</td>
+      <td>0.287</td>
+      <td>0.227</td>
       <td>0.101</td>
       <td>0.099</td>
     </tr>
     <tr>
       <td>Elly De La Cruz</td>
       <td>CIN</td>
-      <td>112</td>
-      <td>429</td>
-      <td>80</td>
-      <td>121</td>
+      <td>0.279</td>
       <td>19</td>
-      <td>72</td>
+      <td>73</td>
+      <td>0.356</td>
+      <td>0.478</td>
       <td>30</td>
-      <td>51</td>
-      <td>118</td>
-      <td>0.282</td>
-      <td>0.360</td>
-      <td>0.483</td>
-      <td>0.843</td>
-      <td>0.359</td>
-      <td>127</td>
-      <td>0.348</td>
-      <td>0.200</td>
-      <td>0.244</td>
-      <td>0.106</td>
+      <td>0.356</td>
+      <td>125</td>
+      <td>0.346</td>
+      <td>0.199</td>
+      <td>0.246</td>
+      <td>0.104</td>
     </tr>
     <tr>
       <td>Pete Crow-Armstrong</td>
       <td>CHC</td>
-      <td>109</td>
-      <td>427</td>
-      <td>74</td>
-      <td>114</td>
+      <td>0.266</td>
       <td>27</td>
       <td>78</td>
+      <td>0.304</td>
+      <td>0.544</td>
       <td>29</td>
-      <td>20</td>
-      <td>111</td>
-      <td>0.267</td>
-      <td>0.303</td>
-      <td>0.548</td>
-      <td>0.851</td>
-      <td>0.359</td>
-      <td>134</td>
-      <td>0.297</td>
-      <td>0.281</td>
-      <td>0.242</td>
-      <td>0.044</td>
-    </tr>
-    <tr>
-      <td>Bobby Witt Jr.</td>
-      <td>KCR</td>
-      <td>111</td>
-      <td>438</td>
-      <td>69</td>
-      <td>125</td>
-      <td>16</td>
-      <td>63</td>
-      <td>29</td>
-      <td>36</td>
-      <td>95</td>
-      <td>0.285</td>
-      <td>0.340</td>
-      <td>0.493</td>
-      <td>0.833</td>
-      <td>0.352</td>
-      <td>123</td>
-      <td>0.327</td>
-      <td>0.208</td>
-      <td>0.197</td>
-      <td>0.075</td>
-    </tr>
-    <tr>
-      <td>Victor Scott II</td>
-      <td>STL</td>
-      <td>106</td>
-      <td>330</td>
-      <td>47</td>
-      <td>75</td>
-      <td>5</td>
-      <td>33</td>
-      <td>29</td>
-      <td>35</td>
-      <td>95</td>
-      <td>0.227</td>
-      <td>0.315</td>
-      <td>0.318</td>
-      <td>0.633</td>
-      <td>0.287</td>
-      <td>84</td>
-      <td>0.302</td>
-      <td>0.091</td>
-      <td>0.250</td>
-      <td>0.092</td>
+      <td>0.357</td>
+      <td>133</td>
+      <td>0.298</td>
+      <td>0.278</td>
+      <td>0.245</td>
+      <td>0.043</td>
     </tr>
     <tr>
       <td>Luis Robert Jr.</td>
       <td>CHW</td>
-      <td>91</td>
-      <td>311</td>
-      <td>43</td>
-      <td>68</td>
-      <td>11</td>
-      <td>45</td>
-      <td>29</td>
-      <td>36</td>
-      <td>99</td>
       <td>0.219</td>
+      <td>12</td>
+      <td>46</td>
       <td>0.301</td>
-      <td>0.354</td>
-      <td>0.655</td>
-      <td>0.288</td>
-      <td>82</td>
-      <td>0.279</td>
-      <td>0.135</td>
+      <td>0.362</td>
+      <td>29</td>
+      <td>0.291</td>
+      <td>83</td>
+      <td>0.277</td>
+      <td>0.143</td>
       <td>0.278</td>
-      <td>0.101</td>
+      <td>0.100</td>
+    </tr>
+    <tr>
+      <td>Victor Scott II</td>
+      <td>STL</td>
+      <td>0.225</td>
+      <td>5</td>
+      <td>33</td>
+      <td>0.311</td>
+      <td>0.314</td>
+      <td>29</td>
+      <td>0.284</td>
+      <td>82</td>
+      <td>0.298</td>
+      <td>0.090</td>
+      <td>0.250</td>
+      <td>0.091</td>
+    </tr>
+    <tr>
+      <td>Bobby Witt Jr.</td>
+      <td>KCR</td>
+      <td>0.287</td>
+      <td>16</td>
+      <td>63</td>
+      <td>0.341</td>
+      <td>0.496</td>
+      <td>29</td>
+      <td>0.354</td>
+      <td>124</td>
+      <td>0.330</td>
+      <td>0.209</td>
+      <td>0.197</td>
+      <td>0.075</td>
     </tr>
     <tr>
       <td>CJ Abrams</td>
       <td>WSN</td>
-      <td>97</td>
-      <td>387</td>
-      <td>68</td>
-      <td>106</td>
+      <td>0.273</td>
       <td>14</td>
       <td>42</td>
+      <td>0.340</td>
+      <td>0.464</td>
       <td>26</td>
-      <td>29</td>
-      <td>73</td>
-      <td>0.274</td>
-      <td>0.342</td>
-      <td>0.468</td>
-      <td>0.810</td>
-      <td>0.350</td>
-      <td>125</td>
-      <td>0.305</td>
-      <td>0.194</td>
-      <td>0.169</td>
+      <td>0.348</td>
+      <td>124</td>
+      <td>0.304</td>
+      <td>0.191</td>
+      <td>0.170</td>
       <td>0.067</td>
     </tr>
     <tr>
       <td>Trea Turner</td>
       <td>PHI</td>
-      <td>109</td>
-      <td>452</td>
-      <td>72</td>
-      <td>128</td>
+      <td>0.280</td>
       <td>11</td>
       <td>45</td>
+      <td>0.334</td>
+      <td>0.415</td>
       <td>25</td>
-      <td>33</td>
-      <td>85</td>
-      <td>0.283</td>
-      <td>0.336</td>
-      <td>0.420</td>
-      <td>0.756</td>
-      <td>0.330</td>
-      <td>110</td>
       <td>0.327</td>
-      <td>0.137</td>
-      <td>0.173</td>
-      <td>0.067</td>
+      <td>108</td>
+      <td>0.323</td>
+      <td>0.135</td>
+      <td>0.172</td>
+      <td>0.068</td>
     </tr>
     <tr>
       <td>Kyle Tucker</td>
       <td>CHC</td>
-      <td>109</td>
-      <td>402</td>
-      <td>75</td>
-      <td>111</td>
+      <td>0.271</td>
       <td>18</td>
       <td>61</td>
+      <td>0.384</td>
+      <td>0.474</td>
       <td>23</td>
-      <td>74</td>
-      <td>67</td>
-      <td>0.276</td>
-      <td>0.389</td>
-      <td>0.483</td>
-      <td>0.871</td>
-      <td>0.375</td>
-      <td>144</td>
-      <td>0.291</td>
-      <td>0.206</td>
-      <td>0.138</td>
-      <td>0.153</td>
+      <td>0.370</td>
+      <td>141</td>
+      <td>0.288</td>
+      <td>0.203</td>
+      <td>0.144</td>
+      <td>0.152</td>
     </tr>
   </tbody>
 </table>
-                </div>
-            </body>
-            </html>
-            
+</body>
+</html>
