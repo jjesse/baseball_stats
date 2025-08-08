@@ -28,7 +28,7 @@
       }
     ],
     "elimination_watch": [],
-    "last_updated": "2025-08-07 13:45:49"
+    "last_updated": "2025-08-08 13:44:53"
   },
   "playoff_scenarios": {
     "al_division_winners": {},
@@ -46,7 +46,7 @@
       "NaN": 8.3,
       "NaN": 8.3,
       "NaN": 8.2,
-      "NaN": 8.0,
+      "NaN": 8.1,
       "NaN": 7.9
     }
   },
@@ -134,11 +134,11 @@
     },
     "NaN": {
       "wins": 42,
-      "losses": 72,
-      "win_pct": 0.368,
-      "projected_wins": 59.7,
-      "strength_score": 0.179,
-      "games_remaining": 48,
+      "losses": 73,
+      "win_pct": 0.365,
+      "projected_wins": 59.2,
+      "strength_score": 0.175,
+      "games_remaining": 47,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -151,12 +151,12 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 62,
+      "wins": 63,
       "losses": 53,
-      "win_pct": 0.539,
-      "projected_wins": 87.3,
-      "strength_score": 0.401,
-      "games_remaining": 47,
+      "win_pct": 0.543,
+      "projected_wins": 88.0,
+      "strength_score": 0.406,
+      "games_remaining": 46,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -178,12 +178,12 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 50,
+      "wins": 51,
       "losses": 66,
-      "win_pct": 0.431,
-      "projected_wins": 69.8,
-      "strength_score": 0.26,
-      "games_remaining": 46,
+      "win_pct": 0.436,
+      "projected_wins": 70.6,
+      "strength_score": 0.267,
+      "games_remaining": 45,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -206,29 +206,29 @@
     },
     "NaN": {
       "wins": 56,
-      "losses": 57,
-      "win_pct": 0.496,
-      "projected_wins": 80.3,
-      "strength_score": 0.344,
-      "games_remaining": 49,
+      "losses": 58,
+      "win_pct": 0.491,
+      "projected_wins": 79.6,
+      "strength_score": 0.339,
+      "games_remaining": 48,
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 47,
+      "wins": 48,
       "losses": 66,
-      "win_pct": 0.416,
-      "projected_wins": 67.4,
-      "strength_score": 0.241,
-      "games_remaining": 49,
+      "win_pct": 0.421,
+      "projected_wins": 68.2,
+      "strength_score": 0.247,
+      "games_remaining": 48,
       "division": "MLB Unknown"
     },
     "NaN": {
       "wins": 45,
-      "losses": 68,
-      "win_pct": 0.398,
-      "projected_wins": 64.5,
-      "strength_score": 0.218,
-      "games_remaining": 49,
+      "losses": 69,
+      "win_pct": 0.395,
+      "projected_wins": 63.9,
+      "strength_score": 0.213,
+      "games_remaining": 48,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -251,11 +251,11 @@
     },
     "NaN": {
       "wins": 60,
-      "losses": 55,
-      "win_pct": 0.522,
-      "projected_wins": 84.5,
-      "strength_score": 0.378,
-      "games_remaining": 47,
+      "losses": 56,
+      "win_pct": 0.517,
+      "projected_wins": 83.8,
+      "strength_score": 0.372,
+      "games_remaining": 46,
       "division": "MLB Unknown"
     },
     "NaN": {
@@ -268,12 +268,12 @@
       "division": "MLB Unknown"
     },
     "NaN": {
-      "wins": 49,
+      "wins": 50,
       "losses": 66,
-      "win_pct": 0.426,
-      "projected_wins": 69.0,
-      "strength_score": 0.254,
-      "games_remaining": 47,
+      "win_pct": 0.431,
+      "projected_wins": 69.8,
+      "strength_score": 0.26,
+      "games_remaining": 46,
       "division": "MLB Unknown"
     },
     "NaN": {
