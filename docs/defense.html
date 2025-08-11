@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Defensive Stats - 2025 Season</title>
+    <style>
+        :root {
+            --bg: #f9f9f9;
+            --text: #333;
+            --card-bg: #fff;
+            --header-bg: #222;
+            --nav-bg: #222;
+            --accent-color: #007bff;
+            --border-color: #dee2e6;
+            --hover-color: #e9ecef;
+            --success-color: #28a745;
+            --link-hover: rgba(255, 255, 255, 0.1);
+            --link-active: rgba(255, 255, 255, 0.2);
+            --link-shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme='dark'] {
+            --bg: #121212;
+            --text: #eee;
+            --card-bg: #1f1f1f;
+            --header-bg: #000;
+            --nav-bg: #000;
+            --accent-color: #4dabf7;
+            --border-color: #495057;
+            --hover-color: #343a40;
+            --success-color: #40c057;
+            --link-hover: rgba(255, 255, 255, 0.15);
+            --link-active: rgba(255, 255, 255, 0.25);
+            --link-shadow: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            transition: all 0.3s ease;
+            margin: 0;
+        }
+
+        .nav-bar {
+            background-color: var(--header-bg);
+            padding: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .nav-bar a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-bar a:hover {
+            background-color: var(--link-hover);
+        }
+
+        .nav-bar a.active {
+            background-color: var(--link-active);
+        }
+
+        header {
+            background-color: var(--header-bg);
+            color: white;
+            padding: 2rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+            margin: 0.5rem 0;
+            font-size: 2.5rem;
+        }
+
+        .dark-toggle {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        .dark-toggle:hover {
+            opacity: 0.9;
+        }
+
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .intro {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px var(--link-shadow);
+        }
+
+        .intro h2 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-section {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px var(--link-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-section:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px var(--link-shadow);
+        }
+
+        .stat-header {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            background-color: var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chart-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background-color: var(--card-bg);
+        }
+
+        .chart-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background-color: var(--card-bg);
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--hover-color);
+            color: var(--text);
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .table-container {
+            max-height: 300px;
+            overflow-y: auto;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .table-container iframe {
+            width: 100%;
+            height: 300px;
+            border: none;
+            background-color: var(--card-bg);
+        }
+
+        .legend {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px var(--link-shadow);
+        }
+
+        .legend h3 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .legend-item strong {
+            color: var(--accent-color);
+            min-width: 50px;
+            flex-shrink: 0;
+        }
+
+        .update-time {
+            text-align: center;
+            margin-top: 2rem;
+            padding: 1rem;
+            background-color: var(--card-bg);
+            border-radius: 5px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 6px var(--link-shadow);
+            font-style: italic;
+            color: var(--success-color);
+        }
+
+        @media (max-width: 768px) {
+            .nav-bar {
+                gap: 0.5rem;
+                flex-wrap: wrap;
+            }
+
+            .nav-bar a {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.9rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            main {
+                padding: 0 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-bar">
+            <a href="index.html">Home</a>
+            <a href="pitching.html">Pitching Stats</a>
+            <a href="batting.html">Batting Stats</a>
+            <a href="standings.html">Standings</a>
+            <a href="mvp-cy-young.html">MVP & Cy Young</a>
+            <a href="playoffs.html">Playoff Picture</a>
+            <a href="defense.html" class="active">Defense</a>
+        </div>
+        <h1>🛡️ MLB Defensive Stats</h1>
+        <p>Fielding statistics and defensive leaders for the 2025 season</p>
+        <button class="dark-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+    </header>
+
+    <main>
+        <div class="intro">
+            <h2>🏆 Defensive Leaders Dashboard</h2>
+            <p>
+                Track the best defensive players in Major League Baseball with comprehensive fielding statistics. 
+                From Gold Glove contenders to error leaders, explore who's making the biggest impact on defense.
+                All statistics are updated regularly throughout the season.
+            </p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-section">
+                <div class="stat-header">
+                    <h3>🥇 Fielding Percentage Leaders</h3>
+                </div>
+                <div class="chart-container">
+                    <img src="defense_fld_pct_chart.png" alt="Fielding Percentage Leaders" loading="lazy" 
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="chart-placeholder" style="display:none;">
+                        <div>📊</div>
+                        <div>Fielding Percentage Chart</div>
+                        <div style="font-size:12px; margin-top:10px;">Data will load when charts are generated</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <iframe src="defense_fld_pct_table.html" title="Fielding Percentage Table"></iframe>
+                </div>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">
+                    <h3>🤝 Putout Leaders</h3>
+                </div>
+                <div class="chart-container">
+                    <img src="defense_po_chart.png" alt="Putout Leaders" loading="lazy"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="chart-placeholder" style="display:none;">
+                        <div>📊</div>
+                        <div>Putout Leaders Chart</div>
+                        <div style="font-size:12px; margin-top:10px;">Data will load when charts are generated</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <iframe src="defense_po_table.html" title="Putouts Table"></iframe>
+                </div>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">
+                    <h3>🎯 Assist Leaders</h3>
+                </div>
+                <div class="chart-container">
+                    <img src="defense_a_chart.png" alt="Assist Leaders" loading="lazy"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="chart-placeholder" style="display:none;">
+                        <div>📊</div>
+                        <div>Assist Leaders Chart</div>
+                        <div style="font-size:12px; margin-top:10px;">Data will load when charts are generated</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <iframe src="defense_a_table.html" title="Assists Table"></iframe>
+                </div>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">
+                    <h3>⚡ Double Play Leaders</h3>
+                </div>
+                <div class="chart-container">
+                    <img src="defense_dp_chart.png" alt="Double Play Leaders" loading="lazy"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="chart-placeholder" style="display:none;">
+                        <div>📊</div>
+                        <div>Double Play Leaders Chart</div>
+                        <div style="font-size:12px; margin-top:10px;">Data will load when charts are generated</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <iframe src="defense_dp_table.html" title="Double Plays Table"></iframe>
+                </div>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">
+                    <h3>🚫 Fewest Errors</h3>
+                </div>
+                <div class="chart-container">
+                    <img src="defense_e_chart.png" alt="Fewest Errors" loading="lazy"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="chart-placeholder" style="display:none;">
+                        <div>📊</div>
+                        <div>Fewest Errors Chart</div>
+                        <div style="font-size:12px; margin-top:10px;">Data will load when charts are generated</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <iframe src="defense_e_table.html" title="Errors Table"></iframe>
+                </div>
+            </div>
+
+            <div class="stat-section">
+                <div class="stat-header">
+                    <h3>🏃‍♂️ Caught Stealing % (Catchers)</h3>
+                </div>
+                <div class="chart-container">
+                    <img src="defense_cs_pct_chart.png" alt="Caught Stealing Percentage" loading="lazy"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="chart-placeholder" style="display:none;">
+                        <div>📊</div>
+                        <div>Caught Stealing % Chart</div>
+                        <div style="font-size:12px; margin-top:10px;">Data will load when charts are generated</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <iframe src="defense_cs_pct_table.html" title="Caught Stealing % Table"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <h3>📚 Defensive Statistics Glossary</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <strong>Fld%:</strong>
+                    <span>Fielding Percentage - (Putouts + Assists) ÷ (Putouts + Assists + Errors)</span>
+                </div>
+                <div class="legend-item">
+                    <strong>PO:</strong>
+                    <span>Putouts - Number of outs recorded by the fielder</span>
+                </div>
+                <div class="legend-item">
+                    <strong>A:</strong>
+                    <span>Assists - Number of assists recorded by the fielder</span>
+                </div>
+                <div class="legend-item">
+                    <strong>E:</strong>
+                    <span>Errors - Number of errors committed by the fielder</span>
+                </div>
+                <div class="legend-item">
+                    <strong>DP:</strong>
+                    <span>Double Plays - Number of double plays the fielder participated in</span>
+                </div>
+                <div class="legend-item">
+                    <strong>CS%:</strong>
+                    <span>Caught Stealing % - Percentage of base stealers thrown out (catchers only)</span>
+                </div>
+                <div class="legend-item">
+                    <strong>G:</strong>
+                    <span>Games - Number of games played at the position</span>
+                </div>
+                <div class="legend-item">
+                    <strong>Inn:</strong>
+                    <span>Innings - Number of innings played at the position</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="update-time" id="update-time">
+            Loading update time...
+        </div>
+    </main>
+
+    <script>
+        // Dark mode toggle
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update iframes to match theme
+            const iframes = document.querySelectorAll('iframe');
+            iframes.forEach(iframe => {
+                try {
+                    iframe.contentDocument.documentElement.setAttribute('data-theme', newTheme);
+                } catch(e) {
+                    // Cross-origin restrictions prevent this, but it's handled in the iframe content
+                }
+            });
+        }
+
+        // Load saved theme
+        window.addEventListener('load', function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            // Load update time
+            fetch('last_updated_defense.txt')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('update-time').textContent = data;
+                })
+                .catch(error => {
+                    document.getElementById('update-time').textContent = 'Update time unavailable';
+                });
+        });
+
+        // Handle iframe loading and theme sync
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframes = document.querySelectorAll('iframe');
+            
+            iframes.forEach(iframe => {
+                iframe.addEventListener('load', function() {
+                    try {
+                        const currentTheme = document.documentElement.getAttribute('data-theme');
+                        iframe.contentDocument.documentElement.setAttribute('data-theme', currentTheme);
+                    } catch(e) {
+                        // Cross-origin restrictions - handled by iframe content
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
