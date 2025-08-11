@@ -1,0 +1,806 @@
+
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                :root {
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
+                }
+                
+                [data-theme='dark'] {
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }
+                
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 10px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                    overflow: hidden;
+                }
+                
+                .table-container {
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: auto;
+                }
+                
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    background-color: var(--bg);
+                    margin: 0 auto;
+                    font-size: 14px;
+                }
+                
+                th, td { 
+                    border: 1px solid var(--border); 
+                    padding: 6px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }
+                
+                th { 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }
+                
+                tr:nth-child(even) td { 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }
+                
+                tr:nth-child(odd) td { 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }
+            </style>
+            <script>
+                window.onload = function() {
+                    try {
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    } catch(e) {
+                        // Cross-origin issues, use default
+                    }
+                };
+            </script>
+        </head>
+        <body>
+            <div class="table-container">
+                <table border="1" class="dataframe stats-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>IDfg</th>
+      <th>Season</th>
+      <th>Name</th>
+      <th>Team</th>
+      <th>Pos</th>
+      <th>G</th>
+      <th>GS</th>
+      <th>Inn</th>
+      <th>PO</th>
+      <th>A</th>
+      <th>E</th>
+      <th>FE</th>
+      <th>TE</th>
+      <th>DP</th>
+      <th>DPS</th>
+      <th>DPT</th>
+      <th>DPF</th>
+      <th>Scp</th>
+      <th>SB</th>
+      <th>CS</th>
+      <th>PB</th>
+      <th>WP</th>
+      <th>FP</th>
+      <th>TZ</th>
+      <th>rSB</th>
+      <th>rGDP</th>
+      <th>rARM</th>
+      <th>rGFP</th>
+      <th>rPM</th>
+      <th>DRS</th>
+      <th>BIZ</th>
+      <th>Plays</th>
+      <th>RZR</th>
+      <th>OOZ</th>
+      <th>TZL</th>
+      <th>FSR</th>
+      <th>ARM</th>
+      <th>DPR</th>
+      <th>RngR</th>
+      <th>ErrR</th>
+      <th>UZR</th>
+      <th>UZR/150</th>
+      <th>CPP</th>
+      <th>RPP</th>
+      <th>Def</th>
+      <th>0%</th>
+      <th># 0%</th>
+      <th>1-10%</th>
+      <th># 1-10%</th>
+      <th>10-40%</th>
+      <th># 10-40%</th>
+      <th>40-60%</th>
+      <th># 40-60%</th>
+      <th>60-90%</th>
+      <th># 60-90%</th>
+      <th>90-100%</th>
+      <th># 90-100%</th>
+      <th>rSZ</th>
+      <th>rCERA</th>
+      <th>rTS</th>
+      <th>FRM</th>
+      <th>OAA</th>
+      <th>Range</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>11739</td>
+      <td>2025</td>
+      <td>J.T. Realmuto</td>
+      <td>PHI</td>
+      <td>C</td>
+      <td>96</td>
+      <td>96</td>
+      <td>843.1</td>
+      <td>892</td>
+      <td>27</td>
+      <td>4</td>
+      <td>0</td>
+      <td>3</td>
+      <td>0</td>
+      <td>7</td>
+      <td>0</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>52.0</td>
+      <td>21.0</td>
+      <td>1.0</td>
+      <td>23.0</td>
+      <td>0.996</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>-3</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>4.9</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-5</td>
+      <td>2.0</td>
+      <td>NaN</td>
+      <td>-4.6</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>33189</td>
+      <td>2025</td>
+      <td>Nolan Schanuel</td>
+      <td>LAA</td>
+      <td>1B</td>
+      <td>113</td>
+      <td>112</td>
+      <td>983.0</td>
+      <td>882</td>
+      <td>55</td>
+      <td>6</td>
+      <td>3</td>
+      <td>3</td>
+      <td>101</td>
+      <td>10</td>
+      <td>0</td>
+      <td>104</td>
+      <td>17.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.994</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>-3.0</td>
+      <td>-2</td>
+      <td>132.0</td>
+      <td>97.0</td>
+      <td>0.735</td>
+      <td>14.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-8.2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-1.0</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <td>20503</td>
+      <td>2025</td>
+      <td>William Contreras</td>
+      <td>MIL</td>
+      <td>C</td>
+      <td>96</td>
+      <td>96</td>
+      <td>834.1</td>
+      <td>858</td>
+      <td>35</td>
+      <td>4</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>4</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>49.0</td>
+      <td>18.0</td>
+      <td>5.0</td>
+      <td>24.0</td>
+      <td>0.996</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>9.5</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>3</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>0.9</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>19251</td>
+      <td>2025</td>
+      <td>Pete Alonso</td>
+      <td>NYM</td>
+      <td>1B</td>
+      <td>117</td>
+      <td>116</td>
+      <td>1028.0</td>
+      <td>857</td>
+      <td>87</td>
+      <td>5</td>
+      <td>1</td>
+      <td>3</td>
+      <td>73</td>
+      <td>3</td>
+      <td>0</td>
+      <td>72</td>
+      <td>21.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.995</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>-6.0</td>
+      <td>-5</td>
+      <td>180.0</td>
+      <td>134.0</td>
+      <td>0.744</td>
+      <td>17.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-9.1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-2.0</td>
+      <td>-1.0</td>
+    </tr>
+    <tr>
+      <td>14344</td>
+      <td>2025</td>
+      <td>Matt Olson</td>
+      <td>ATL</td>
+      <td>1B</td>
+      <td>118</td>
+      <td>118</td>
+      <td>1044.2</td>
+      <td>856</td>
+      <td>107</td>
+      <td>3</td>
+      <td>1</td>
+      <td>2</td>
+      <td>60</td>
+      <td>11</td>
+      <td>0</td>
+      <td>59</td>
+      <td>14.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.997</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>11.0</td>
+      <td>14</td>
+      <td>170.0</td>
+      <td>137.0</td>
+      <td>0.806</td>
+      <td>26.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-2.3</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>8.0</td>
+      <td>6.0</td>
+    </tr>
+    <tr>
+      <td>23003</td>
+      <td>2025</td>
+      <td>Yainer Diaz</td>
+      <td>HOU</td>
+      <td>C</td>
+      <td>80</td>
+      <td>79</td>
+      <td>703.0</td>
+      <td>794</td>
+      <td>23</td>
+      <td>2</td>
+      <td>0</td>
+      <td>2</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>71.0</td>
+      <td>11.0</td>
+      <td>6.0</td>
+      <td>20.0</td>
+      <td>0.998</td>
+      <td>NaN</td>
+      <td>-3.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>-4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-3.1</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-3</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>-5.9</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <td>19566</td>
+      <td>2025</td>
+      <td>Nathaniel Lowe</td>
+      <td>WSN</td>
+      <td>1B</td>
+      <td>112</td>
+      <td>110</td>
+      <td>969.1</td>
+      <td>789</td>
+      <td>57</td>
+      <td>7</td>
+      <td>6</td>
+      <td>1</td>
+      <td>76</td>
+      <td>6</td>
+      <td>0</td>
+      <td>75</td>
+      <td>12.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.992</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>-3</td>
+      <td>-2.0</td>
+      <td>-5</td>
+      <td>142.0</td>
+      <td>102.0</td>
+      <td>0.718</td>
+      <td>10.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-11.3</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-5.0</td>
+      <td>-4.0</td>
+    </tr>
+    <tr>
+      <td>11609</td>
+      <td>2025</td>
+      <td>Willson Contreras</td>
+      <td>STL</td>
+      <td>1B</td>
+      <td>98</td>
+      <td>97</td>
+      <td>821.1</td>
+      <td>788</td>
+      <td>67</td>
+      <td>6</td>
+      <td>2</td>
+      <td>3</td>
+      <td>56</td>
+      <td>4</td>
+      <td>1</td>
+      <td>60</td>
+      <td>8.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.993</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>-2</td>
+      <td>2.0</td>
+      <td>-1</td>
+      <td>144.0</td>
+      <td>113.0</td>
+      <td>0.785</td>
+      <td>19.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-2.6</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>5.0</td>
+      <td>4.0</td>
+    </tr>
+    <tr>
+      <td>13419</td>
+      <td>2025</td>
+      <td>Christian Walker</td>
+      <td>HOU</td>
+      <td>1B</td>
+      <td>110</td>
+      <td>110</td>
+      <td>958.0</td>
+      <td>785</td>
+      <td>36</td>
+      <td>5</td>
+      <td>3</td>
+      <td>2</td>
+      <td>56</td>
+      <td>3</td>
+      <td>0</td>
+      <td>62</td>
+      <td>9.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.994</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>NaN</td>
+      <td>-1</td>
+      <td>-8.0</td>
+      <td>-9</td>
+      <td>111.0</td>
+      <td>75.0</td>
+      <td>0.676</td>
+      <td>13.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-7.4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.0</td>
+      <td>0.0</td>
+    </tr>
+    <tr>
+      <td>27465</td>
+      <td>2025</td>
+      <td>Spencer Torkelson</td>
+      <td>DET</td>
+      <td>1B</td>
+      <td>103</td>
+      <td>102</td>
+      <td>902.0</td>
+      <td>751</td>
+      <td>67</td>
+      <td>3</td>
+      <td>2</td>
+      <td>1</td>
+      <td>71</td>
+      <td>15</td>
+      <td>0</td>
+      <td>70</td>
+      <td>20.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.996</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1.0</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>0.0</td>
+      <td>2</td>
+      <td>132.0</td>
+      <td>107.0</td>
+      <td>0.811</td>
+      <td>21.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-8.2</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>-2.0</td>
+      <td>-1.0</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </body>
+        </html>
+        
