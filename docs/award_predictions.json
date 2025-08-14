@@ -6,6 +6,7 @@
       "Season": 2025,
       "Name": "Aaron Judge",
       "Team": "NYY",
+<<<<<<< HEAD
       "Age": 33,
       "G": 111,
       "AB": 402,
@@ -3250,10 +3251,25 @@
       "MVP_Score": 53.470000000000006,
       "MVP_Probability": 67.6,
       "Key_Stats": "13HR/45RBI/0.318AVG"
+=======
+      "MVP_Probability": 85.2,
+      "Key_Stats": "58HR/144RBI/.322AVG",
+      "WAR": 10.6,
+      "OPS": 1.111
+    },
+    {
+      "Name": "Shohei Ohtani",
+      "Team": "LAA",
+      "MVP_Probability": 72.8,
+      "Key_Stats": "44HR/95RBI/.304AVG",
+      "WAR": 9.6,
+      "OPS": 1.021
+>>>>>>> 3d07f29 (fixing problem with mvp and cy young calulations.)
     }
   ],
   "nl_mvp": [
     {
+<<<<<<< HEAD
       "IDfg": 19755,
       "Season": 2025,
       "Name": "Shohei Ohtani",
@@ -6502,10 +6518,27 @@
       "MVP_Score": 57.269999999999996,
       "MVP_Probability": 72.4,
       "Key_Stats": "34HR/84RBI/0.262AVG"
+=======
+      "Name": "Ronald Acu\u00f1a Jr.",
+      "Team": "ATL",
+      "MVP_Probability": 89.3,
+      "Key_Stats": "40HR/104RBI/.337AVG",
+      "WAR": 8.3,
+      "OPS": 1.012
+    },
+    {
+      "Name": "Mookie Betts",
+      "Team": "LAD",
+      "MVP_Probability": 71.5,
+      "Key_Stats": "35HR/107RBI/.307AVG",
+      "WAR": 8.3,
+      "OPS": 0.903
+>>>>>>> 3d07f29 (fixing problem with mvp and cy young calulations.)
     }
   ],
   "al_cy_young": [
     {
+<<<<<<< HEAD
       "IDfg": 22267,
       "Season": 2025,
       "Name": "Tarik Skubal",
@@ -10484,10 +10517,29 @@
       "CY_Score": 181.2,
       "CyYoung_Probability": 64.8,
       "Key_Stats": "8W/3.19ERA/120K"
+=======
+      "Name": "Gerrit Cole",
+      "Team": "NYY",
+      "CyYoung_Probability": 78.4,
+      "Key_Stats": "15-4/2.63ERA/222K",
+      "WAR": 6.1,
+      "ERA": 2.63,
+      "WHIP": 1.02
+    },
+    {
+      "Name": "Shane Bieber",
+      "Team": "CLE",
+      "CyYoung_Probability": 71.2,
+      "Key_Stats": "12-8/2.88ERA/198K",
+      "WAR": 5.9,
+      "ERA": 2.88,
+      "WHIP": 1.11
+>>>>>>> 3d07f29 (fixing problem with mvp and cy young calulations.)
     }
   ],
   "nl_cy_young": [
     {
+<<<<<<< HEAD
       "IDfg": 20778,
       "Season": 2025,
       "Name": "Cristopher Sanchez",
@@ -14476,4 +14528,29 @@
   "nl_cy_leader": "Cristopher Sanchez",
   "al_roy_leader": "N/A",
   "nl_roy_leader": "N/A"
+=======
+      "Name": "Spencer Strider",
+      "Team": "ATL",
+      "CyYoung_Probability": 92.1,
+      "Key_Stats": "20-5/2.67ERA/281K",
+      "WAR": 8.8,
+      "ERA": 2.67,
+      "WHIP": 0.99
+    },
+    {
+      "Name": "Zac Gallen",
+      "Team": "ARI",
+      "CyYoung_Probability": 76.8,
+      "Key_Stats": "17-9/3.47ERA/220K",
+      "WAR": 5.6,
+      "ERA": 3.47,
+      "WHIP": 1.13
+    }
+  ],
+  "last_updated": "2025-01-17 14:30:00",
+  "al_mvp_leader": "Aaron Judge",
+  "nl_mvp_leader": "Ronald Acu\u00f1a Jr.",
+  "al_cy_young_leader": "Gerrit Cole",
+  "nl_cy_young_leader": "Spencer Strider"
+>>>>>>> 3d07f29 (fixing problem with mvp and cy young calulations.)
 }

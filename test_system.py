@@ -144,8 +144,17 @@ try:
         print("SUCCESS: Generated AL and NL MVP predictions")
     if "al_cy_young" in result and "nl_cy_young" in result:
         print("SUCCESS: Generated AL and NL Cy Young predictions")
+    # Check if we have actual data vs fallback
+    if result.get("al_mvp") and len(result["al_mvp"]) > 0:
+        first_player = result["al_mvp"][0]
+        if "WAR" in first_player:
+            print("SUCCESS: Using advanced statistical analysis")
+        else:
+            print("INFO: Using fallback predictions (no real data available)")
 except Exception as e:
     print(f"ERROR: {e}")
+    import traceback
+    traceback.print_exc()
     exit(1)
             """,
             ],
@@ -159,7 +168,11 @@ except Exception as e:
             print(result.stdout)
             return True
         else:
-            print(f"❌ Award calculator failed: {result.stderr}")
+            print(f"❌ Award calculator failed:")
+            if result.stderr:
+                print(f"STDERR: {result.stderr}")
+            if result.stdout:
+                print(f"STDOUT: {result.stdout}")
             return False
 
     except Exception as e:
@@ -206,20 +219,24 @@ def generate_test_data():
 
     os.makedirs("docs", exist_ok=True)
 
-    # Create test award predictions JSON
+    # Create test award predictions JSON - updated to match new format
     test_predictions = {
         "al_mvp": [
             {
                 "Name": "Aaron Judge",
                 "Team": "NYY",
                 "MVP_Probability": 85.2,
-                "Key_Stats": "37HR/96RBI/.311AVG",
+                "Key_Stats": "58HR/144RBI/.322AVG",
+                "WAR": 10.6,
+                "OPS": 1.111
             },
             {
-                "Name": "Mike Trout",
+                "Name": "Shohei Ohtani",
                 "Team": "LAA",
                 "MVP_Probability": 72.8,
-                "Key_Stats": "40HR/104RBI/.283AVG",
+                "Key_Stats": "44HR/95RBI/.304AVG",
+                "WAR": 9.6,
+                "OPS": 1.021
             },
         ],
         "nl_mvp": [
@@ -227,13 +244,17 @@ def generate_test_data():
                 "Name": "Ronald Acuña Jr.",
                 "Team": "ATL",
                 "MVP_Probability": 89.3,
-                "Key_Stats": "41HR/106RBI/.304AVG",
+                "Key_Stats": "40HR/104RBI/.337AVG",
+                "WAR": 8.3,
+                "OPS": 1.012
             },
             {
-                "Name": "Freddie Freeman",
+                "Name": "Mookie Betts",
                 "Team": "LAD",
                 "MVP_Probability": 71.5,
-                "Key_Stats": "22HR/89RBI/.298AVG",
+                "Key_Stats": "35HR/107RBI/.307AVG",
+                "WAR": 8.3,
+                "OPS": .903
             },
         ],
         "al_cy_young": [
@@ -241,13 +262,19 @@ def generate_test_data():
                 "Name": "Gerrit Cole",
                 "Team": "NYY",
                 "CyYoung_Probability": 78.4,
-                "Key_Stats": "13W/3.50ERA/222K",
+                "Key_Stats": "15-4/2.63ERA/222K",
+                "WAR": 6.1,
+                "ERA": 2.63,
+                "WHIP": 1.02
             },
             {
                 "Name": "Shane Bieber",
                 "Team": "CLE",
                 "CyYoung_Probability": 71.2,
-                "Key_Stats": "13W/2.88ERA/198K",
+                "Key_Stats": "12-8/2.88ERA/198K",
+                "WAR": 5.9,
+                "ERA": 2.88,
+                "WHIP": 1.11
             },
         ],
         "nl_cy_young": [
@@ -255,16 +282,26 @@ def generate_test_data():
                 "Name": "Spencer Strider",
                 "Team": "ATL",
                 "CyYoung_Probability": 92.1,
-                "Key_Stats": "20W/2.67ERA/281K",
+                "Key_Stats": "20-5/2.67ERA/281K",
+                "WAR": 8.8,
+                "ERA": 2.67,
+                "WHIP": 0.99
             },
             {
-                "Name": "Sandy Alcantara",
-                "Team": "MIA",
+                "Name": "Zac Gallen",
+                "Team": "ARI",
                 "CyYoung_Probability": 76.8,
-                "Key_Stats": "14W/2.28ERA/207K",
+                "Key_Stats": "17-9/3.47ERA/220K",
+                "WAR": 5.6,
+                "ERA": 3.47,
+                "WHIP": 1.13
             },
         ],
         "last_updated": "2025-01-17 14:30:00",
+        "al_mvp_leader": "Aaron Judge",
+        "nl_mvp_leader": "Ronald Acuña Jr.",
+        "al_cy_young_leader": "Gerrit Cole",
+        "nl_cy_young_leader": "Spencer Strider"
     }
 
     with open("docs/award_predictions.json", "w") as f:
