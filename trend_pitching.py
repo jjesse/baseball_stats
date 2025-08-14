@@ -24,78 +24,80 @@ def create_pitching_trends():
         trend_stats = ["ERA", "WHIP", "SO", "K/BB", "HR/9", "FIP"]
         
         for stat in trend_stats:
-            plt.figure(figsize=(12, 8))
-            lines_plotted = 0
-            
-            # Process each archive file
-            for file in sorted(archive_files):
-                try:
-                    df = pd.read_csv(file)
-                    if stat in df.columns:
-                        # Get top 5 performers for this stat
-                        ascending = stat in ["ERA", "WHIP", "HR/9", "FIP"]
-                        top_performers = df.nlargest(5, stat) if not ascending else df.nsmallest(5, stat)
-                        
-                        # Extract date from filename
-                        date_str = file.split('_')[-1].replace('.csv', '')
-                        
-                        for _, player in top_performers.iterrows():
-                            plt.plot([date_str], [player[stat]], 'o-', label=f"{player['Name']}")
-                            lines_plotted += 1
-                
-                except Exception as e:
-                    print(f"Error processing {file}: {e}")
-                    continue
-            
-            # Add legend if we plotted any lines
-            if lines_plotted:
-                plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-            
-            plt.title(f"Pitching Trends - {stat}")
-            plt.xlabel("Date")
-            plt.ylabel(stat)
-            plt.xticks(rotation=45)
-            plt.tight_layout()
-            
-            # Save chart
-            chart_path = f"{output_path}/trend_pitching_{stat.lower().replace('/', '_')}.png"
-            plt.savefig(chart_path, dpi=150, bbox_inches='tight')
-            plt.close()
-            
-            print(f"✓ Created trend chart for {stat}")
+            create_single_trend_chart(archive_files, stat)
         
         print("✓ Pitching trend analysis completed!")
         
     except Exception as e:
         print(f"Error creating pitching trends: {e}")
 
-if __name__ == "__main__":
-    create_pitching_trends()
-            top_players = latest_data.nsmallest(5, stat)['Name'].tolist()
-        else:
-            top_players = latest_data.nlargest(5, stat)['Name'].tolist()
+def create_single_trend_chart(archive_files, stat):
+    """Create a trend chart for a single statistic"""
+    try:
+        # Determine if lower is better for this stat
+        lower_is_better = stat in ["ERA", "WHIP", "HR/9", "FIP"]
+        title = f"Pitching Trends - {stat}"
         
-        # Create the plot
         plt.figure(figsize=(12, 8))
         
-        # Track if we plotted any lines
-        lines_plotted = False
+        # Track dates and top players for each date
+        date_data = {}
         
-        # Plot trend lines for top players
-        for player in top_players:
-            player_data = df[df['Name'] == player].sort_values('Date')
+        # Process each archive file
+        for file in sorted(archive_files):
+            try:
+                df = pd.read_csv(file)
+                if stat not in df.columns:
+                    continue
+                    
+                # Extract date from filename
+                date_str = file.split('_')[-1].replace('.csv', '')
+                
+                # Get top 5 performers for this stat
+                if lower_is_better:
+                    top_performers = df.nsmallest(5, stat)
+                else:
+                    top_performers = df.nlargest(5, stat)
+                
+                # Store data for this date
+                date_data[date_str] = top_performers[['Name', stat]].copy()
+                
+            except Exception as e:
+                print(f"Error processing {file}: {e}")
+                continue
+        
+        if not date_data:
+            print(f"No data found for {stat}")
+            return
+        
+        # Get all unique players who appeared in top 5
+        all_players = set()
+        for date_df in date_data.values():
+            all_players.update(date_df['Name'].tolist())
+        
+        # Plot trend lines for each player
+        lines_plotted = 0
+        for player in list(all_players)[:10]:  # Limit to 10 players max
+            dates = []
+            values = []
             
-            if len(player_data) >= 2:  # Need at least 2 points for a trend
-                plt.plot(player_data['Date'], player_data[stat], 
-                        marker='o', linewidth=2, label=player, markersize=6)
-                lines_plotted = True
+            for date_str, date_df in sorted(date_data.items()):
+                player_row = date_df[date_df['Name'] == player]
+                if not player_row.empty:
+                    dates.append(date_str)
+                    values.append(player_row[stat].iloc[0])
+            
+            if len(dates) >= 2:  # Need at least 2 points for a trend
+                plt.plot(dates, values, marker='o', linewidth=2, 
+                        label=player, markersize=6)
+                lines_plotted += 1
         
         # Add legend if we plotted any lines
-        if lines_plotted:
+        if lines_plotted > 0:
             plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
         
         # Customize the chart
-        plt.title(f'{title} Trends - Top 5 Players', fontsize=14, fontweight='bold')
+        plt.title(title, fontsize=14, fontweight='bold')
         plt.xlabel('Date', fontsize=12)
         plt.ylabel(stat, fontsize=12)
         plt.grid(True, alpha=0.3)
