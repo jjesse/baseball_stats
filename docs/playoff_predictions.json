@@ -12,7 +12,7 @@
       }
     ],
     "elimination_watch": [],
-    "last_updated": "2025-08-15 00:23:06"
+    "last_updated": "2025-08-15 13:41:10"
   },
   "playoff_scenarios": {
     "al_division_winners": {},
@@ -26,11 +26,11 @@
   "team_strength": {
     "UNK": {
       "wins": 32,
-      "losses": 88,
-      "win_pct": 0.267,
-      "projected_wins": 43.2,
-      "strength_score": 0.047,
-      "games_remaining": 42,
+      "losses": 89,
+      "win_pct": 0.264,
+      "projected_wins": 42.8,
+      "strength_score": 0.044,
+      "games_remaining": 41,
       "division": "NL Division"
     }
   }
