@@ -1,31 +1,31 @@
 {
-  "last_updated": "2025-08-14 23:26:28",
+  "last_updated": "2025-08-15 00:23:02",
   "al_leader": {
-    "team": "N/A",
-    "wins": 0,
-    "losses": 0,
-    "pct": 0.0,
-    "division": "N/A"
+    "team": "HOU",
+    "wins": 56,
+    "losses": 42,
+    "pct": 0.571,
+    "division": "AL West"
   },
   "nl_leader": {
-    "team": "N/A",
-    "wins": 0,
-    "losses": 0,
-    "pct": 0.0,
-    "division": "N/A"
+    "team": "LAD",
+    "wins": 63,
+    "losses": 35,
+    "pct": 0.643,
+    "division": "NL West"
   },
   "closest_race": {
-    "division": "N/A",
+    "division": "AL East",
     "leader": {
-      "team": "N/A",
-      "wins": 0,
-      "losses": 0
+      "team": "NYY",
+      "wins": 56,
+      "losses": 42
     },
     "second": {
-      "team": "N/A",
-      "wins": 0,
-      "losses": 0
+      "team": "TBR",
+      "wins": 52,
+      "losses": 45
     },
-    "games_behind": 0.0
+    "games_behind": 3.5
   }
 }

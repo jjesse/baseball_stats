@@ -2,7 +2,7 @@
         <!DOCTYPE html>
         <html>
         <head>
-            <title>MLB Unknown</title>
+            <title>NL Division</title>
             <style>
                 :root {
                     --text-color: #333;
@@ -12,14 +12,12 @@
                     --hover-color: #f5f5f5;
                 }
                 
-                @media (prefers-color-scheme: dark) {
-                    :root {
-                        --text-color: #eee;
-                        --bg-color: #222;
-                        --header-bg: #333;
-                        --border-color: #444;
-                        --hover-color: #2a2a2a;
-                    }
+                [data-theme='dark'] {
+                    --text-color: #eee;
+                    --bg-color: #222;
+                    --header-bg: #333;
+                    --border-color: #444;
+                    --hover-color: #2a2a2a;
                 }
                 
                 body {
@@ -59,6 +57,19 @@
                     color: #cc0000;
                 }
             </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {
+                    try {
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    } catch(e) {
+                        // Cross-origin issues, use default
+                    }
+                };
+            </script>
         </head>
         <body>
             <table>
@@ -73,40 +84,40 @@
                 </thead>
                 <tbody>
         
-                    <tr>
-                        <td class="nl-team">N/A</td>
+                    <tr class="nl-team">
+                        <td>UNK</td>
                         <td>70</td>
                         <td>52</td>
                         <td>0.574</td>
                         <td>-</td>
                     </tr>
             
-                    <tr>
-                        <td class="nl-team">N/A</td>
+                    <tr class="nl-team">
+                        <td>UNK</td>
                         <td>62</td>
                         <td>57</td>
                         <td>0.521</td>
                         <td>6.5</td>
                     </tr>
             
-                    <tr>
-                        <td class="nl-team">N/A</td>
+                    <tr class="nl-team">
+                        <td>UNK</td>
                         <td>60</td>
                         <td>61</td>
                         <td>0.496</td>
                         <td>9.5</td>
                     </tr>
             
-                    <tr>
-                        <td class="nl-team">N/A</td>
+                    <tr class="nl-team">
+                        <td>UNK</td>
                         <td>57</td>
                         <td>63</td>
                         <td>0.475</td>
                         <td>12.0</td>
                     </tr>
             
-                    <tr>
-                        <td class="nl-team">N/A</td>
+                    <tr class="nl-team">
+                        <td>UNK</td>
                         <td>44</td>
                         <td>77</td>
                         <td>0.364</td>
