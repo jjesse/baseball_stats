@@ -96,7 +96,27 @@ jobs:
           
           git add $FILE_PATTERN
           git commit -m "$COMMIT_MSG"
-          git push origin ${{ github.ref_name }}
+          
+          # Improved push with rebase handling
+          for attempt in {1..3}; do
+            echo "Attempt $attempt to push changes..."
+            
+            if git push origin ${{ github.ref_name }}; then
+              echo "Successfully pushed on attempt $attempt"
+              break
+            else
+              if [ $attempt -lt 3 ]; then
+                echo "Push failed, fetching and rebasing..."
+                git fetch origin ${{ github.ref_name }}
+                git rebase origin/${{ github.ref_name }} || git reset --soft origin/${{ github.ref_name }}
+                git commit -m "$COMMIT_MSG" || echo "Nothing to commit after rebase"
+                sleep 5
+              else
+                echo "Failed to push after 3 attempts"
+                exit 1
+              fi
+            fi
+          done
         else
           echo "No changes to commit"
         fi

@@ -169,17 +169,35 @@ jobs:
 
             git commit -m "Complete stats rebuild [skip ci]"
             
-            # Try to push with retry logic
+            # Try to push with proper rebase handling
             for attempt in {1..5}; do
               echo "Attempt $attempt to push changes..."
+              
+              # First, try a simple push
               if git push origin ${{ github.ref_name }}; then
                 echo "Successfully pushed on attempt $attempt"
                 break
               else
                 if [ $attempt -lt 5 ]; then
-                  echo "Push failed on attempt $attempt. Retrying in 30 seconds..."
-                  sleep 30
-                  git pull --rebase origin ${{ github.ref_name }}
+                  echo "Push failed on attempt $attempt. Pulling remote changes and rebasing..."
+                  
+                  # Fetch the latest changes
+                  git fetch origin ${{ github.ref_name }}
+                  
+                  # Try to rebase our commit on top of remote changes
+                  if git rebase origin/${{ github.ref_name }}; then
+                    echo "Rebase successful, retrying push..."
+                  else
+                    echo "Rebase failed, trying reset and recommit..."
+                    
+                    # Reset to remote state but keep our changes staged
+                    git reset --soft origin/${{ github.ref_name }}
+                    
+                    # Recommit our changes
+                    git commit -m "Complete stats rebuild [skip ci]" || echo "Nothing to commit after reset"
+                  fi
+                  
+                  sleep 10  # Short delay before retry
                 else
                   echo "Failed to push after 5 attempts"
                   exit 1
