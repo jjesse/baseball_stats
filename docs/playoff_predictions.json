@@ -8,11 +8,11 @@
     "world_series_favorites": [
       {
         "team": "UNK",
-        "odds": 5.7
+        "odds": 5.8
       }
     ],
     "elimination_watch": [],
-    "last_updated": "2025-08-15 13:41:10"
+    "last_updated": "2025-08-16 13:37:59"
   },
   "playoff_scenarios": {
     "al_division_winners": {},
@@ -20,17 +20,17 @@
     "al_wild_card": {},
     "nl_wild_card": {},
     "world_series_odds": {
-      "UNK": 5.7
+      "UNK": 5.8
     }
   },
   "team_strength": {
     "UNK": {
-      "wins": 32,
+      "wins": 33,
       "losses": 89,
-      "win_pct": 0.264,
-      "projected_wins": 42.8,
-      "strength_score": 0.044,
-      "games_remaining": 41,
+      "win_pct": 0.27,
+      "projected_wins": 43.8,
+      "strength_score": 0.052,
+      "games_remaining": 40,
       "division": "NL Division"
     }
   }
