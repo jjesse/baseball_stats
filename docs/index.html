@@ -178,23 +178,45 @@
       if (stored) {
         document.documentElement.setAttribute("data-theme", stored);
       }
+      setupAutoRefresh();
     };
-  </script>
-</body>
-</html>
-      const current = document.documentElement.getAttribute("data-theme");
-      const next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
+
+    // Auto-refresh data after long periods
+    function setupAutoRefresh() {
+      // Check for new data every 30 minutes
+      const REFRESH_INTERVAL = 30 * 60 * 1000;
+      
+      setInterval(() => {
+        console.log("Auto-refreshing data...");
+        // Reload the page to get fresh data
+        window.location.reload();
+      }, REFRESH_INTERVAL);
     }
 
-    window.onload = () => {
-      const stored = localStorage.getItem("theme");
-      if (stored) {
-        document.documentElement.setAttribute("data-theme", stored);
-      }
-    };
+    // Global handler to gracefully handle missing images
+    document.addEventListener('DOMContentLoaded', function() {
+      const images = document.querySelectorAll('img');
+      images.forEach(img => {
+        if (!img.hasAttribute('onerror')) {
+          img.onerror = function() {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</html></body>  </script>    });      });        }          };            this.parentNode.appendChild(placeholder);            placeholder.style.marginTop = '1rem';            placeholder.style.textAlign = 'center';            placeholder.style.borderRadius = '8px';            placeholder.style.backgroundColor = 'var(--card-bg)';            placeholder.style.color = 'var(--text)';            placeholder.style.padding = '1rem';            placeholder.textContent = 'Image updating...';            const placeholder = document.createElement('div');            this.style.display = 'none';    });
   </script>
 </body>
-</html>
 </html>

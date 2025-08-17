@@ -1,5 +1,4 @@
-
-            <!DOCTYPE html>
+<!DOCTYPE html>
             <html>
             <head>
                 <style>
@@ -65,16 +64,34 @@
                     }
                 </style>
                 <script>
-                    // Inherit theme from parent window
-                    window.onload = function() {
-                        try {
-                            const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                            if (parentTheme) {
-                                document.documentElement.setAttribute('data-theme', parentTheme);
-                            }
-                        } catch(e) {
-                            // Cross-origin issues, use default
+                    // More robust theme sync for iframes
+                    function syncTheme() {
+                      try {
+                        // Try to get theme from parent
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {
+                          document.documentElement.setAttribute('data-theme', parentTheme);
                         }
+                      } catch(e) {
+                        // Fallback to localStorage if cross-origin issues
+                        try {
+                          const storedTheme = localStorage.getItem('theme');
+                          if (storedTheme) {
+                            document.documentElement.setAttribute('data-theme', storedTheme);
+                          }
+                        } catch(e2) {
+                          // If all else fails, use system preference
+                          if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                            document.documentElement.setAttribute('data-theme', 'dark');
+                          }
+                        }
+                      }
+                    }
+                    
+                    // Run immediately and also poll
+                    window.onload = function() {
+                      syncTheme();
+                      setInterval(syncTheme, 1000); // Check periodically
                     };
                 </script>
             </head>
@@ -232,4 +249,3 @@
                 </div>
             </body>
             </html>
-            

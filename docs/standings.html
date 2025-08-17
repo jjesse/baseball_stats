@@ -438,8 +438,32 @@
     }
 
     function loadSummaryData() {
+      // Show loading state
+      document.getElementById('summary-cards').innerHTML = `
+        <div class="summary-card">
+          <h3>Loading Data</h3>
+          <div class="stat-value">⏳</div>
+          <div class="stat-detail">Fetching latest standings...</div>
+        </div>
+        <div class="summary-card">
+          <h3>Loading Data</h3>
+          <div class="stat-value">⏳</div>
+          <div class="stat-detail">Fetching latest standings...</div>
+        </div>
+        <div class="summary-card">
+          <h3>Loading Data</h3>
+          <div class="stat-value">⏳</div>
+          <div class="stat-detail">Fetching latest standings...</div>
+        </div>
+      `;
+      
       fetch('standings_summary.json')
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
         .then(data => {
           const summaryHtml = `
             <div class="summary-card">
@@ -471,9 +495,10 @@
           console.error('Error loading summary data:', error);
           document.getElementById('summary-cards').innerHTML = `
             <div class="summary-card">
-              <h3>Data Loading</h3>
-              <div class="stat-value">...</div>
-              <div class="stat-detail">Standings data updating</div>
+              <h3>Data Updating</h3>
+              <div class="stat-value">⚠️</div>
+              <div class="stat-detail">Standings data is refreshing</div>
+              <div class="stat-detail">Check back in a moment</div>
             </div>
           `;
         });
