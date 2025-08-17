@@ -100,7 +100,7 @@ def get_espn_api_standings():
                     team_records = []
                     
                     for team in division.get("standings", {}).get("entries", []):
-                        team_name = team.get("team", {}).get("abbreviation", "UNK")
+                        team_name = team.get("team", {}).get('abbreviation', 'UNK')
                         stats = {s["name"]: s for s in team.get("stats", [])}
                         wins = int(stats.get("wins", {}).get("value", 0))
                         losses = int(stats.get("losses", {}).get("value", 0))
@@ -343,91 +343,91 @@ def create_html_table(df, filename, title=None):
         
         # Create HTML with dark mode support
         html = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>{title if title else 'MLB Standings'}</title>
-            <style>
-                :root {{
-                    --text-color: #333;
-                    --bg-color: #fff;
-                    --header-bg: #f2f2f2;
-                    --border-color: #ddd;
-                    --hover-color: #f5f5f5;
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{title if title else 'MLB Standings'}</title>
+    <style>
+        :root {{
+            --text-color: #333;
+            --bg-color: #fff;
+            --header-bg: #f2f2f2;
+            --border-color: #ddd;
+            --hover-color: #f5f5f5;
+        }}
+        
+        [data-theme='dark'] {{
+            --text-color: #eee;
+            --bg-color: #222;
+            --header-bg: #333;
+            --border-color: #444;
+            --hover-color: #2a2a2a;
+        }}
+        
+        body {{
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }}
+        
+        table {{
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }}
+        
+        th, td {{
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }}
+        
+        th {{
+            background-color: var(--header-bg);
+            font-weight: bold;
+        }}
+        
+        tr:hover {{
+            background-color: var(--hover-color);
+        }}
+        
+        .al-team {{
+            color: #0099cc;
+        }}
+        
+        .nl-team {{
+            color: #cc0000;
+        }}
+    </style>
+    <script>
+        // Inherit theme from parent window
+        window.onload = function() {{
+            try {{
+                const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                if (parentTheme) {{
+                    document.documentElement.setAttribute('data-theme', parentTheme);
                 }}
-                
-                [data-theme='dark'] {{
-                    --text-color: #eee;
-                    --bg-color: #222;
-                    --header-bg: #333;
-                    --border-color: #444;
-                    --hover-color: #2a2a2a;
-                }}
-                
-                body {{
-                    font-family: Arial, sans-serif;
-                    color: var(--text-color);
-                    background-color: var(--bg-color);
-                    margin: 0;
-                    padding: 0;
-                }}
-                
-                table {{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 1rem 0;
-                }}
-                
-                th, td {{
-                    padding: 0.5rem;
-                    text-align: left;
-                    border-bottom: 1px solid var(--border-color);
-                }}
-                
-                th {{
-                    background-color: var(--header-bg);
-                    font-weight: bold;
-                }}
-                
-                tr:hover {{
-                    background-color: var(--hover-color);
-                }}
-                
-                .al-team {{
-                    color: #0099cc;
-                }}
-                
-                .nl-team {{
-                    color: #cc0000;
-                }}
-            </style>
-            <script>
-                // Inherit theme from parent window
-                window.onload = function() {{
-                    try {{
-                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                        if (parentTheme) {{
-                            document.documentElement.setAttribute('data-theme', parentTheme);
-                        }}
-                    }} catch(e) {{
-                        // Cross-origin issues, use default
-                    }}
-                }};
-            </script>
-        </head>
-        <body>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Team</th>
-                        <th>W</th>
-                        <th>L</th>
-                        <th>PCT</th>
-                        <th>GB</th>
-                    </tr>
-                </thead>
-                <tbody>
-        """
+            }} catch(e) {{
+                // Cross-origin issues, use default
+            }}
+        }};
+    </script>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>W</th>
+                <th>L</th>
+                <th>PCT</th>
+                <th>GB</th>
+            </tr>
+        </thead>
+        <tbody>
+"""
         
         for _, row in df_sorted.iterrows():
             league_class = "al-team" if row['League'] == 'AL' else "nl-team"
@@ -439,14 +439,14 @@ def create_html_table(df, filename, title=None):
                         <td>{row['PCT']}</td>
                         <td>{row['GB']}</td>
                     </tr>
-            """
+"""
         
         html += """
-                </tbody>
-            </table>
-        </body>
-        </html>
-        """
+        </tbody>
+    </table>
+</body>
+</html>
+"""
         
         # Save HTML file
         with open(f"{output_path}/{filename}", 'w') as f:
