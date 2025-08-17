@@ -9,13 +9,25 @@ import os
 import json
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-# Set style for charts
-sns.set_style("whitegrid")
+# Set style for charts using Matplotlib defaults to mimic whitegrid
+plt.rcParams.update({
+    'axes.facecolor': 'white',
+    'axes.grid': True,
+    'axes.grid.which': 'major',
+    'grid.color': 'lightgray',
+    'grid.linestyle': '-',
+    'grid.alpha': 0.3,
+})
+
+# Try to import pybaseball if available
+try:
+    from pybaseball import standings as pyb_standings
+except ImportError:
+    pyb_standings = None
 
 # Make sure output folder exists
 output_path = os.environ.get("OUTPUT_PATH", "docs")
@@ -68,7 +80,7 @@ def get_mlb_com_standings():
 def get_espn_api_standings():
     """Get standings from ESPN API - backup source"""
     try:
-        url = "https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings"
+        url = "https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings?season=2025"
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         }
@@ -125,8 +137,8 @@ def get_baseball_reference_standings():
         
         soup = BeautifulSoup(response.content, 'html.parser')
         
-        # Find all division tables
-        division_tables = soup.find_all('table', {'class': 'standings'})
+        # Find all division tables by id (more reliable)
+        division_tables = soup.find_all('table', id=lambda x: x and x.startswith('standings_'))
         
         if not division_tables:
             print("No standings tables found on Baseball Reference")
@@ -148,20 +160,20 @@ def get_baseball_reference_standings():
                 division_name = division_names[i]
                 team_records = []
                 
-                # Find team rows
-                rows = table.find_all('tr')
-                
-                for row in rows:
-                    cells = row.find_all(['th', 'td'])
-                    if len(cells) >= 3:
-                        # Try to get team name and record
-                        try:
-                            team_name = cells[0].text.strip()[:3].upper()  # Get abbreviation
-                            wins = int(cells[1].text.strip())
-                            losses = int(cells[2].text.strip())
-                            team_records.append((team_name, wins, losses))
-                        except (ValueError, IndexError):
-                            continue
+                # Find team rows in tbody
+                tbody = table.find('tbody')
+                if tbody:
+                    rows = tbody.find_all('tr')
+                    for row in rows:
+                        cells = row.find_all(['th', 'td'])
+                        if len(cells) >= 3 and cells[0].get('data-stat') == 'team_ID':
+                            try:
+                                team_name = cells[0].text.strip()  # Abbreviation like "TOR"
+                                wins = int(cells[1].text.strip())
+                                losses = int(cells[2].text.strip())
+                                team_records.append((team_name, wins, losses))
+                            except (ValueError, IndexError):
+                                continue
                 
                 if team_records:
                     df = create_division_dataframe(division_name, team_records)
@@ -236,16 +248,16 @@ def create_division_dataframe(division_name, team_records):
 def get_fallback_standings():
     """Create fallback standings for 2025 season using realistic team data"""
     divisions = [
-        ("AL East", [("NYY", 56, 42), ("TBR", 52, 45), ("TOR", 48, 49), ("BOS", 43, 53), ("BAL", 41, 55)]),
-        ("AL Central", [("CLE", 59, 38), ("DET", 58, 40), ("MIN", 49, 49), ("KC", 42, 55), ("CHW", 29, 68)]),
-        ("AL West", [("HOU", 56, 42), ("SEA", 52, 46), ("TEX", 45, 52), ("LAA", 42, 56), ("OAK", 40, 58)]),
-        ("NL East", [("PHI", 59, 38), ("ATL", 54, 43), ("NYM", 49, 48), ("WSN", 43, 54), ("MIA", 37, 60)]),
-        ("NL Central", [("MIL", 58, 40), ("CHC", 51, 47), ("STL", 49, 49), ("CIN", 45, 53), ("PIT", 45, 53)]),
-        ("NL West", [("LAD", 63, 35), ("SD", 53, 45), ("ARI", 51, 47), ("SF", 48, 50), ("COL", 38, 60)])
+        ("AL East", [("TOR", 72, 51), ("BOS", 67, 56), ("NYY", 65, 57), ("TB", 60, 63), ("BAL", 56, 66)]),
+        ("AL Central", [("DET", 72, 52), ("CLE", 63, 58), ("KCR", 61, 61), ("MIN", 57, 65), ("CHW", 44, 78)]),
+        ("AL West", [("HOU", 68, 54), ("SEA", 68, 55), ("TEX", 61, 62), ("LAA", 59, 63), ("OAK", 55, 69)]),
+        ("NL East", [("PHI", 70, 52), ("NYM", 64, 58), ("MIA", 58, 64), ("ATL", 54, 68), ("WSN", 49, 73)]),
+        ("NL Central", [("MIL", 77, 44), ("CHC", 68, 53), ("CIN", 64, 59), ("STL", 61, 62), ("PIT", 52, 71)]),
+        ("NL West", [("LAD", 69, 53), ("SDP", 69, 53), ("ARI", 60, 63), ("SFG", 59, 63), ("COL", 33, 89)])
     ]
 
     standings_list = []
-    print("Using current 2025 season standings (updated)")
+    print("Using current 2025 season standings (updated as of August 16, 2025)")
 
     for div_name, teams_data in divisions:
         standings_list.append(create_division_dataframe(div_name, teams_data))
@@ -255,18 +267,14 @@ def get_fallback_standings():
 
 def try_pybaseball_standings():
     """Try pybaseball as secondary option with 2025 season"""
+    if pyb_standings is None:
+        print("pybaseball not available")
+        return None
     try:
-        from pybaseball import standings
+        mlb_standings = pyb_standings(2025)
         
-        # Try to get current standings
-        mlb_standings = standings(2025)
-        
-        if isinstance(mlb_standings, dict) and len(mlb_standings) > 0:
-            # Convert pybaseball format to our format
-            all_divisions = []
-            for division_name, division_df in mlb_standings.items():
-                if isinstance(division_df, pd.DataFrame) and not division_df.empty:
-                    all_divisions.append(division_df)
+        if isinstance(mlb_standings, list) and len(mlb_standings) > 0:
+            all_divisions = [df for df in mlb_standings if isinstance(df, pd.DataFrame) and not df.empty]
             
             if all_divisions:
                 print(f"Successfully parsed pybaseball data: {len(all_divisions)} divisions")
@@ -310,9 +318,6 @@ def create_standings_chart(df, title, filename, team_col="Team"):
         
         # Customize y-axis to show team names
         plt.yticks(fontsize=10)
-        
-        # Add a grid for easier reading
-        plt.grid(True, alpha=0.3)
         
         # Adjust layout and save
         plt.tight_layout()
@@ -547,7 +552,7 @@ def main():
                 "division": al_leader['Division']
             }
         else:
-            al_leader_data = {"team": "HOU", "wins": 56, "losses": 42, "pct": 0.571, "division": "AL West"}
+            al_leader_data = {"team": "DET", "wins": 72, "losses": 52, "pct": 0.581, "division": "AL Central"}
         
         # Find the NL leader (team with most wins in National League)
         nl_teams = all_teams[all_teams["League"] == "NL"]
@@ -561,7 +566,7 @@ def main():
                 "division": nl_leader['Division']
             }
         else:
-            nl_leader_data = {"team": "LAD", "wins": 63, "losses": 35, "pct": 0.643, "division": "NL West"}
+            nl_leader_data = {"team": "MIL", "wins": 77, "losses": 44, "pct": 0.636, "division": "NL Central"}
         
         # Find the closest division race
         closest_race = None
@@ -586,10 +591,10 @@ def main():
         
         if closest_race is None:
             closest_race = {
-                "division": "AL East",
-                "leader": {"team": "NYY", "wins": 56, "losses": 42},
-                "second": {"team": "TBR", "wins": 52, "losses": 45},
-                "games_behind": 3.5
+                "division": "NL West",
+                "leader": {"team": "LAD", "wins": 69, "losses": 53},
+                "second": {"team": "SDP", "wins": 69, "losses": 53},
+                "games_behind": 0.0
             }
         
         # Build the summary JSON
@@ -610,13 +615,13 @@ def main():
         # Create a minimal fallback summary to prevent UI errors
         fallback_summary = {
             "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            "al_leader": {"team": "HOU", "wins": 56, "losses": 42, "pct": 0.571, "division": "AL West"},
-            "nl_leader": {"team": "LAD", "wins": 63, "losses": 35, "pct": 0.643, "division": "NL West"},
+            "al_leader": {"team": "DET", "wins": 72, "losses": 52, "pct": 0.581, "division": "AL Central"},
+            "nl_leader": {"team": "MIL", "wins": 77, "losses": 44, "pct": 0.636, "division": "NL Central"},
             "closest_race": {
-                "division": "AL East",
-                "leader": {"team": "NYY", "wins": 56, "losses": 42},
-                "second": {"team": "TBR", "wins": 52, "losses": 45},
-                "games_behind": 3.5
+                "division": "NL West",
+                "leader": {"team": "LAD", "wins": 69, "losses": 53},
+                "second": {"team": "SDP", "wins": 69, "losses": 53},
+                "games_behind": 0.0
             }
         }
         
