@@ -1,89 +1,89 @@
 
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>NL Division</title>
-            <style>
-                :root {
-                    --text-color: #333;
-                    --bg-color: #fff;
-                    --header-bg: #f2f2f2;
-                    --border-color: #ddd;
-                    --hover-color: #f5f5f5;
-                }
-                
-                [data-theme='dark'] {
-                    --text-color: #eee;
-                    --bg-color: #222;
-                    --header-bg: #333;
-                    --border-color: #444;
-                    --hover-color: #2a2a2a;
-                }
-                
-                body {
-                    font-family: Arial, sans-serif;
-                    color: var(--text-color);
-                    background-color: var(--bg-color);
-                    margin: 0;
-                    padding: 0;
-                }
-                
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 1rem 0;
-                }
-                
-                th, td {
-                    padding: 0.5rem;
-                    text-align: left;
-                    border-bottom: 1px solid var(--border-color);
-                }
-                
-                th {
-                    background-color: var(--header-bg);
-                    font-weight: bold;
-                }
-                
-                tr:hover {
-                    background-color: var(--hover-color);
-                }
-                
-                .al-team {
-                    color: #0099cc;
-                }
-                
-                .nl-team {
-                    color: #cc0000;
-                }
-            </style>
-            <script>
-                // Inherit theme from parent window
-                window.onload = function() {
-                    try {
-                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                        if (parentTheme) {
-                            document.documentElement.setAttribute('data-theme', parentTheme);
-                        }
-                    } catch(e) {
-                        // Cross-origin issues, use default
-                    }
-                };
-            </script>
-        </head>
-        <body>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Team</th>
-                        <th>W</th>
-                        <th>L</th>
-                        <th>PCT</th>
-                        <th>GB</th>
-                    </tr>
-                </thead>
-                <tbody>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NL Division</title>
+    <style>
+        :root {
+            --text-color: #333;
+            --bg-color: #fff;
+            --header-bg: #f2f2f2;
+            --border-color: #ddd;
+            --hover-color: #f5f5f5;
+        }
         
+        [data-theme='dark'] {
+            --text-color: #eee;
+            --bg-color: #222;
+            --header-bg: #333;
+            --border-color: #444;
+            --hover-color: #2a2a2a;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+        
+        th, td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--header-bg);
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .al-team {
+            color: #0099cc;
+        }
+        
+        .nl-team {
+            color: #cc0000;
+        }
+    </style>
+    <script>
+        // Inherit theme from parent window
+        window.onload = function() {
+            try {
+                const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                if (parentTheme) {
+                    document.documentElement.setAttribute('data-theme', parentTheme);
+                }
+            } catch(e) {
+                // Cross-origin issues, use default
+            }
+        };
+    </script>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Team</th>
+                <th>W</th>
+                <th>L</th>
+                <th>PCT</th>
+                <th>GB</th>
+            </tr>
+        </thead>
+        <tbody>
+
                     <tr class="nl-team">
                         <td>UNK</td>
                         <td>69</td>
@@ -91,7 +91,7 @@
                         <td>0.566</td>
                         <td>-</td>
                     </tr>
-            
+
                     <tr class="nl-team">
                         <td>UNK</td>
                         <td>69</td>
@@ -99,7 +99,7 @@
                         <td>0.566</td>
                         <td>-</td>
                     </tr>
-            
+
                     <tr class="nl-team">
                         <td>UNK</td>
                         <td>60</td>
@@ -107,7 +107,7 @@
                         <td>0.488</td>
                         <td>9.5</td>
                     </tr>
-            
+
                     <tr class="nl-team">
                         <td>UNK</td>
                         <td>59</td>
@@ -115,7 +115,7 @@
                         <td>0.484</td>
                         <td>10.0</td>
                     </tr>
-            
+
                     <tr class="nl-team">
                         <td>UNK</td>
                         <td>33</td>
@@ -123,9 +123,8 @@
                         <td>0.27</td>
                         <td>36.0</td>
                     </tr>
-            
-                </tbody>
-            </table>
-        </body>
-        </html>
-        
+
+        </tbody>
+    </table>
+</body>
+</html>
