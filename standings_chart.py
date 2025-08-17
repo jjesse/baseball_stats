@@ -198,7 +198,10 @@ def create_division_dataframe(division_name, team_records):
         elif "nl" in division_lower or "national" in division_lower:
             league = "NL"
         else:
-            league = "AL" if team in ["NYY", "BOS", "TOR", "BAL", "TBR", "CLE", "DET", "KC", "MIN", "CHW", "HOU", "LAA", "OAK", "SEA", "TEX"] else "NL"
+            # Reliable team to league mapping
+            league = "AL" if team in ["NYY", "BOS", "TOR", "BAL", "TBR", 
+                                      "CLE", "DET", "KC", "MIN", "CHW", 
+                                      "HOU", "LAA", "OAK", "SEA", "TEX"] else "NL"
         
         # Parse division name to get East/West/Central
         if "east" in division_lower:
@@ -442,183 +445,183 @@ def main():
     """Main function to run the standings chart generator"""
     # Try multiple data sources in order of preference
     print("Attempting to fetch accurate 2025 MLB standings data...")
-
-    division_standings = None
-
     # Method 1: Try MLB.com API (most reliable for current season)
     print("Trying MLB.com official API for 2025 season...")
     division_standings = get_mlb_com_standings()
-
-    # Method 2: Try ESPN API if MLB.com fails
-    if not division_standings:
+    # Method 1: Try MLB.com API (most reliable for current season)
+    # Method 2: Try ESPN API if MLB.com fails25 season...")
+    if not division_standings:lb_com_standings()
         print("MLB.com API failed. Trying ESPN API...")
         division_standings = get_espn_api_standings()
-
-    # Method 3: Try Baseball Reference if APIs fail
     if not division_standings:
+    # Method 3: Try Baseball Reference if APIs fail..")
+    if not division_standings:et_espn_api_standings()
         print("ESPN API failed. Trying Baseball Reference...")
         division_standings = get_baseball_reference_standings()
-
-    # Method 4: Try pybaseball if all web sources fail
     if not division_standings:
+    # Method 4: Try pybaseball if all web sources failnce...")
+    if not division_standings:et_baseball_reference_standings()
         print("Baseball Reference failed. Trying pybaseball...")
         division_standings = try_pybaseball_standings()
-
+    if not division_standings:
     # Method 5: Use accurate fallback 2025 season data if all else fails
-    if not division_standings:
+    if not division_standings:ry_pybaseball_standings()
         print("All API sources failed. Using fallback standings data...")
-        division_standings = get_fallback_standings()
-
+        division_standings = get_fallback_standings()a if all else fails
     if not division_standings:
+    if not division_standings: failed. Using fallback standings data...")
         print("ERROR: Could not obtain standings data from any source")
         # Create a minimal fallback to prevent workflow failures
         print("Creating minimal fallback data to prevent workflow failure")
-        division_standings = get_fallback_standings()
-
+        division_standings = get_fallback_standings() from any source")
+        # Create a minimal fallback to prevent workflow failures
     print(f"Successfully obtained {len(division_standings)} division standings for 2025 season")
-
+        division_standings = get_fallback_standings()
     division_names = ["al_east", "al_central", "al_west", "nl_east", "nl_central", "nl_west"]
-
+    print(f"Successfully obtained {len(division_standings)} division standings for 2025 season")
     all_dfs = []
-    processed_divisions = 0
+    processed_divisions = 0ast", "al_central", "al_west", "nl_east", "nl_central", "nl_west"]
 
     for i, df in enumerate(division_standings):
         if i < len(division_names):
             division_id = division_names[i]
-        else:
+        else: in enumerate(division_standings):
             division_id = f"division_{i}"
-        
+            division_id = division_names[i]
         # Create HTML and chart for this division
         create_html_table(df, f"standings_{division_id}.html", df['Division'].iloc[0])
         create_standings_chart(df, f"{df['Division'].iloc[0]} Standings", f"standings_{division_id}.png")
+        # Create HTML and chart for this division
+        all_dfs.append(df)df, f"standings_{division_id}.html", df['Division'].iloc[0])
+        processed_divisions += 1f, f"{df['Division'].iloc[0]} Standings", f"standings_{division_id}.png")
         
-        all_dfs.append(df)
-        processed_divisions += 1
-
     print(f"Successfully processed {processed_divisions} divisions")
-
+        processed_divisions += 1
     # Check if we have any data to work with
-    if not all_dfs:
+    if not all_dfs:fully processed {processed_divisions} divisions")
         print("No division data to process")
-        return
-
-    # Combine all into a master CSV
-    try:
+        return we have any data to work with
+    if not all_dfs:
+    # Combine all into a master CSVprocess")
+    try:return
         all_teams = pd.concat(all_dfs)
         all_teams.to_csv(f"{output_path}/standings_all.csv", index=False)
         print("✓ Created combined standings CSV")
-    except Exception as e:
-        print(f"Error creating combined CSV: {e}")
-
+    except Exception as e:cat(all_dfs)
+        print(f"Error creating combined CSV: {e}")_all.csv", index=False)
+        print("✓ Created combined standings CSV")
     # Create overall wins chart
-    try:
+    try:print(f"Error creating combined CSV: {e}")
         create_standings_chart(pd.concat(all_dfs), "MLB Standings - All Teams", "standings_all.png")
-    except Exception as e:
+    except Exception as e:chart
         print(f"Error creating overall standings chart: {e}")
-
+        create_standings_chart(pd.concat(all_dfs), "MLB Standings - All Teams", "standings_all.png")
     # Create summary statistics JSON
-    try:
+    try:print(f"Error creating overall standings chart: {e}")
         # Prepare data for the summary cards
         all_teams = pd.concat(all_dfs)
         
         # Find the AL leader (team with most wins in American League)
         al_teams = all_teams[all_teams["League"] == "AL"]
         if not al_teams.empty:
-            al_leader = al_teams.loc[al_teams['W'].idxmax()]
-            al_leader_data = {
+            al_leader = al_teams.loc[al_teams['W'].idxmax()]n League)
+            al_leader_data = {ll_teams["League"] == "AL"]
                 "team": al_leader['Team'],
-                "wins": int(al_leader['W']),
+                "wins": int(al_leader['W']),s['W'].idxmax()]
                 "losses": int(al_leader['L']),
                 "pct": float(al_leader['PCT']),
                 "division": al_leader['Division']
-            }
-        else:
+            }   "losses": int(al_leader['L']),
+        else:   "pct": float(al_leader['PCT']),
             al_leader_data = {"team": "HOU", "wins": 56, "losses": 42, "pct": 0.571, "division": "AL West"}
-        
+            }
         # Find the NL leader (team with most wins in National League)
-        nl_teams = all_teams[all_teams["League"] == "NL"]
+        nl_teams = all_teams[all_teams["League"] == "NL"]"losses": 42, "pct": 0.571, "division": "AL West"}
         if not nl_teams.empty:
-            nl_leader = nl_teams.loc[nl_teams['W'].idxmax()]
-            nl_leader_data = {
+            nl_leader = nl_teams.loc[nl_teams['W'].idxmax()]l League)
+            nl_leader_data = {ll_teams["League"] == "NL"]
                 "team": nl_leader['Team'],
-                "wins": int(nl_leader['W']),
+                "wins": int(nl_leader['W']),s['W'].idxmax()]
                 "losses": int(nl_leader['L']),
                 "pct": float(nl_leader['PCT']),
                 "division": nl_leader['Division']
-            }
-        else:
+            }   "losses": int(nl_leader['L']),
+        else:   "pct": float(nl_leader['PCT']),
             nl_leader_data = {"team": "LAD", "wins": 63, "losses": 35, "pct": 0.643, "division": "NL West"}
-        
+            }
         # Find the closest division race
-        closest_race = None
+        closest_race = None= {"team": "LAD", "wins": 63, "losses": 35, "pct": 0.643, "division": "NL West"}
         smallest_diff = float('inf')
-        
+        # Find the closest division race
         for division_name in division_names:
             div_df = next((df for df in all_dfs if len(df) > 1), None)
             if div_df is not None:
                 div_df_sorted = div_df.sort_values('W', ascending=False)
-                if len(div_df_sorted) >= 2:
+                if len(div_df_sorted) >= 2:_dfs if len(df) > 1), None)
                     leader = div_df_sorted.iloc[0]
-                    second = div_df_sorted.iloc[1]
+                    second = div_df_sorted.iloc[1]('W', ascending=False)
                     diff = leader['W'] - second['W']
-                    
-                    if diff < smallest_diff:
-                        smallest_diff = diff
+                    leader = div_df_sorted.iloc[0]
+                    if diff < smallest_diff:loc[1]
+                        smallest_diff = diffond['W']
                         closest_race = {
                             "division": leader['Division'],
                             "leader": {"team": leader['Team'], "wins": int(leader['W']), "losses": int(leader['L'])},
                             "second": {"team": second['Team'], "wins": int(second['W']), "losses": int(second['L'])},
                             "games_behind": float(second['GB']) if second['GB'] != '-' else 0.0
-                        }
-        
-        if closest_race is None:
+                        }   "leader": {"team": leader['Team'], "wins": int(leader['W']), "losses": int(leader['L'])},
+                            "second": {"team": second['Team'], "wins": int(second['W']), "losses": int(second['L'])},
+        if closest_race is None:es_behind": float(second['GB']) if second['GB'] != '-' else 0.0
             closest_race = {
                 "division": "AL East",
                 "leader": {"team": "NYY", "wins": 56, "losses": 42},
                 "second": {"team": "TBR", "wins": 52, "losses": 45},
-                "games_behind": 3.5
-            }
-        
-        # Build the summary JSON
+                "games_behind": 3.5t",
+            }   "leader": {"team": "NYY", "wins": 56, "losses": 42},
+                "second": {"team": "TBR", "wins": 52, "losses": 45},
+        # Build the summary JSON3.5
         summary = {
             "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "al_leader": al_leader_data,
             "nl_leader": nl_leader_data,
-            "closest_race": closest_race
-        }
-        
-        # Save the summary JSON
+            "closest_race": closest_race().strftime("%Y-%m-%d %H:%M:%S"),
+        }   "al_leader": al_leader_data,
+            "nl_leader": nl_leader_data,
+        # Save the summary JSONsest_race
         with open(f"{output_path}/standings_summary.json", "w") as f:
             json.dump(summary, f, indent=2)
-        
-        print("✓ Created standings summary JSON for overview cards")
-    except Exception as e:
+        # Save the summary JSON
+        print("✓ Created standings summary JSON for overview cards"):
+    except Exception as e:ary, f, indent=2)
         print(f"Error creating summary JSON: {e}")
-        # Create a minimal fallback summary to prevent UI errors
+        # Create a minimal fallback summary to prevent UI errorsds")
         fallback_summary = {
             "last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             "al_leader": {"team": "HOU", "wins": 56, "losses": 42, "pct": 0.571, "division": "AL West"},
             "nl_leader": {"team": "LAD", "wins": 63, "losses": 35, "pct": 0.643, "division": "NL West"},
-            "closest_race": {
-                "division": "AL East",
-                "leader": {"team": "NYY", "wins": 56, "losses": 42},
+            "closest_race": {atetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                "division": "AL East",", "wins": 56, "losses": 42, "pct": 0.571, "division": "AL West"},
+                "leader": {"team": "NYY", "wins": 56, "losses": 42},pct": 0.643, "division": "NL West"},
                 "second": {"team": "TBR", "wins": 52, "losses": 45},
+                "games_behind": 3.5t",
+            }   "leader": {"team": "NYY", "wins": 56, "losses": 42},
+        }       "second": {"team": "TBR", "wins": 52, "losses": 45},
                 "games_behind": 3.5
-            }
-        }
-        
         # Always create a summary JSON even if there's an error
         with open(f"{output_path}/standings_summary.json", "w") as f:
             json.dump(fallback_summary, f, indent=2)
-        
+        # Always create a summary JSON even if there's an error
         print("✓ Created fallback standings summary JSON due to error")
-
+            json.dump(fallback_summary, f, indent=2)
     # Save success timestamp
-    with open(f"{output_path}/last_updated_standings.txt", "w") as f:
+    with open(f"{output_path}/last_updated_standings.txt", "w") as f:")
+        f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    # Save success timestamp
+    print("✓ Standings update completed successfully!")t", "w") as f:
         f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
-    print("✓ Standings update completed successfully!")
-
+if __name__ == "__main__":ate completed successfully!")
+    main()
 
 if __name__ == "__main__":
     main()
