@@ -54,21 +54,21 @@ def get_mlb_com_standings():
                 all_divisions.append(create_division_dataframe(division_name, team_records))
         
         if all_divisions:
-            print(f"Successfully parsed MLB.com data: {len(all_divisions)} divisions")
+            print(f"Successfully retrieved {len(all_divisions)} divisions from MLB.com API")
             return all_divisions
         else:
-            print("No data found in MLB.com response")
+            print("No division data found in MLB.com API response")
             return None
     
     except Exception as e:
-        print(f"MLB.com API failed: {e}")
+        print(f"Error fetching from MLB.com API: {e}")
         return None
 
 
 def get_espn_api_standings():
     """Get standings from ESPN API - backup source"""
     try:
-        url = "https://site.api.espn.com/apis/site/v2/sports/baseball/mlb/standings"
+        url = "https://site.api.espn.com/apis/v2/sports/baseball/mlb/standings"
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
         }
@@ -205,8 +205,8 @@ def create_division_dataframe(division_name, team_records):
         else:
             # Reliable team to league mapping
             league = "AL" if team in ["NYY", "BOS", "TOR", "BAL", "TBR", 
-                                      "CLE", "DET", "KC", "MIN", "CHW", 
-                                      "HOU", "LAA", "OAK", "SEA", "TEX"] else "NL"
+                                     "CLE", "DET", "KC", "MIN", "CHW", 
+                                     "HOU", "LAA", "OAK", "SEA", "TEX"] else "NL"
         
         # Parse division name to get East/West/Central
         if "east" in division_lower:
