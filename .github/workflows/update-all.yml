@@ -1,225 +1,265 @@
 name: Update All Stats (Complete Rebuild)
 
 on:
-  workflow_dispatch:  # Manually triggered workflow
+  workflow_dispatch:
     inputs:
       reason:
-        description: 'Reason for complete rebuild'
+        description: 'Reason for rebuild'
         required: false
-        default: 'Manual complete rebuild'
+        default: 'Scheduled rebuild'
+        type: string
 
 jobs:
-  update-all:
+  update-standings:
     runs-on: ubuntu-latest
-    timeout-minutes: 120  # Allow up to 2 hours for all steps to complete
-    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Fetch all history for trends
-
+        
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'  # Enable pip caching
-
+          cache: 'pip'
+      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pybaseball pandas matplotlib seaborn numpy requests beautifulsoup4 lxml
-        timeout-minutes: 5
-
-      - name: Generate batting stats
-        run: |
-          # Set output path based on branch
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
           else
-            export OUTPUT_PATH="docs"
+            # Fallback dependencies if requirements.txt is missing
+            pip install pandas matplotlib seaborn requests beautifulsoup4 numpy lxml html5lib
           fi
-          python batting_chart.py || exit 1
-          
-          # Archive current batting stats
-          mkdir -p archive
-          if [ -f "${OUTPUT_PATH}/batting_stats.csv" ]; then
-            cp ${OUTPUT_PATH}/batting_stats.csv archive/batting_$(date +%F).csv
-          fi
-          
-          # Run batting trend chart script
-          python trend_batting.py || {
-            echo "Warning: trend_batting.py failed, creating fallback files"
-            mkdir -p "${OUTPUT_PATH}"
-            echo "Trend analysis failed - $(date)" > "${OUTPUT_PATH}/trend_batting_error.txt"
-            # Create minimal placeholder images to prevent workflow failure
-            for stat in AVG HR RBI; do
-              touch "${OUTPUT_PATH}/trend_batting_${stat,,}.png"
-            done
-          }
-        timeout-minutes: 15
-        continue-on-error: true
-
-      - name: Generate pitching stats
+      
+      - name: Update standings
         run: |
-          # Set output path based on branch
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
+          python standings_chart.py
+        continue-on-error: true
+      
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if [[ -n $(git status --porcelain docs/*.json docs/*.png docs/*.html docs/*.txt) ]]; then
+            git add docs/*.json docs/*.png docs/*.html docs/*.txt
+            git commit -m "Update standings [skip ci]"
+            git push
           else
-            export OUTPUT_PATH="docs"
+            echo "No standings changes to commit"
           fi
-          python pitching_chart.py || exit 1
-          python trend_pitching.py || exit 1
-          
-          # Archive current pitching stats
-          mkdir -p archive
-          if [ -f "${OUTPUT_PATH}/season_stats.csv" ]; then
-            cp ${OUTPUT_PATH}/season_stats.csv archive/pitching_$(date +%F).csv
-          fi
-        timeout-minutes: 15
-        continue-on-error: true
 
-      - name: Generate standings data
+  update-pitching:
+    needs: update-standings
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
         run: |
-          # Set output path based on branch
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
           else
-            export OUTPUT_PATH="docs"
+            # Fallback dependencies
+            pip install pybaseball pandas matplotlib seaborn
           fi
-          python standings_chart.py || exit 1
-        timeout-minutes: 15
-        continue-on-error: true
-
-      - name: Generate MVP and Cy Young predictions
+      
+      - name: Update pitching stats
         run: |
-          # Set output path based on branch
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
-          else
-            export OUTPUT_PATH="docs"
-          fi
-          python mvp_cy_young_calculator.py || exit 1
-          python create_award_charts.py || exit 1
-        timeout-minutes: 15
+          python pitching_chart.py
         continue-on-error: true
-
-      - name: Generate playoff predictions
+      
+      - name: Commit changes
         run: |
-          # Create placeholder playoff_predictor.py if it doesn't exist
-          if [ ! -f "playoff_predictor.py" ]; then
-            echo "Placeholder playoff predictor script. Will be implemented in future updates." > playoff_predictor.py
-            echo "import json, os, datetime" >> playoff_predictor.py
-            echo "output_path = os.environ.get('OUTPUT_PATH', 'docs')" >> playoff_predictor.py
-            echo "os.makedirs(output_path, exist_ok=True)" >> playoff_predictor.py
-            echo "predictions = {'last_updated': datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'placeholder': True}" >> playoff_predictor.py
-            echo "with open(f'{output_path}/playoff_predictions.json', 'w') as f:" >> playoff_predictor.py
-            echo "    json.dump(predictions, f, indent=2)" >> playoff_predictor.py
-            echo "print('Created placeholder playoff predictions')" >> playoff_predictor.py
-          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Set output path based on branch
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
+          if [[ -n $(git status --porcelain) ]]; then
+            git add docs/*.png docs/*.html docs/*.txt
+            git commit -m "Update pitching stats [skip ci]"
+            git push
           else
-            export OUTPUT_PATH="docs"
+            echo "No pitching changes to commit"
           fi
-          
-          # Run the playoff predictor script
-          python playoff_predictor.py || {
-            echo "Warning: playoff_predictor.py failed, creating fallback file"
-            mkdir -p "${OUTPUT_PATH}"
-            echo "{\"last_updated\": \"$(date -Iseconds)\", \"error\": true}" > "${OUTPUT_PATH}/playoff_predictions.json"
-          }
-        timeout-minutes: 5
-        continue-on-error: true
 
-      - name: Archive prediction history
+  update-batting:
+    needs: update-pitching
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
         run: |
-          # Create prediction history directory if it doesn't exist
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            # Fallback dependencies
+            pip install pybaseball pandas matplotlib seaborn
+          fi
+      
+      - name: Update batting stats
+        run: |
+          python batting_chart.py
+        continue-on-error: true
+      
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if [[ -n $(git status --porcelain) ]]; then
+            git add docs/*.png docs/*.html docs/*.txt
+            git commit -m "Update batting stats [skip ci]"
+            git push
+          else
+            echo "No batting changes to commit"
+          fi
+
+  update-mvp-cy-young:
+    needs: update-batting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            # Fallback dependencies
+            pip install pandas matplotlib seaborn requests
+          fi
+      
+      - name: Update MVP & Cy Young predictions
+        run: |
+          python mvp_cy_young_calculator.py
+          python create_award_charts.py
+        continue-on-error: true
+      
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if [[ -n $(git status --porcelain) ]]; then
+            git add docs/*.json docs/*.png docs/*.csv
+            git commit -m "Update MVP & Cy Young predictions [skip ci]"
+            git push
+          else
+            echo "No award prediction changes to commit"
+          fi
+
+  update-playoffs:
+    needs: update-mvp-cy-young
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            # Fallback dependencies
+            pip install pandas matplotlib seaborn requests numpy
+          fi
+      
+      - name: Update playoff predictions
+        run: |
+          python playoff_predictor.py
+          python playoff_accuracy_tracker.py
+        continue-on-error: true
+      
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          if [[ -n $(git status --porcelain) ]]; then
+            git add docs/playoff_*.json docs/playoff_*.png docs/playoff_*.html docs/playoff_prediction_history/*.json
+            git commit -m "Update playoff predictions [skip ci]"
+            git push
+          else
+            echo "No playoff prediction changes to commit"
+          fi
+
+  update-prediction-tracking:
+    needs: update-playoffs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            # Fallback dependencies
+            pip install pandas matplotlib seaborn numpy
+          fi
+      
+      - name: Archive predictions
+        run: |
           mkdir -p docs/prediction_history
           
-          # Copy today's predictions to history with timestamp
           if [ -f "docs/award_predictions.json" ]; then
             cp docs/award_predictions.json docs/prediction_history/predictions_$(date +%F).json
             echo "✓ Archived today's predictions"
           else
             echo "Warning: No award predictions found to archive"
           fi
-        timeout-minutes: 2
         continue-on-error: true
-
-      - name: Commit and push changes
+      
+      - name: Commit changes
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           if [[ -n $(git status --porcelain) ]]; then
-            git config user.name "github-actions[bot]"
-            git config user.email "github-actions[bot]@users.noreply.github.com"
-            
-            git add docs/*.png docs/*.html docs/*.json docs/*.txt docs/prediction_history/*.json archive/*.csv playoff_predictor.py
-            # Add ROY CSVs if present (main and preview)
-            if [ -f docs/al_roy_predictions.csv ]; then git add docs/al_roy_predictions.csv; fi
-            if [ -f docs/nl_roy_predictions.csv ]; then git add docs/nl_roy_predictions.csv; fi
-            if [ -f docs/preview/al_roy_predictions.csv ]; then git add docs/preview/al_roy_predictions.csv; fi
-            if [ -f docs/preview/nl_roy_predictions.csv ]; then git add docs/preview/nl_roy_predictions.csv; fi
-
-            git commit -m "Complete stats rebuild [skip ci]"
-            
-            # Try to push with proper rebase handling
-            for attempt in {1..5}; do
-              echo "Attempt $attempt to push changes..."
-              
-              # First, try a simple push
-              if git push origin ${{ github.ref_name }}; then
-                echo "Successfully pushed on attempt $attempt"
-                break
-              else
-                if [ $attempt -lt 5 ]; then
-                  echo "Push failed on attempt $attempt. Pulling remote changes and rebasing..."
-                  
-                  # Fetch the latest changes
-                  git fetch origin ${{ github.ref_name }}
-                  
-                  # Try to rebase our commit on top of remote changes
-                  if git rebase origin/${{ github.ref_name }}; then
-                    echo "Rebase successful, retrying push..."
-                  else
-                    echo "Rebase failed, trying reset and recommit..."
-                    
-                    # Reset to remote state but keep our changes staged
-                    git reset --soft origin/${{ github.ref_name }}
-                    
-                    # Recommit our changes
-                    git commit -m "Complete stats rebuild [skip ci]" || echo "Nothing to commit after reset"
-                  fi
-                  
-                  sleep 10  # Short delay before retry
-                else
-                  echo "Failed to push after 5 attempts"
-                  exit 1
-                fi
-              fi
-            done
+            git add docs/prediction_history/*.json
+            git commit -m "Update prediction tracking [skip ci]"
+            git push
           else
-            echo "No changes to commit"
+            echo "No prediction tracking changes to commit"
           fi
-        timeout-minutes: 10
-
-      - name: Summary
-        run: |
-          echo "🚀 Complete rebuild completed!"
-          echo "✅ Generated batting stats and trends"
-          echo "✅ Generated pitching stats and trends" 
-          echo "✅ Generated standings data"
-          echo "✅ Generated MVP & Cy Young predictions"
-          echo "✅ Generated playoff predictions"
-          echo "✅ Archived prediction history"
-          echo ""
-          echo "📝 Reason: ${{ github.event.inputs.reason }}"
-          echo ""
-          echo "💡 All stats have been updated in a single workflow."
-        timeout-minutes: 1

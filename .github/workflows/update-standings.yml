@@ -1,70 +1,79 @@
 name: Update Standings
 
 on:
-  workflow_dispatch: {}  # Minimalist workflow_dispatch trigger that will definitely work
+  workflow_dispatch: {}  # Minimalist workflow_dispatch trigger
   schedule:
     - cron: '0 13 * * *'  # Runs daily at 13:00 UTC (main branch only)
 
 jobs:
   update-standings:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     # Skip scheduled runs on preview branch
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-        cache: 'pip'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pandas matplotlib seaborn requests beautifulsoup4 lxml
-      timeout-minutes: 5
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          else
+            # Fallback dependencies for standings
+            pip install pandas matplotlib seaborn requests beautifulsoup4 numpy lxml html5lib
+          fi
+        timeout-minutes: 5
 
-    - name: Generate standings data and charts
-      run: |
-        # Set output path based on branch
-        if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-          export OUTPUT_PATH="docs/preview"
-          mkdir -p docs/preview
-        else
-          export OUTPUT_PATH="docs"
-        fi
-        python standings_chart.py || exit 1
-      timeout-minutes: 5
-      continue-on-error: false
-
-    - name: Commit and push changes
-      run: |
-        if [[ -n $(git status --porcelain) ]]; then
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+      - name: Update standings
+        run: |
           # Set output path based on branch
           if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
             export OUTPUT_PATH="docs/preview"
             mkdir -p docs/preview
-            COMMIT_MSG="Update standings data and charts (preview) [skip ci]"
-            FILE_PATTERN="docs/preview/standings_*.png docs/preview/standings_*.html docs/preview/standings_*.csv docs/preview/last_updated_standings.txt"
           else
             export OUTPUT_PATH="docs"
-            COMMIT_MSG="Update standings data and charts [skip ci]"
-            FILE_PATTERN="docs/standings_*.png docs/standings_*.html docs/standings_*.csv docs/last_updated_standings.txt"
           fi
           
-          git add $FILE_PATTERN
-          git commit -m "$COMMIT_MSG"
-          git push origin ${{ github.ref_name }}
-        else
-          echo "No changes to commit"
-        fi
-      timeout-minutes: 5
+          # Run the standings chart script
+          python standings_chart.py || {
+            echo "Warning: standings_chart.py failed, creating fallback file"
+            mkdir -p "${OUTPUT_PATH}"
+            echo "{\"last_updated\": \"$(date -Iseconds)\", \"error\": true}" > "${OUTPUT_PATH}/standings_summary.json"
+            echo "Last updated: $(date -Iseconds) - ERROR" > "${OUTPUT_PATH}/last_updated_standings.txt"
+          }
+        timeout-minutes: 3
+        continue-on-error: true
+
+      - name: Commit and push changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+            # Set commit message and files based on branch
+            if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
+              COMMIT_MSG="Update standings (preview) [skip ci]"
+              FILE_PATTERN="docs/preview/standings_*.json docs/preview/standings_*.png docs/preview/standings_*.html docs/preview/last_updated_standings.txt"
+            else
+              COMMIT_MSG="Update standings [skip ci]"
+              FILE_PATTERN="docs/standings_*.json docs/standings_*.png docs/standings_*.html docs/last_updated_standings.txt"
+            fi
+            
+            git add $FILE_PATTERN
+            git commit -m "$COMMIT_MSG"
+            git push origin ${{ github.ref_name }}
+          else
+            echo "No changes to commit"
+          fi
+        timeout-minutes: 2
