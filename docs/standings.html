@@ -121,38 +121,13 @@
       display: block;
     }
 
-    .standings-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 2rem;
-      margin: 2rem 0;
+    .division-section {
+      margin-bottom: 3rem;
     }
 
-    .division-card {
-      background-color: var(--card-bg);
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px var(--link-shadow);
-      border: 1px solid #ddd;
-    }
-
-    [data-theme='dark'] .division-card {
-      border: 1px solid #555;
-    }
-
-    .division-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      margin-bottom: 1rem;
-      color: var(--text);
-      text-align: center;
-      border-bottom: 2px solid #007bff;
-      padding-bottom: 0.5rem;
-    }
-
-    .standings-table iframe {
+    .standings-full {
       width: 100%;
-      height: 300px;
+      height: 800px;
       border: 1px solid var(--border, #ddd);
       border-radius: 8px;
     }
@@ -254,10 +229,6 @@
     }
 
     @media (max-width: 768px) {
-      .standings-grid {
-        grid-template-columns: 1fr;
-      }
-      
       .summary-cards {
         grid-template-columns: 1fr;
       }
@@ -312,35 +283,26 @@
   <div id="american" class="content">
     <h2>🔵 American League Standings</h2>
     
-    <div class="standings-grid">
-      <div class="division-card">
-        <div class="division-title">AL East</div>
-        <div class="standings-table">
-          <iframe src="standings_al_east.html" title="AL East Standings"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="standings_al_east.png" alt="AL East Chart" onerror="this.style.display='none'">
-        </div>
+    <iframe src="standings_al_all.html" class="standings-full" title="American League Standings"></iframe>
+    
+    <div class="division-section">
+      <h3>AL East</h3>
+      <div class="chart-container">
+        <img src="standings_al_east.png" alt="AL East Chart" onerror="this.style.display='none'">
       </div>
-      
-      <div class="division-card">
-        <div class="division-title">AL Central</div>
-        <div class="standings-table">
-          <iframe src="standings_al_central.html" title="AL Central Standings"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="standings_al_central.png" alt="AL Central Chart" onerror="this.style.display='none'">
-        </div>
+    </div>
+    
+    <div class="division-section">
+      <h3>AL Central</h3>
+      <div class="chart-container">
+        <img src="standings_al_central.png" alt="AL Central Chart" onerror="this.style.display='none'">
       </div>
-      
-      <div class="division-card">
-        <div class="division-title">AL West</div>
-        <div class="standings-table">
-          <iframe src="standings_al_west.html" title="AL West Standings"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="standings_al_west.png" alt="AL West Chart" onerror="this.style.display='none'">
-        </div>
+    </div>
+    
+    <div class="division-section">
+      <h3>AL West</h3>
+      <div class="chart-container">
+        <img src="standings_al_west.png" alt="AL West Chart" onerror="this.style.display='none'">
       </div>
     </div>
   </div>
@@ -348,35 +310,26 @@
   <div id="national" class="content">
     <h2>🔴 National League Standings</h2>
     
-    <div class="standings-grid">
-      <div class="division-card">
-        <div class="division-title">NL East</div>
-        <div class="standings-table">
-          <iframe src="standings_nl_east.html" title="NL East Standings"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="standings_nl_east.png" alt="NL East Chart" onerror="this.style.display='none'">
-        </div>
+    <iframe src="standings_nl_all.html" class="standings-full" title="National League Standings"></iframe>
+    
+    <div class="division-section">
+      <h3>NL East</h3>
+      <div class="chart-container">
+        <img src="standings_nl_east.png" alt="NL East Chart" onerror="this.style.display='none'">
       </div>
-      
-      <div class="division-card">
-        <div class="division-title">NL Central</div>
-        <div class="standings-table">
-          <iframe src="standings_nl_central.html" title="NL Central Standings"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="standings_nl_central.png" alt="NL Central Chart" onerror="this.style.display='none'">
-        </div>
+    </div>
+    
+    <div class="division-section">
+      <h3>NL Central</h3>
+      <div class="chart-container">
+        <img src="standings_nl_central.png" alt="NL Central Chart" onerror="this.style.display='none'">
       </div>
-      
-      <div class="division-card">
-        <div class="division-title">NL West</div>
-        <div class="standings-table">
-          <iframe src="standings_nl_west.html" title="NL West Standings"></iframe>
-        </div>
-        <div class="chart-container">
-          <img src="standings_nl_west.png" alt="NL West Chart" onerror="this.style.display='none'">
-        </div>
+    </div>
+    
+    <div class="division-section">
+      <h3>NL West</h3>
+      <div class="chart-container">
+        <img src="standings_nl_west.png" alt="NL West Chart" onerror="this.style.display='none'">
       </div>
     </div>
   </div>
@@ -435,6 +388,18 @@
       const next = current === "dark" ? "light" : "dark";
       document.documentElement.setAttribute("data-theme", next);
       localStorage.setItem("theme", next);
+      
+      // Also update iframes
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        try {
+          if (iframe.contentDocument && iframe.contentDocument.documentElement) {
+            iframe.contentDocument.documentElement.setAttribute('data-theme', next);
+          }
+        } catch(e) {
+          // Cross-origin restriction might prevent this
+        }
+      });
     }
 
     function loadSummaryData() {
@@ -491,6 +456,41 @@
           document.getElementById('summary-cards').innerHTML = summaryHtml;
           document.getElementById('last-updated').textContent = `Last Updated: ${data.last_updated}`;
         })
+        .catch(error => {
+          console.error('Error loading summary data:', error);
+          document.getElementById('summary-cards').innerHTML = `
+            <div class="summary-card">
+              <h3>Data Updating</h3>
+              <div class="stat-value">⚠️</div>
+              <div class="stat-detail">Standings data is refreshing</div>
+              <div class="stat-detail">Check back in a moment</div>
+            </div>
+          `;
+        });
+    }
+    
+    // Load timestamp
+    fetch('last_updated_standings.txt')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('last-updated').textContent = data;
+      })
+      .catch(error => {
+        document.getElementById('last-updated').textContent = 'Last Updated: Loading...';
+      });
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+      
+      switchTab("overview");
+      loadSummaryData();
+    };
+  </script>
+</body>
+</html>
         .catch(error => {
           console.error('Error loading summary data:', error);
           document.getElementById('summary-cards').innerHTML = `

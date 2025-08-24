@@ -15,17 +15,7 @@ from datetime import datetime
 from bs4 import BeautifulSoup
 import traceback
 
-# Set style for charts using Matplotlib defaults to mimic whitegrid
-plt.rcParams.update({
-    'axes.facecolor': 'white',
-    'axes.grid': True,
-    'axes.grid.which': 'major',
-    'grid.color': 'lightgray',
-    'grid.linestyle': '-',
-    'grid.alpha': 0.3,
-})
-
-# Make sure output folder exists
+# Ensure output directory exists
 output_path = os.environ.get("OUTPUT_PATH", "docs")
 os.makedirs(output_path, exist_ok=True)
 
@@ -61,7 +51,7 @@ def fetch_standings():
 
 
 def fetch_standings_mlb():
-    """Fetch standings from MLB.com (primary source)"""
+    """Fetch standings from MLB.com API (primary source)"""
     try:
         # MLB.com API endpoint for standings
         url = "https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=2025&standingsTypes=regularSeason"
@@ -79,7 +69,18 @@ def fetch_standings_mlb():
         if "records" in data:
             for division_record in data["records"]:
                 division_name = division_record.get("division", {}).get("name", "Unknown")
-                league_name = "AL" if "American" in division_name else "NL"
+                # Standardize division names to our format (AL East, NL West, etc.)
+                if "American" in division_name:
+                    league = "AL"
+                    div = division_name.replace("American League ", "")
+                    division_name = f"AL {div}"
+                elif "National" in division_name:
+                    league = "NL"
+                    div = division_name.replace("National League ", "")
+                    division_name = f"NL {div}"
+                else:
+                    # Default league assignment if name format is different
+                    league = "AL" if "AL" in division_name else "NL"
                 
                 for team_record in division_record.get("teamRecords", []):
                     team_name = team_record.get("team", {}).get("name", "Unknown")
@@ -107,7 +108,7 @@ def fetch_standings_mlb():
                         "PCT": pct,
                         "GB": 0.0,  # Will calculate later
                         "Division": division_name,
-                        "League": league_name
+                        "League": league
                     })
         
         if not all_teams:
@@ -137,66 +138,60 @@ def fetch_standings_espn():
         # Process the ESPN HTML
         all_teams = []
         
-        # Find division tables
-        division_tables = soup.find_all('table', class_='standings')
+        # Map division names to standardized format
+        division_mapping = {
+            "AL EAST": "AL East",
+            "AL CENTRAL": "AL Central", 
+            "AL WEST": "AL West",
+            "NL EAST": "NL East", 
+            "NL CENTRAL": "NL Central",
+            "NL WEST": "NL West"
+        }
         
-        for table in division_tables:
-            # Determine division name and league
-            header = table.find_previous('div', class_='Table__Title')
-            if not header:
+        # Find division tables
+        for division_header in soup.find_all('div', class_='Table__Title'):
+            division_text = division_header.get_text().strip().upper()
+            
+            # Skip if not a valid division
+            if division_text not in division_mapping:
                 continue
                 
-            header_text = header.get_text()
+            division_name = division_mapping[division_text]
+            league = division_name.split()[0]  # AL or NL
             
-            # Extract division name
-            if 'East' in header_text:
-                division_name = "East"
-            elif 'Central' in header_text:
-                division_name = "Central"
-            elif 'West' in header_text:
-                division_name = "West"
-            else:
-                division_name = "Unknown"
+            # Find the table for this division
+            table = division_header.find_next('table')
+            if not table:
+                continue
                 
-            # Extract league
-            if 'American' in header_text:
-                league = "AL"
-                division_name = f"AL {division_name}"
-            elif 'National' in header_text:
-                league = "NL"
-                division_name = f"NL {division_name}"
-            else:
-                league = "Unknown"
-            
-            # Extract team rows
-            team_rows = table.find_all('tr')[1:]  # Skip header row
-            
-            for row in team_rows:
+            # Get team rows
+            rows = table.find_all('tr')
+            for row in rows[1:]:  # Skip header row
                 cells = row.find_all('td')
-                if len(cells) < 3:
+                if len(cells) < 10:  # Ensure it's a data row
                     continue
+                    
+                # Extract team name
+                team_link = row.find('a', class_='AnchorLink')
+                if not team_link:
+                    continue
+                team_name = team_link.get_text().strip()
                 
-                team_link = row.find('a')
-                if team_link:
-                    team_name = team_link.get_text()
-                    
-                    # Get team abbreviation
-                    href = team_link.get('href', '')
-                    abbrev = href.split('/')[-2].upper() if '/' in href else team_name[:3].upper()
-                    
-                    # Extract wins and losses
-                    win_cell = cells[0]
-                    loss_cell = cells[1]
-                    
-                    wins = int(win_cell.get_text().strip())
-                    losses = int(loss_cell.get_text().strip())
+                # Extract team abbreviation
+                team_abbrev = team_name[:3].upper()  # Default abbreviation
+                
+                # Extract win/loss data - assuming standard ESPN format
+                try:
+                    wins = int(cells[0].get_text().strip())
+                    losses = int(cells[1].get_text().strip())
                     
                     # Calculate PCT
-                    pct = wins / (wins + losses) if wins + losses > 0 else 0
+                    pct = round(wins / (wins + losses), 3) if wins + losses > 0 else 0.0
                     
+                    # Add to team list
                     all_teams.append({
                         "Team": team_name,
-                        "Abbrev": abbrev,
+                        "Abbrev": team_abbrev,
                         "W": wins,
                         "L": losses,
                         "PCT": pct,
@@ -204,9 +199,11 @@ def fetch_standings_espn():
                         "Division": division_name,
                         "League": league
                     })
+                except (ValueError, IndexError):
+                    continue
         
         if not all_teams:
-            print("No data found on ESPN standings page")
+            print("No data found in ESPN HTML")
             return None
         
         # Create DataFrame and calculate GB for each division
@@ -232,83 +229,72 @@ def fetch_standings_baseball_reference():
         # Process Baseball Reference HTML
         all_teams = []
         
-        # Find all division tables
-        division_tables = soup.find_all('table', id=lambda x: x and x.endswith('standings_E'))
-        division_tables += soup.find_all('table', id=lambda x: x and x.endswith('standings_C'))
-        division_tables += soup.find_all('table', id=lambda x: x and x.endswith('standings_W'))
+        # Division names for each table
+        divisions = [
+            "AL East", "AL Central", "AL West",
+            "NL East", "NL Central", "NL West"
+        ]
         
-        for table in division_tables:
-            table_id = table.get('id', '')
-            
-            # Determine division name and league
-            if 'AL' in table_id:
-                league = "AL"
-                if table_id.endswith('_E'):
-                    division = "AL East"
-                elif table_id.endswith('_C'):
-                    division = "AL Central"
-                elif table_id.endswith('_W'):
-                    division = "AL West"
-                else:
-                    division = "AL Unknown"
-            elif 'NL' in table_id:
-                league = "NL"
-                if table_id.endswith('_E'):
-                    division = "NL East"
-                elif table_id.endswith('_C'):
-                    division = "NL Central"
-                elif table_id.endswith('_W'):
-                    division = "NL West"
-                else:
-                    division = "NL Unknown"
-            else:
-                league = "Unknown"
-                division = "Unknown"
-            
-            # Extract team rows
-            team_rows = table.find_all('tr')[1:]  # Skip header row
-            
-            for row in team_rows:
-                # Skip if row is a header or separator
-                if row.get('class') and ('thead' in row['class'] or 'spacer' in row['class']):
-                    continue
-                    
-                cells = row.find_all('td')
-                if len(cells) < 3:
-                    continue
+        # Find all division tables
+        tables = soup.find_all('table')
+        division_tables = []
+        
+        for table in tables:
+            if 'standings_' in table.get('id', ''):
+                division_tables.append(table)
+        
+        # Process each division table
+        for idx, table in enumerate(division_tables):
+            if idx >= len(divisions):
+                break
                 
-                team_cell = row.find('th')
-                if not team_cell:
+            division_name = divisions[idx]
+            league = division_name.split()[0]  # AL or NL
+            
+            # Process team rows
+            rows = table.find_all('tr')
+            for row in rows[1:]:  # Skip header row
+                cells = row.find_all('td')
+                if not cells:  # Skip header or separator rows
                     continue
                     
-                team_link = team_cell.find('a')
-                if team_link:
-                    team_name = team_link.get_text().strip()
-                    
-                    # Try to get team abbreviation from URL
-                    href = team_link.get('href', '')
-                    abbrev = href.split('/')[-2].upper() if '/' in href else team_name[:3].upper()
-                    
-                    # Extract wins and losses
+                # Extract team name
+                team_cell = row.find('th')
+                if not team_cell or not team_cell.find('a'):
+                    continue
+                team_name = team_cell.find('a').get_text().strip()
+                
+                # Use 3-letter abbreviation
+                team_abbrev = team_name[:3].upper()
+                
+                try:
+                    # Baseball Reference columns (may need adjustment)
                     wins = int(cells[0].get_text().strip())
                     losses = int(cells[1].get_text().strip())
                     
                     # Calculate PCT
-                    pct = float(cells[2].get_text().strip())
+                    pct_text = cells[2].get_text().strip()
+                    try:
+                        pct = float(pct_text)
+                    except:
+                        pct = round(wins / (wins + losses), 3) if wins + losses > 0 else 0.0
                     
+                    # Add to team list
                     all_teams.append({
                         "Team": team_name,
-                        "Abbrev": abbrev,
+                        "Abbrev": team_abbrev,
                         "W": wins,
                         "L": losses,
                         "PCT": pct,
                         "GB": 0.0,  # Will calculate later
-                        "Division": division,
+                        "Division": division_name,
                         "League": league
                     })
+                except (ValueError, IndexError):
+                    continue
         
         if not all_teams:
-            print("No data found on Baseball Reference standings page")
+            print("No data found in Baseball Reference HTML")
             return None
         
         # Create DataFrame and calculate GB for each division
@@ -324,106 +310,101 @@ def fetch_standings_baseball_reference():
 
 def get_fallback_standings():
     """Provide fallback standings data when online sources are unavailable"""
-    try:
-        # Define team abbreviations for proper display
-        team_info = {
+    # Define team information dictionary with proper names, abbreviations, and division assignments
+    team_info = {
+        # AL East
+        "New York Yankees": {"abbrev": "NYY", "division": "AL East", "league": "AL"},
+        "Boston Red Sox": {"abbrev": "BOS", "division": "AL East", "league": "AL"},
+        "Toronto Blue Jays": {"abbrev": "TOR", "division": "AL East", "league": "AL"},
+        "Tampa Bay Rays": {"abbrev": "TB", "division": "AL East", "league": "AL"},
+        "Baltimore Orioles": {"abbrev": "BAL", "division": "AL East", "league": "AL"},
+        
+        # AL Central
+        "Cleveland Guardians": {"abbrev": "CLE", "division": "AL Central", "league": "AL"},
+        "Minnesota Twins": {"abbrev": "MIN", "division": "AL Central", "league": "AL"},
+        "Detroit Tigers": {"abbrev": "DET", "division": "AL Central", "league": "AL"},
+        "Kansas City Royals": {"abbrev": "KC", "division": "AL Central", "league": "AL"},
+        "Chicago White Sox": {"abbrev": "CWS", "division": "AL Central", "league": "AL"},
+        
+        # AL West
+        "Houston Astros": {"abbrev": "HOU", "division": "AL West", "league": "AL"},
+        "Seattle Mariners": {"abbrev": "SEA", "division": "AL West", "league": "AL"},
+        "Texas Rangers": {"abbrev": "TEX", "division": "AL West", "league": "AL"},
+        "Los Angeles Angels": {"abbrev": "LAA", "division": "AL West", "league": "AL"},
+        "Oakland Athletics": {"abbrev": "OAK", "division": "AL West", "league": "AL"},
+        
+        # NL East
+        "Atlanta Braves": {"abbrev": "ATL", "division": "NL East", "league": "NL"},
+        "Philadelphia Phillies": {"abbrev": "PHI", "division": "NL East", "league": "NL"},
+        "New York Mets": {"abbrev": "NYM", "division": "NL East", "league": "NL"},
+        "Miami Marlins": {"abbrev": "MIA", "division": "NL East", "league": "NL"},
+        "Washington Nationals": {"abbrev": "WSH", "division": "NL East", "league": "NL"},
+        
+        # NL Central
+        "Milwaukee Brewers": {"abbrev": "MIL", "division": "NL Central", "league": "NL"},
+        "Chicago Cubs": {"abbrev": "CHC", "division": "NL Central", "league": "NL"},
+        "St. Louis Cardinals": {"abbrev": "STL", "division": "NL Central", "league": "NL"},
+        "Cincinnati Reds": {"abbrev": "CIN", "division": "NL Central", "league": "NL"},
+        "Pittsburgh Pirates": {"abbrev": "PIT", "division": "NL Central", "league": "NL"},
+        
+        # NL West
+        "Los Angeles Dodgers": {"abbrev": "LAD", "division": "NL West", "league": "NL"},
+        "San Diego Padres": {"abbrev": "SD", "division": "NL West", "league": "NL"},
+        "San Francisco Giants": {"abbrev": "SF", "division": "NL West", "league": "NL"},
+        "Arizona Diamondbacks": {"abbrev": "ARI", "division": "NL West", "league": "NL"},
+        "Colorado Rockies": {"abbrev": "COL", "division": "NL West", "league": "NL"}
+    }
+    
+    # Sample data for 2025 season
+    data = {
+        "Team": list(team_info.keys()),
+        "W": [
             # AL East
-            "New York Yankees": {"abbrev": "NYY", "division": "AL East", "league": "AL"},
-            "Boston Red Sox": {"abbrev": "BOS", "division": "AL East", "league": "AL"},
-            "Toronto Blue Jays": {"abbrev": "TOR", "division": "AL East", "league": "AL"},
-            "Tampa Bay Rays": {"abbrev": "TB", "division": "AL East", "league": "AL"},
-            "Baltimore Orioles": {"abbrev": "BAL", "division": "AL East", "league": "AL"},
-            
+            92, 88, 85, 82, 65,
             # AL Central
-            "Cleveland Guardians": {"abbrev": "CLE", "division": "AL Central", "league": "AL"},
-            "Minnesota Twins": {"abbrev": "MIN", "division": "AL Central", "league": "AL"},
-            "Detroit Tigers": {"abbrev": "DET", "division": "AL Central", "league": "AL"},
-            "Kansas City Royals": {"abbrev": "KC", "division": "AL Central", "league": "AL"},
-            "Chicago White Sox": {"abbrev": "CWS", "division": "AL Central", "league": "AL"},
-            
+            90, 87, 78, 72, 62,
             # AL West
-            "Houston Astros": {"abbrev": "HOU", "division": "AL West", "league": "AL"},
-            "Seattle Mariners": {"abbrev": "SEA", "division": "AL West", "league": "AL"},
-            "Texas Rangers": {"abbrev": "TEX", "division": "AL West", "league": "AL"},
-            "Los Angeles Angels": {"abbrev": "LAA", "division": "AL West", "league": "AL"},
-            "Oakland Athletics": {"abbrev": "OAK", "division": "AL West", "league": "AL"},
-            
+            94, 89, 80, 72, 67,
             # NL East
-            "Atlanta Braves": {"abbrev": "ATL", "division": "NL East", "league": "NL"},
-            "Philadelphia Phillies": {"abbrev": "PHI", "division": "NL East", "league": "NL"},
-            "New York Mets": {"abbrev": "NYM", "division": "NL East", "league": "NL"},
-            "Miami Marlins": {"abbrev": "MIA", "division": "NL East", "league": "NL"},
-            "Washington Nationals": {"abbrev": "WSH", "division": "NL East", "league": "NL"},
-            
+            96, 93, 85, 74, 69,
             # NL Central
-            "Milwaukee Brewers": {"abbrev": "MIL", "division": "NL Central", "league": "NL"},
-            "Chicago Cubs": {"abbrev": "CHC", "division": "NL Central", "league": "NL"},
-            "St. Louis Cardinals": {"abbrev": "STL", "division": "NL Central", "league": "NL"},
-            "Cincinnati Reds": {"abbrev": "CIN", "division": "NL Central", "league": "NL"},
-            "Pittsburgh Pirates": {"abbrev": "PIT", "division": "NL Central", "league": "NL"},
-            
+            91, 85, 81, 78, 70,
             # NL West
-            "Los Angeles Dodgers": {"abbrev": "LAD", "division": "NL West", "league": "NL"},
-            "San Diego Padres": {"abbrev": "SD", "division": "NL West", "league": "NL"},
-            "San Francisco Giants": {"abbrev": "SF", "division": "NL West", "league": "NL"},
-            "Arizona Diamondbacks": {"abbrev": "ARI", "division": "NL West", "league": "NL"},
-            "Colorado Rockies": {"abbrev": "COL", "division": "NL West", "league": "NL"}
-        }
-        
-        # Sample data for 2025 season
-        data = {
-            "Team": list(team_info.keys()),
-            "W": [
-                # AL East
-                92, 88, 85, 82, 65,
-                # AL Central
-                90, 87, 78, 72, 62,
-                # AL West
-                94, 89, 80, 72, 67,
-                # NL East
-                96, 93, 85, 74, 69,
-                # NL Central
-                91, 85, 81, 78, 70,
-                # NL West
-                98, 89, 84, 80, 68
-            ],
-            "L": [
-                # AL East
-                70, 74, 77, 80, 97,
-                # AL Central
-                72, 75, 84, 90, 100,
-                # AL West
-                68, 73, 82, 90, 95,
-                # NL East
-                66, 69, 77, 88, 93,
-                # NL Central
-                71, 77, 81, 84, 92,
-                # NL West
-                64, 73, 78, 82, 94
-            ]
-        }
-        
-        # Create DataFrame
-        df = pd.DataFrame(data)
-        
-        # Add team abbreviation, division, and league from team_info dictionary
-        df["Abbrev"] = df["Team"].apply(lambda x: team_info.get(x, {}).get("abbrev", x[:3].upper()))
-        df["Division"] = df["Team"].apply(lambda x: team_info.get(x, {}).get("division", "Unknown"))
-        df["League"] = df["Team"].apply(lambda x: team_info.get(x, {}).get("league", "Unknown"))
-        
-        # Calculate winning percentage
-        df["PCT"] = df["W"] / (df["W"] + df["L"]).astype(float)
-        df["PCT"] = df["PCT"].round(3)
-        
-        # Calculate GB
-        calculate_games_behind(df)
-        
-        print("✓ Generated fallback standings data")
-        return df
-        
-    except Exception as e:
-        print(f"Error creating fallback standings: {e}")
-        return get_emergency_fallback()
+            98, 89, 84, 80, 68
+        ],
+        "L": [
+            # AL East
+            70, 74, 77, 80, 97,
+            # AL Central
+            72, 75, 84, 90, 100,
+            # AL West
+            68, 73, 82, 90, 95,
+            # NL East
+            66, 69, 77, 88, 93,
+            # NL Central
+            71, 77, 81, 84, 92,
+            # NL West
+            64, 73, 78, 82, 94
+        ]
+    }
+    
+    # Create DataFrame
+    df = pd.DataFrame(data)
+    
+    # Add team abbreviation, division, and league from team_info dictionary
+    df["Abbrev"] = df["Team"].apply(lambda x: team_info[x]["abbrev"])
+    df["Division"] = df["Team"].apply(lambda x: team_info[x]["division"])
+    df["League"] = df["Team"].apply(lambda x: team_info[x]["league"])
+    
+    # Calculate winning percentage
+    df["PCT"] = df["W"] / (df["W"] + df["L"]).astype(float)
+    df["PCT"] = df["PCT"].round(3)
+    
+    # Calculate GB
+    calculate_games_behind(df)
+    
+    print("✓ Generated fallback standings data")
+    return df
 
 
 def get_emergency_fallback():
@@ -834,6 +815,178 @@ def generate_standings_summary(df):
         print("✓ Generated fallback standings summary data")
 
 
+def generate_league_standings_html():
+    """Generate consolidated standings HTML files for American and National Leagues"""
+    try:
+        # Load the CSV data if it exists
+        csv_path = f"{output_path}/standings_all.csv"
+        if not os.path.exists(csv_path):
+            print("Cannot generate league standings HTML - standings CSV not found")
+            return
+            
+        df = pd.read_csv(csv_path)
+        
+        # Generate American League HTML
+        generate_league_html(df, "AL", "American League")
+        
+        # Generate National League HTML
+        generate_league_html(df, "NL", "National League")
+        
+        print("✓ Generated league standings HTML files")
+        
+    except Exception as e:
+        print(f"Error generating league standings HTML: {e}")
+
+
+def generate_league_html(df, league_code, league_name):
+    """Generate HTML for a specific league"""
+    try:
+        # Filter for this league
+        league_df = df[df["League"] == league_code].copy()
+        
+        # Get divisions in this league
+        divisions = sorted([div for div in league_df["Division"].unique() if league_code in div])
+        
+        # Create HTML content
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                :root {{
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
+                }}
+                
+                [data-theme='dark'] {{
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }}
+                
+                body {{ 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 10px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                    overflow: hidden;
+                }}
+                
+                .league-container {{
+                    display: flex;
+                    flex-direction: column;
+                    gap: 20px;
+                }}
+                
+                .division-section {{
+                    margin-bottom: 20px;
+                }}
+                
+                .division-title {{
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    color: var(--text);
+                    border-bottom: 2px solid #007bff;
+                    padding-bottom: 5px;
+                }}
+                
+                .table-container {{
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: auto;
+                }}
+                
+                table {{ 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    background-color: var(--bg);
+                    margin: 0 auto;
+                    font-size: 14px;
+                }}
+                
+                th, td {{ 
+                    border: 1px solid var(--border); 
+                    padding: 6px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }}
+                
+                th {{ 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }}
+                
+                tr:nth-child(even) td {{ 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }}
+                
+                tr:nth-child(odd) td {{ 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }}
+            </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {{
+                    try {{
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {{
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }}
+                    }} catch(e) {{
+                        // Cross-origin issues, use default
+                    }}
+                }};
+            </script>
+        </head>
+        <body>
+            <div class="league-container">
+        """
+        
+        # Add each division
+        for division in divisions:
+            division_df = league_df[league_df["Division"] == division].sort_values("PCT", ascending=False)
+            
+            # Format PCT as string
+            division_df["PCT"] = division_df["PCT"].apply(lambda x: f"{x:.3f}")
+            
+            # Select columns for display
+            display_df = division_df[["Team", "W", "L", "PCT", "GB"]]
+            
+            html_content += f"""
+                <div class="division-section">
+                    <div class="division-title">{division}</div>
+                    <div class="table-container">
+                        {display_df.to_html(index=False, classes='standings-table', escape=False)}
+                    </div>
+                </div>
+            """
+        
+        html_content += """
+            </div>
+        </body>
+        </html>
+        """
+        
+        # Save to file
+        file_path = f"{output_path}/standings_{league_code.lower()}_all.html"
+        with open(file_path, "w") as f:
+            f.write(html_content)
+        
+        print(f"✓ Generated {league_name} standings HTML")
+        
+    except Exception as e:
+        print(f"Error generating {league_name} HTML: {e}")
+
+
 def main():
     """Main function to run the standings generation process"""
     try:
@@ -846,6 +999,9 @@ def main():
         
         print("Generating HTML tables...")
         generate_standings_tables(df)
+        
+        print("Generating league standings HTML...")
+        generate_league_standings_html()
         
         print("Generating charts...")
         generate_standings_charts(df)
@@ -882,7 +1038,3 @@ def main():
             }
             with open(f"{output_path}/standings_summary.json", "w") as f:
                 json.dump(fallback_summary, f, indent=2)
-
-
-if __name__ == "__main__":
-    main()
