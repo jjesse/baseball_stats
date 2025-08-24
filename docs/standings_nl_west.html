@@ -1,130 +1,134 @@
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>NL Division</title>
-    <style>
-        :root {
-            --text-color: #333;
-            --bg-color: #fff;
-            --header-bg: #f2f2f2;
-            --border-color: #ddd;
-            --hover-color: #f5f5f5;
-        }
-        
-        [data-theme='dark'] {
-            --text-color: #eee;
-            --bg-color: #222;
-            --header-bg: #333;
-            --border-color: #444;
-            --hover-color: #2a2a2a;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            color: var(--text-color);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1rem 0;
-        }
-        
-        th, td {
-            padding: 0.5rem;
-            text-align: left;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        th {
-            background-color: var(--header-bg);
-            font-weight: bold;
-        }
-        
-        tr:hover {
-            background-color: var(--hover-color);
-        }
-        
-        .al-team {
-            color: #0099cc;
-        }
-        
-        .nl-team {
-            color: #cc0000;
-        }
-    </style>
-    <script>
-        // Inherit theme from parent window
-        window.onload = function() {
-            try {
-                const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                if (parentTheme) {
-                    document.documentElement.setAttribute('data-theme', parentTheme);
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                :root {
+                    --bg: #ffffff;
+                    --text: #333333;
+                    --border: #dddddd;
+                    --header-bg: #f8f9fa;
                 }
-            } catch(e) {
-                // Cross-origin issues, use default
-            }
-        };
-    </script>
-</head>
-<body>
-    <table>
-        <thead>
-            <tr>
-                <th>Team</th>
-                <th>W</th>
-                <th>L</th>
-                <th>PCT</th>
-                <th>GB</th>
-            </tr>
-        </thead>
-        <tbody>
-
-                    <tr class="nl-team">
-                        <td>UNK</td>
-                        <td>74</td>
-                        <td>56</td>
-                        <td>0.569</td>
-                        <td>-</td>
-                    </tr>
-
-                    <tr class="nl-team">
-                        <td>UNK</td>
-                        <td>73</td>
-                        <td>57</td>
-                        <td>0.562</td>
-                        <td>1.0</td>
-                    </tr>
-
-                    <tr class="nl-team">
-                        <td>UNK</td>
-                        <td>64</td>
-                        <td>66</td>
-                        <td>0.492</td>
-                        <td>10.0</td>
-                    </tr>
-
-                    <tr class="nl-team">
-                        <td>UNK</td>
-                        <td>62</td>
-                        <td>68</td>
-                        <td>0.477</td>
-                        <td>12.0</td>
-                    </tr>
-
-                    <tr class="nl-team">
-                        <td>UNK</td>
-                        <td>37</td>
-                        <td>93</td>
-                        <td>0.285</td>
-                        <td>37.0</td>
-                    </tr>
-
-        </tbody>
-    </table>
-</body>
-</html>
+                
+                [data-theme='dark'] {
+                    --bg: #1f1f1f;
+                    --text: #ffffff;
+                    --border: #555555;
+                    --header-bg: #2d2d2d;
+                    --row-even: #2a2a2a;
+                }
+                
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 10px;
+                    background-color: var(--bg);
+                    color: var(--text);
+                    overflow: hidden;
+                }
+                
+                .table-container {
+                    width: 100%;
+                    max-width: 100%;
+                    overflow-x: auto;
+                }
+                
+                table { 
+                    width: 100%; 
+                    border-collapse: collapse; 
+                    background-color: var(--bg);
+                    margin: 0 auto;
+                    font-size: 14px;
+                }
+                
+                th, td { 
+                    border: 1px solid var(--border); 
+                    padding: 6px; 
+                    text-align: center;
+                    color: var(--text) !important;
+                }
+                
+                th { 
+                    background-color: var(--header-bg) !important;
+                    font-weight: bold;
+                    color: var(--text) !important;
+                }
+                
+                tr:nth-child(even) td { 
+                    background-color: var(--row-even, #f9f9f9) !important;
+                    color: var(--text) !important;
+                }
+                
+                tr:nth-child(odd) td { 
+                    background-color: var(--bg) !important;
+                    color: var(--text) !important;
+                }
+            </style>
+            <script>
+                // Inherit theme from parent window
+                window.onload = function() {
+                    try {
+                        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
+                        if (parentTheme) {
+                            document.documentElement.setAttribute('data-theme', parentTheme);
+                        }
+                    } catch(e) {
+                        // Cross-origin issues, use default
+                    }
+                };
+            </script>
+        </head>
+        <body>
+            <div class="table-container">
+                <table border="1" class="dataframe standings-table">
+  <thead>
+    <tr style="text-align: right;">
+      <th>Team</th>
+      <th>W</th>
+      <th>L</th>
+      <th>PCT</th>
+      <th>GB</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Los Angeles Dodgers</td>
+      <td>98</td>
+      <td>64</td>
+      <td>0.605</td>
+      <td>-</td>
+    </tr>
+    <tr>
+      <td>San Diego Padres</td>
+      <td>89</td>
+      <td>73</td>
+      <td>0.549</td>
+      <td>9.0</td>
+    </tr>
+    <tr>
+      <td>San Francisco Giants</td>
+      <td>84</td>
+      <td>78</td>
+      <td>0.519</td>
+      <td>14.0</td>
+    </tr>
+    <tr>
+      <td>Arizona Diamondbacks</td>
+      <td>80</td>
+      <td>82</td>
+      <td>0.494</td>
+      <td>18.0</td>
+    </tr>
+    <tr>
+      <td>Colorado Rockies</td>
+      <td>68</td>
+      <td>94</td>
+      <td>0.420</td>
+      <td>30.0</td>
+    </tr>
+  </tbody>
+</table>
+            </div>
+        </body>
+        </html>
+        

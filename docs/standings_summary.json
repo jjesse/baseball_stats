@@ -1,31 +1,33 @@
 {
-  "last_updated": "2025-08-17 00:32:24",
   "al_leader": {
-    "team": "HOU",
-    "wins": 56,
-    "losses": 42,
-    "pct": 0.571,
+    "team": "Houston Astros",
+    "wins": 94,
+    "losses": 68,
+    "pct": 0.58,
     "division": "AL West"
   },
   "nl_leader": {
-    "team": "LAD",
-    "wins": 63,
-    "losses": 35,
-    "pct": 0.643,
+    "team": "Los Angeles Dodgers",
+    "wins": 98,
+    "losses": 64,
+    "pct": 0.605,
     "division": "NL West"
   },
   "closest_race": {
-    "division": "AL East",
+    "division": "AL Central",
     "leader": {
-      "team": "NYY",
-      "wins": 56,
-      "losses": 42
+      "team": "Cleveland Guardians",
+      "wins": 90,
+      "losses": 72,
+      "pct": 0.556
     },
     "second": {
-      "team": "TBR",
-      "wins": 52,
-      "losses": 45
+      "team": "Minnesota Twins",
+      "wins": 87,
+      "losses": 75,
+      "pct": 0.537
     },
-    "games_behind": 3.5
-  }
+    "games_behind": 3.0
+  },
+  "last_updated": "2025-08-24 21:22:41"
 }
