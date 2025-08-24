@@ -1,33 +1,33 @@
 {
   "al_leader": {
-    "team": "Houston Astros",
-    "wins": 94,
-    "losses": 68,
-    "pct": 0.58,
-    "division": "AL West"
+    "team": "N/A",
+    "wins": 0,
+    "losses": 0,
+    "pct": 0.0,
+    "division": "N/A"
   },
   "nl_leader": {
-    "team": "Los Angeles Dodgers",
-    "wins": 98,
-    "losses": 64,
-    "pct": 0.605,
-    "division": "NL West"
+    "team": "Milwaukee Brewers",
+    "wins": 81,
+    "losses": 49,
+    "pct": 0.623,
+    "division": "Unknown"
   },
   "closest_race": {
-    "division": "AL Central",
+    "division": "Unknown",
     "leader": {
-      "team": "Cleveland Guardians",
-      "wins": 90,
-      "losses": 72,
-      "pct": 0.556
+      "team": "Milwaukee Brewers",
+      "wins": 81,
+      "losses": 49,
+      "pct": 0.623
     },
     "second": {
-      "team": "Minnesota Twins",
-      "wins": 87,
-      "losses": 75,
-      "pct": 0.537
+      "team": "Detroit Tigers",
+      "wins": 78,
+      "losses": 54,
+      "pct": 0.591
     },
-    "games_behind": 3.0
+    "games_behind": 4.0
   },
-  "last_updated": "2025-08-24 21:22:41"
+  "last_updated": "2025-08-24 21:37:40"
 }
