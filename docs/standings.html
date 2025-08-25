@@ -283,7 +283,9 @@
   <div id="american" class="content">
     <h2>🔵 American League Standings</h2>
     
-    <iframe src="standings_al_all.html" class="standings-full" title="American League Standings"></iframe>
+    <iframe src="standings_al_all.html" class="standings-full" title="American League Standings" 
+            onerror="this.parentNode.innerHTML='<div style=\'text-align:center;padding:20px;color:#721c24;background-color:#f8d7da;border:1px solid #f5c6cb;border-radius:5px;margin:20px;\'>Error loading American League standings. Please try again later.</div>'">
+    </iframe>
     
     <div class="division-section">
       <h3>AL East</h3>
@@ -310,7 +312,9 @@
   <div id="national" class="content">
     <h2>🔴 National League Standings</h2>
     
-    <iframe src="standings_nl_all.html" class="standings-full" title="National League Standings"></iframe>
+    <iframe src="standings_nl_all.html" class="standings-full" title="National League Standings"
+            onerror="this.parentNode.innerHTML='<div style=\'text-align:center;padding:20px;color:#721c24;background-color:#f8d7da;border:1px solid #f5c6cb;border-radius:5px;margin:20px;\'>Error loading National League standings. Please try again later.</div>'">
+    </iframe>
     
     <div class="division-section">
       <h3>NL East</h3>
@@ -491,10 +495,6 @@
   </script>
 </body>
 </html>
-        .catch(error => {
-          console.error('Error loading summary data:', error);
-          document.getElementById('summary-cards').innerHTML = `
-            <div class="summary-card">
               <h3>Data Updating</h3>
               <div class="stat-value">⚠️</div>
               <div class="stat-detail">Standings data is refreshing</div>

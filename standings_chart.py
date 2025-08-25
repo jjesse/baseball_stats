@@ -976,7 +976,7 @@ def generate_league_html(df, league_code, league_name):
         </html>
         """
         
-        # Save to file
+        # Save to file - save directly to the correct file name
         file_path = f"{output_path}/standings_{league_code.lower()}_all.html"
         with open(file_path, "w") as f:
             f.write(html_content)
@@ -985,6 +985,42 @@ def generate_league_html(df, league_code, league_name):
         
     except Exception as e:
         print(f"Error generating {league_name} HTML: {e}")
+        
+        # Create a fallback HTML file with an error message
+        fallback_html = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 20px;
+                    text-align: center;
+                }}
+                .error-message {{
+                    margin: 50px auto;
+                    padding: 20px;
+                    max-width: 600px;
+                    background-color: #f8d7da;
+                    border: 1px solid #f5c6cb;
+                    border-radius: 5px;
+                    color: #721c24;
+                }}
+            </style>
+        </head>
+        <body>
+            <div class="error-message">
+                <h2>Unable to load {league_name} standings</h2>
+                <p>There was a problem generating the standings data. Please try again later.</p>
+                <p>Error: {str(e)}</p>
+            </div>
+        </body>
+        </html>
+        """
+        file_path = f"{output_path}/standings_{league_code.lower()}_all.html"
+        with open(file_path, "w") as f:
+            f.write(fallback_html)
 
 
 def main():
@@ -997,11 +1033,19 @@ def main():
             print("Error: Failed to fetch standings data")
             return
         
+        # Save the CSV first so it's available for the league HTML generation
+        # This is crucial - the league generation function needs this file
+        print("Saving CSV data...")
+        df.to_csv(f"{output_path}/standings_all.csv", index=False)
+        
         print("Generating HTML tables...")
         generate_standings_tables(df)
         
+        # Generate the league HTML files directly from the dataframe
+        # Instead of reading from CSV which might not be ready yet
         print("Generating league standings HTML...")
-        generate_league_standings_html()
+        generate_league_html(df, "AL", "American League")
+        generate_league_html(df, "NL", "National League")
         
         print("Generating charts...")
         generate_standings_charts(df)
