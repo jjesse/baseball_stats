@@ -1,15 +1,14 @@
 name: Update Standings
 
 on:
-  workflow_dispatch: {}  # Minimalist workflow_dispatch trigger
+  workflow_dispatch: {}  # Manual trigger
   schedule:
-    - cron: '0 13 * * *'  # Runs daily at 13:00 UTC (main branch only)
+    - cron: '0 13 * * *'  # Daily at 13:00 UTC
 
 jobs:
   update-standings:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
-    # Skip scheduled runs on preview branch
+    timeout-minutes: 15
     if: github.event_name == 'workflow_dispatch' || github.ref == 'refs/heads/main'
 
     steps:
@@ -27,30 +26,31 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          else
-            # Fallback dependencies for standings
-            pip install pandas matplotlib seaborn requests beautifulsoup4 numpy lxml html5lib
-          fi
+          pip install pandas matplotlib seaborn requests beautifulsoup4 lxml html5lib
         timeout-minutes: 5
 
-      - name: Update standings
+      - name: Generate standings data
         run: |
-          # Set output path based on branch
-          if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
+          export OUTPUT_PATH="docs"
+          python standings_chart.py || exit 1
+        timeout-minutes: 10
+
+      - name: Commit and push changes
+        run: |
+          if [[ -n $(git status --porcelain) ]]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            
+            COMMIT_MSG="Update standings [skip ci]"
+            FILE_PATTERN="docs/standings_*.html docs/standings_*.png docs/standings_*.json docs/standings_*.csv docs/last_updated_standings.txt"
+            
+            git add $FILE_PATTERN
+            git commit -m "$COMMIT_MSG"
+            git push origin ${{ github.ref_name }}
           else
-            export OUTPUT_PATH="docs"
+            echo "No changes to commit"
           fi
-          
-          # Run the standings chart script
-          python standings_chart.py || {
-            echo "Warning: standings_chart.py failed, creating fallback file"
-            mkdir -p "${OUTPUT_PATH}"
-            echo "{\"last_updated\": \"$(date -Iseconds)\", \"error\": true}" > "${OUTPUT_PATH}/standings_summary.json"
-            echo "Last updated: $(date -Iseconds) - ERROR" > "${OUTPUT_PATH}/last_updated_standings.txt"
+        timeout-minutes: 5
           }
         timeout-minutes: 3
         continue-on-error: true

@@ -121,13 +121,9 @@
       display: block;
     }
 
-    .division-section {
-      margin-bottom: 3rem;
-    }
-
     .standings-full {
       width: 100%;
-      height: 800px;
+      height: 600px;
       border: 1px solid var(--border, #ddd);
       border-radius: 8px;
     }
@@ -176,49 +172,6 @@
       box-shadow: 0 4px 8px var(--link-shadow);
     }
 
-    .glossary-section {
-      background-color: var(--card-bg);
-      padding: 2rem;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      margin: 2rem 0;
-    }
-
-    [data-theme='dark'] .glossary-section {
-      border: 1px solid #555;
-    }
-
-    .glossary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-
-    .glossary-item {
-      background-color: rgba(0, 123, 255, 0.1);
-      padding: 1rem;
-      border-radius: 8px;
-      border-left: 4px solid #007bff;
-    }
-
-    .glossary-term {
-      font-weight: bold;
-      color: var(--text);
-      margin-bottom: 0.5rem;
-    }
-
-    .glossary-definition {
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 2rem;
-      color: #666;
-    }
-
     .update-info {
       text-align: center;
       padding: 1rem;
@@ -226,6 +179,12 @@
       border-radius: 8px;
       border: 1px solid #007acc;
       margin: 2rem 0;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #666;
     }
 
     @media (max-width: 768px) {
@@ -255,10 +214,9 @@
   </header>
 
   <div class="tabs">
-    <button id="overview-btn" onclick="switchTab('overview')">Overview</button>
+    <button id="overview-btn" onclick="switchTab('overview')" class="active">Overview</button>
     <button id="american-btn" onclick="switchTab('american')">American League</button>
     <button id="national-btn" onclick="switchTab('national')">National League</button>
-    <button id="glossary-btn" onclick="switchTab('glossary')">Glossary</button>
   </div>
 
   <div id="overview" class="content active">
@@ -283,78 +241,120 @@
   <div id="american" class="content">
     <h2>🔵 American League Standings</h2>
     
-    <iframe src="standings_al_all.html" class="standings-full" title="American League Standings" 
-            onerror="this.parentNode.innerHTML='<div style=\'text-align:center;padding:20px;color:#721c24;background-color:#f8d7da;border:1px solid #f5c6cb;border-radius:5px;margin:20px;\'>Error loading American League standings. Please try again later.</div>'">
-    </iframe>
-    
-    <div class="division-section">
-      <h3>AL East</h3>
-      <div class="chart-container">
-        <img src="standings_al_east.png" alt="AL East Chart" onerror="this.style.display='none'">
-      </div>
-    </div>
-    
-    <div class="division-section">
-      <h3>AL Central</h3>
-      <div class="chart-container">
-        <img src="standings_al_central.png" alt="AL Central Chart" onerror="this.style.display='none'">
-      </div>
-    </div>
-    
-    <div class="division-section">
-      <h3>AL West</h3>
-      <div class="chart-container">
-        <img src="standings_al_west.png" alt="AL West Chart" onerror="this.style.display='none'">
-      </div>
-    </div>
+    <iframe src="standings_al_all.html" class="standings-full" title="American League Standings"></iframe>
   </div>
 
   <div id="national" class="content">
     <h2>🔴 National League Standings</h2>
     
-    <iframe src="standings_nl_all.html" class="standings-full" title="National League Standings"
-            onerror="this.parentNode.innerHTML='<div style=\'text-align:center;padding:20px;color:#721c24;background-color:#f8d7da;border:1px solid #f5c6cb;border-radius:5px;margin:20px;\'>Error loading National League standings. Please try again later.</div>'">
-    </iframe>
-    
-    <div class="division-section">
-      <h3>NL East</h3>
-      <div class="chart-container">
-        <img src="standings_nl_east.png" alt="NL East Chart" onerror="this.style.display='none'">
-      </div>
-    </div>
-    
-    <div class="division-section">
-      <h3>NL Central</h3>
-      <div class="chart-container">
-        <img src="standings_nl_central.png" alt="NL Central Chart" onerror="this.style.display='none'">
-      </div>
-    </div>
-    
-    <div class="division-section">
-      <h3>NL West</h3>
-      <div class="chart-container">
-        <img src="standings_nl_west.png" alt="NL West Chart" onerror="this.style.display='none'">
-      </div>
-    </div>
+    <iframe src="standings_nl_all.html" class="standings-full" title="National League Standings"></iframe>
   </div>
 
-  <div id="glossary" class="content">
-    <div class="glossary-section">
-      <h2>📚 Standings Glossary</h2>
-      <p>Understanding baseball standings and key metrics.</p>
+  <script>
+    function switchTab(tabName) {
+      const tabs = document.querySelectorAll(".tabs button");
+      const contents = document.querySelectorAll(".content");
+      tabs.forEach(tab => tab.classList.remove("active"));
+      contents.forEach(content => content.classList.remove("active"));
+      document.getElementById(tabName).classList.add("active");
+      document.getElementById(tabName + "-btn").classList.add("active");
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("theme", next);
       
-      <div class="glossary-grid">
-        <div class="glossary-item">
-          <div class="glossary-term">W (Wins)</div>
-          <div class="glossary-definition">Total number of games won by the team</div>
+      const iframes = document.querySelectorAll('iframe');
+      iframes.forEach(iframe => {
+        try {
+          if (iframe.contentDocument && iframe.contentDocument.documentElement) {
+            iframe.contentDocument.documentElement.setAttribute('data-theme', next);
+          }
+        } catch(e) {
+          // Cross-origin restriction might prevent this
+        }
+      });
+    }
+
+    function loadSummaryData() {
+      document.getElementById('summary-cards').innerHTML = `
+        <div class="summary-card">
+          <h3>Loading Data</h3>
+          <div class="stat-value">⏳</div>
+          <div class="stat-detail">Fetching latest standings...</div>
         </div>
-        
-        <div class="glossary-item">
-          <div class="glossary-term">L (Losses)</div>
-          <div class="glossary-definition">Total number of games lost by the team</div>
-        </div>
-        
-        <div class="glossary-item">
+      `;
+      
+      fetch('standings_summary.json')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then(data => {
+          const summaryHtml = `
+            <div class="summary-card">
+              <h3>AL Leader</h3>
+              <div class="stat-value">${data.al_leader.team}</div>
+              <div class="stat-detail">${data.al_leader.wins}-${data.al_leader.losses} (${data.al_leader.pct.toFixed(3)})</div>
+              <div class="stat-detail">${data.al_leader.division}</div>
+            </div>
+            
+            <div class="summary-card">
+              <h3>NL Leader</h3>
+              <div class="stat-value">${data.nl_leader.team}</div>
+              <div class="stat-detail">${data.nl_leader.wins}-${data.nl_leader.losses} (${data.nl_leader.pct.toFixed(3)})</div>
+              <div class="stat-detail">${data.nl_leader.division}</div>
+            </div>
+            
+            <div class="summary-card">
+              <h3>Closest Race</h3>
+              <div class="stat-value">${data.closest_race.division}</div>
+              <div class="stat-detail">${data.closest_race.leader.team} leads ${data.closest_race.second.team}</div>
+              <div class="stat-detail">by ${data.closest_race.games_behind} game${data.closest_race.games_behind !== 1 ? 's' : ''}</div>
+            </div>
+          `;
+          
+          document.getElementById('summary-cards').innerHTML = summaryHtml;
+          document.getElementById('last-updated').textContent = `Last Updated: ${data.last_updated}`;
+        })
+        .catch(error => {
+          console.error('Error loading summary data:', error);
+          document.getElementById('summary-cards').innerHTML = `
+            <div class="summary-card">
+              <h3>Data Updating</h3>
+              <div class="stat-value">⚠️</div>
+              <div class="stat-detail">Standings data is refreshing</div>
+              <div class="stat-detail">Check back in a moment</div>
+            </div>
+          `;
+        });
+    }
+    
+    fetch('last_updated_standings.txt')
+      .then(response => response.text())
+      .then(data => {
+        document.getElementById('last-updated').textContent = data;
+      })
+      .catch(error => {
+        document.getElementById('last-updated').textContent = 'Last Updated: Loading...';
+      });
+
+    window.onload = () => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.setAttribute("data-theme", savedTheme);
+      }
+      
+      switchTab("overview");
+      loadSummaryData();
+    };
+  </script>
+</body>
+</html>
           <div class="glossary-term">PCT (Winning Percentage)</div>
           <div class="glossary-definition">Wins divided by total games played (W + L)</div>
         </div>
