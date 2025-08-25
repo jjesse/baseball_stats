@@ -7,19 +7,19 @@
     "division": "N/A"
   },
   "nl_leader": {
-    "team": "Milwaukee Brewers",
-    "wins": 81,
-    "losses": 49,
-    "pct": 0.623,
-    "division": "Unknown"
+    "team": "N/A",
+    "wins": 0,
+    "losses": 0,
+    "pct": 0.0,
+    "division": "N/A"
   },
   "closest_race": {
     "division": "Unknown",
     "leader": {
       "team": "Milwaukee Brewers",
       "wins": 81,
-      "losses": 49,
-      "pct": 0.623
+      "losses": 50,
+      "pct": 0.618
     },
     "second": {
       "team": "Detroit Tigers",
@@ -27,7 +27,7 @@
       "losses": 54,
       "pct": 0.591
     },
-    "games_behind": 4.0
+    "games_behind": 3.5
   },
-  "last_updated": "2025-08-24 21:37:40"
+  "last_updated": "2025-08-25 15:48:16"
 }
