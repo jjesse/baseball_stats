@@ -17,9 +17,9 @@
     "division": "Unknown",
     "leader": {
       "team": "Milwaukee Brewers",
-      "wins": 81,
+      "wins": 82,
       "losses": 50,
-      "pct": 0.618
+      "pct": 0.621
     },
     "second": {
       "team": "Detroit Tigers",
@@ -27,7 +27,7 @@
       "losses": 54,
       "pct": 0.591
     },
-    "games_behind": 3.5
+    "games_behind": 4.0
   },
-  "last_updated": "2025-08-25 15:48:16"
+  "last_updated": "2025-08-26 04:02:45"
 }
