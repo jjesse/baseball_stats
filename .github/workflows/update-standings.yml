@@ -16,6 +16,7 @@ jobs:
       uses: actions/checkout@v4
       with:
         fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -57,25 +58,61 @@ jobs:
 
     - name: Commit and push changes
       run: |
+        # Configure git
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        
+        # Check if there are changes
         if [[ -n $(git status --porcelain) ]]; then
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Pull latest changes to avoid conflicts
+          git fetch origin
+          git pull origin ${{ github.ref_name }} --rebase || true
           
+          # Set file patterns based on branch
           if [ "${{ github.ref }}" = "refs/heads/preview" ]; then
-            export OUTPUT_PATH="docs/preview"
-            mkdir -p docs/preview
             COMMIT_MSG="Update standings (preview) [skip ci]"
-            FILE_PATTERN="docs/preview/standings_*.png docs/preview/standings_*.html docs/preview/standings_summary.json docs/preview/last_updated_standings.txt archive/standings_*.csv"
+            FILES_TO_ADD="docs/preview/standings_*.html docs/preview/standings_*.png docs/preview/standings_summary.json docs/preview/last_updated_standings.txt archive/standings_*.csv"
           else
-            export OUTPUT_PATH="docs"
             COMMIT_MSG="Update standings [skip ci]"
-            FILE_PATTERN="docs/standings_*.png docs/standings_*.html docs/standings_summary.json docs/last_updated_standings.txt archive/standings_*.csv"
+            FILES_TO_ADD="docs/standings_*.html docs/standings_*.png docs/standings_summary.json docs/last_updated_standings.txt archive/standings_*.csv"
           fi
           
-          git add $FILE_PATTERN
-          git commit -m "$COMMIT_MSG"
-          git push origin ${{ github.ref_name }}
+          # Add files (use individual adds to avoid globbing issues)
+          git add docs/standings_*.html || true
+          git add docs/standings_*.png || true
+          git add docs/standings_summary.json || true
+          git add docs/last_updated_standings.txt || true
+          git add archive/standings_*.csv || true
+          
+          # Commit changes
+          git commit -m "$COMMIT_MSG" || {
+            echo "No changes to commit after git add"
+            exit 0
+          }
+          
+          # Push with retry logic
+          for attempt in 1 2 3; do
+            echo "Push attempt $attempt..."
+            if git push origin ${{ github.ref_name }}; then
+              echo "✓ Successfully pushed changes"
+              exit 0
+            else
+              echo "Push failed, attempt $attempt/3"
+              if [ $attempt -lt 3 ]; then
+                echo "Retrying after rebase..."
+                git fetch origin
+                git rebase origin/${{ github.ref_name }} || {
+                  echo "Rebase failed, trying merge..."
+                  git merge origin/${{ github.ref_name }} || true
+                }
+                sleep 10
+              fi
+            fi
+          done
+          
+          echo "Failed to push after 3 attempts"
+          exit 1
         else
-          echo "No changes to commit"
+          echo "No changes detected"
         fi
       timeout-minutes: 5
