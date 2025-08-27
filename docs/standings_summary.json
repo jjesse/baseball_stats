@@ -24,10 +24,10 @@
     "second": {
       "team": "Detroit Tigers",
       "wins": 78,
-      "losses": 55,
-      "pct": 0.586
+      "losses": 56,
+      "pct": 0.582
     },
-    "games_behind": 5.0
+    "games_behind": 5.5
   },
-  "last_updated": "2025-08-27 04:06:50"
+  "last_updated": "2025-08-27 22:10:44"
 }
