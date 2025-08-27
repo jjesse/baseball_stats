@@ -7,6 +7,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 ## ✅ Completed Tasks
 
 ### 🏗️ Core Infrastructure
+
 - ✅ Split `index.html` into `index.html`, `pitching.html`, `batting.html`, and `standings.html`
 - ✅ Created `pitching_chart.py` and `batting_chart.py` scripts with dark mode table support
 - ✅ Built trend tracking scripts: `trend_pitching.py` and `trend_batting.py` (6 stats each)
@@ -17,6 +18,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - ✅ Created and committed a comprehensive `README.md` reflecting all features
 
 ### 🤖 Automation Pipeline
+
 - ✅ **Set up 6 GitHub Actions workflows**: Individual updates + master rebuild capability
 - ✅ **`update-batting.yml`** - Daily batting updates with archiving and trend generation
 - ✅ **`update-pitching.yml`** - Weekly pitching updates with proper error handling
@@ -28,6 +30,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - ✅ **Robust error handling** - All scripts have try/catch blocks and fallback data options
 
 ### 🏆 Playoff Prediction System
+
 - ✅ **Division Winner Probabilities** - Real-time odds calculation for all 6 MLB divisions
 - ✅ **Wild Card Race Tracking** - AL and NL wild card probability calculations (3 spots each)
 - ✅ **World Series Championship Odds** - Complete championship probability rankings
@@ -38,6 +41,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - ✅ **Automated Daily Updates** - Playoff probabilities refresh daily after standings updates
 
 ### 🎯 Award Prediction Accuracy System
+
 - ✅ **Daily Prediction Archiving** - Automatic saving of predictions with probabilities and timestamps
 - ✅ **Accuracy Calculation Engine** - Real-time evaluation against actual winners once announced
 - ✅ **Historical Timeline Tracking** - Complete record of how predictions changed throughout season
@@ -47,6 +51,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - ✅ **Integration with Existing Workflows** - Seamlessly added to MVP/Cy Young prediction updates
 
 ### 🎨 User Experience Excellence
+
 - ✅ **Universal dark mode** - Complete theme system with table inheritance across all pages
 - ✅ **Educational tooltips** - Comprehensive stat explanations with performance benchmarks on all pages
 - ✅ **Responsive design** - Perfect mobile, tablet, and desktop experience
@@ -57,7 +62,8 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - ✅ **Playoff Picture Dashboard** - Complete playoff tracker with tabbed interface and methodology
 
 ### 📊 Advanced Features
-- ✅ **Enhanced Standings Dashboard** 
+
+- ✅ **Enhanced Standings Dashboard**
   - ✅ Tabbed interface (Overview, American League, National League, Glossary)
   - ✅ Dynamic summary statistics (AL/NL leaders, closest division race)
   - ✅ Individual division win charts with professional styling
@@ -90,6 +96,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
   - ✅ Archive system for historical data preservation
 
 ### 🎯 Educational Content
+
 - ✅ **Interactive tooltips** - Detailed explanations for every tracked statistic
 - ✅ **Performance benchmarks** - What constitutes excellent/good/average/poor performance
 - ✅ **Comprehensive glossaries** - Complete stat explanations on pitching, batting, standings, and playoff pages
@@ -105,6 +112,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 **Your MLB Stats Dashboard is now a comprehensive, professional-grade application featuring:**
 
 ### 🌟 **6 Complete Pages with Full Analytics**
+
 - **Homepage**: Professional landing page with feature highlights
 - **Pitching Stats**: 7 key metrics + trends + educational content
 - **Batting Stats**: 12 key metrics + trends + educational content  
@@ -113,6 +121,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - **Playoff Picture**: Complete playoff probability tracker with wild card races and World Series odds
 
 ### 🏆 **Revolutionary Playoff Prediction System**
+
 - **Division Winner Tracking**: Real-time probabilities for all 6 MLB divisions
 - **Wild Card Analysis**: Complete AL/NL wild card race tracking with 3 spots each
 - **World Series Odds**: Championship probability rankings based on team strength
@@ -120,6 +129,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - **Race Identification**: Automatic detection of closest competitions and key storylines
 
 ### 🎯 **Advanced Accuracy Tracking System**
+
 - **Daily Prediction Archiving**: Every prediction saved with timestamps and probabilities
 - **End-of-Season Validation**: Automatic comparison to actual award winners
 - **Performance Analytics**: Detailed accuracy metrics and success pattern analysis
@@ -127,6 +137,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - **Methodology Transparency**: Complete explanation of how accuracy is measured
 
 ### 🔄 **Enhanced Automation Pipeline**
+
 - **6 GitHub Actions workflows** handling all aspects of data updates and accuracy tracking
 - **Integrated prediction tracking** seamlessly added to existing MVP/Cy Young updates
 - **Playoff probability updates** synchronized with daily standings updates
@@ -135,6 +146,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - **Complete rebuild workflow** now includes all 6 workflows for comprehensive updates
 
 ### 🎨 **Professional User Experience**
+
 - **Complete dark/light theme system** with table inheritance
 - **Educational tooltips** on every statistic across all pages
 - **Mobile-responsive design** that works perfectly on all devices
@@ -142,6 +154,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - **Comprehensive dashboards** for all aspects of MLB analytics
 
 ### 📈 **Advanced Analytics with Validation**
+
 - **Award prediction algorithms** based on 20+ years of voting data
 - **Playoff probability models** using team strength and current standings
 - **Trend analysis** with historical performance tracking
@@ -154,6 +167,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 ## 📋 Maintenance & Monitoring Tasks
 
 ### 🔍 **Regular Monitoring** (Ongoing)
+
 - [ ] **Monitor workflow success** - Check GitHub Actions logs for any failures across all 6 workflows
 - [ ] **Verify data accuracy** - Ensure standings reflect current 2025 season correctly
 - [ ] **Test award predictions** - Validate MVP/Cy Young/ROY calculations against current player performance
@@ -163,6 +177,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - [ ] **Check dark mode rendering** - Confirm all tables display properly in both themes across all pages
 
 ### 🧪 **Periodic Testing** (Monthly)
+
 - [ ] **Test complete rebuild workflow** - Run "Update All Stats" to verify all 6 workflows
 - [ ] **Validate data sources** - Ensure MLB.com, ESPN, and Baseball Reference APIs still functional
 - [ ] **Test prediction accuracy system** - Verify daily archiving and accuracy calculations (MVP/Cy Young/ROY)
@@ -171,6 +186,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - [ ] **Mobile responsiveness check** - Test on various device sizes
 
 ### 📊 **End-of-Season Tasks** (November 2025)
+
 - [ ] **Update actual winners** - Manually update `actual_winners.json` with official award winners (MVP, Cy Young, ROY)
 - [ ] **Generate final accuracy report** - Run comprehensive accuracy analysis for awards (including ROY)
 - [ ] **Validate playoff predictions** - Compare playoff probability accuracy to actual postseason results
@@ -183,12 +199,14 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 ## 🚀 Future Enhancement Opportunities
 
 ### 📊 **Prediction System Enhancements** (Optional)
+
 - [ ] Add Manager of the Year award predictions
 - [ ] Build trade deadline impact analysis on playoff odds
 - [ ] Create injury impact prediction models for teams and awards
 - [ ] Add playoff series prediction (who beats who in each round)
 
 ### 🎯 **Advanced Analytics Features** (Optional)
+
 - [ ] Add comparison to expert predictions and betting odds
 - [ ] Include confidence intervals for all predictions
 - [ ] Create prediction leaderboards comparing different methods
@@ -196,6 +214,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - [ ] Build predictive models for individual playoff series outcomes
 
 ### 📈 **Data Expansions** (Optional)
+
 - [ ] Add player injury tracking and impact analysis
 - [ ] Include minor league prospect tracking
 - [ ] Expand historical data beyond current season
@@ -203,6 +222,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - [ ] Include salary cap analysis and value metrics
 
 ### 🎨 **User Experience Enhancements** (Optional)
+
 - [ ] Add user customizable dashboard layouts
 - [ ] Include player comparison tools
 - [ ] Build interactive filtering and sorting for tables
@@ -210,6 +230,7 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 - [ ] Create playoff bracket visualization tool
 
 ### 🔧 **Technical Improvements** (Optional)
+
 - [ ] Implement caching for faster load times
 - [ ] Add Progressive Web App (PWA) capabilities
 - [ ] Build API endpoints for data access
@@ -241,20 +262,23 @@ This project tracks, visualizes, and publishes MLB pitching, batting, team stand
 
 The latest major enhancement adds comprehensive playoff analytics:
 
-### What's New:
+### What's New
+
 - **Division Winner Odds**: Real-time probability calculations for all 6 divisions
 - **Wild Card Tracker**: Complete AL/NL wild card race analysis
 - **World Series Predictions**: Championship odds based on team strength
 - **Playoff Dashboard**: Interactive visual analytics for all postseason scenarios
 - **Race Analysis**: Automatic identification of closest competitions
 
-### Why It Matters:
+### Why It Matters
+
 - **Complete Coverage**: Now tracks every aspect of the postseason race
 - **Real-time Updates**: Probabilities adjust daily with standings
 - **Visual Analytics**: Professional charts showing all playoff scenarios
 - **Educational Value**: Clear explanations of playoff format and probabilities
 
-### How to Use:
+### How to Use
+
 1. **Division Races**: View real-time division winner probabilities
 2. **Wild Card**: Track the battle for 3 wild card spots per league
 3. **World Series**: See championship odds for all contenders

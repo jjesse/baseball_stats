@@ -13,6 +13,7 @@ import seaborn as sns
 import requests
 from datetime import datetime
 from bs4 import BeautifulSoup
+from utils import save_html_table, save_standings_chart, log_error
 
 # Set style for charts
 sns.set_style("whitegrid")
@@ -464,7 +465,6 @@ def main():
     for i, df in enumerate(division_standings):
         if i < len(division_names):
             division_id = division_names[i]
-            # Create standings chart for this division
             div_name = df["Division"].iloc[0] if "Division" in df.columns else f"Division {i+1}"
             create_standings_chart(
                 df, f"{div_name} Standings", f"standings_{division_id}_chart.png"
@@ -486,7 +486,7 @@ def main():
         all_standings.to_csv(f"{output_path}/standings_all.csv", index=False)
         print("✓ Created combined standings CSV")
     except Exception as e:
-        print(f"Error creating combined CSV: {e}")
+        log_error("creating combined CSV", e)
 
     # Create overall wins chart
     try:
@@ -524,7 +524,7 @@ def main():
         plt.close()
         print("✓ Created overall wins chart")
     except Exception as e:
-        print(f"Error creating overall wins chart: {e}")
+        log_error("creating overall wins chart", e)
 
     # Create summary statistics JSON
     try:
@@ -589,8 +589,7 @@ def main():
         
         print("✓ Created standings summary JSON")
     except Exception as e:
-        print(f"Error creating summary JSON: {e}")
-        # Create a minimal valid JSON to prevent errors
+        log_error("creating summary JSON", e)
         with open(f"{output_path}/standings_summary.json", "w") as f:
             json.dump({"last_updated": datetime.now().strftime("%Y-%m-%d %H:%M:%S")}, f)
 
@@ -600,7 +599,7 @@ def main():
             f.write(f"Last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         print("✓ Created timestamp file")
     except Exception as e:
-        print(f"Error creating timestamp file: {e}")
+        log_error("creating timestamp file", e)
 
     print("🎉 Standings processing completed successfully!")
 
@@ -609,7 +608,6 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as e:
-        print(f"Critical error in standings_chart.py: {e}")
-        # Ensure we at least create a valid timestamp file to prevent workflow failures
+        log_error("Critical error in standings_chart.py", e)
         with open(f"{output_path}/last_updated_standings.txt", "w") as f:
             f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")

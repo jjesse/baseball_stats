@@ -8,6 +8,7 @@ import seaborn as sns
 import os
 from datetime import datetime
 import glob
+from utils import save_html_table, save_standings_chart, log_error
 
 # Set style and output directory
 sns.set_style("whitegrid")
@@ -71,54 +72,6 @@ def create_batting_trends():
         
     except Exception as e:
         print(f"Error creating batting trends: {e}")
-
-if __name__ == "__main__":
-    create_batting_trends()
-                plt.xlabel("Date", fontsize=12)
-                plt.ylabel(stat, fontsize=12)
-                plt.xticks(rotation=45)
-                plt.grid(True, alpha=0.3)
-                plt.tight_layout()
-                
-                # Save chart
-                chart_path = f"{output_path}/trend_batting_{stat.lower()}.png"
-                plt.savefig(chart_path, dpi=150, bbox_inches='tight')
-                plt.close()
-                
-                print(f"✓ Created trend chart for {stat}")
-                
-            except Exception as e:
-                print(f"Error creating trend chart for {stat}: {e}")
-                continue
-        
-        print("✓ Batting trend analysis completed!")
-        
-    except Exception as e:
-        print(f"Error in batting trend analysis: {e}")
-
-if __name__ == "__main__":
-    create_batting_trends()
-        # Customize the chart
-        plt.title(f'{title} Trends - Top 5 Players', fontsize=14, fontweight='bold')
-        plt.xlabel('Date', fontsize=12)
-        plt.ylabel(stat, fontsize=12)
-        plt.grid(True, alpha=0.3)
-        
-        # Rotate x-axis labels for better readability
-        plt.xticks(rotation=45)
-        
-        # Tight layout to prevent label cutoff
-        plt.tight_layout()
-        
-        # Save the chart
-        filename = f"{output_path}/trend_batting_{stat.lower().replace('/', '_')}.png"
-        plt.savefig(filename, dpi=150, bbox_inches='tight')
-        plt.close()
-        
-        print(f"✓ Created trend chart for {stat}")
-        
-    except Exception as e:
-        print(f"Error creating trend chart for {stat}: {e}")
 
 if __name__ == "__main__":
     create_batting_trends()

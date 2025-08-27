@@ -4,6 +4,7 @@ import seaborn as sns
 import os
 from datetime import datetime
 import glob
+from utils import save_html_table, save_standings_chart, log_error
 
 # Set style and output directory
 sns.set_style("whitegrid")
@@ -30,6 +31,7 @@ def create_pitching_trends():
         
     except Exception as e:
         print(f"Error creating pitching trends: {e}")
+        log_error(f"Error creating pitching trends: {e}")
 
 def create_single_trend_chart(archive_files, stat):
     """Create a trend chart for a single statistic"""
@@ -64,6 +66,7 @@ def create_single_trend_chart(archive_files, stat):
                 
             except Exception as e:
                 print(f"Error processing {file}: {e}")
+                log_error(f"Error processing {file}: {e}")
                 continue
         
         if not date_data:
@@ -117,6 +120,7 @@ def create_single_trend_chart(archive_files, stat):
         
     except Exception as e:
         print(f"Error creating trend chart for {stat}: {e}")
+        log_error(f"Error creating trend chart for {stat}: {e}")
 
 if __name__ == "__main__":
     create_pitching_trends()

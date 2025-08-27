@@ -4,6 +4,7 @@ import seaborn as sns
 from pybaseball import batting_stats
 from datetime import datetime
 import os
+from utils import save_html_table, save_standings_chart, log_error
 
 # Ensure output directory exists
 output_path = os.environ.get("OUTPUT_PATH", "docs")
@@ -55,76 +56,9 @@ try:
         plt.savefig(chart_path)
         plt.close()
         
-        # Create simple HTML table with dark mode support
-        html = f"""<!DOCTYPE html>
-<html>
-<head>
-<style>
-:root {{
-    --bg: #ffffff;
-    --text: #333333;
-    --border: #dddddd;
-    --header-bg: #f8f9fa;
-}}
-
-[data-theme='dark'] {{
-    --bg: #1f1f1f;
-    --text: #ffffff;
-    --border: #555555;
-    --header-bg: #2d2d2d;
-    --row-even: #2a2a2a;
-}}
-
-body {{ 
-    font-family: Arial, sans-serif; 
-    margin: 0; 
-    padding: 10px;
-    background-color: var(--bg);
-    color: var(--text);
-}}
-
-table {{ 
-    width: 100%; 
-    border-collapse: collapse; 
-    margin: 0 auto;
-    font-size: 14px;
-}}
-
-th, td {{ 
-    border: 1px solid var(--border); 
-    padding: 6px; 
-    text-align: center;
-}}
-
-th {{ 
-    background-color: var(--header-bg);
-    font-weight: bold;
-}}
-
-tr:nth-child(even) td {{ 
-    background-color: var(--row-even, #f9f9f9);
-}}
-</style>
-<script>
-window.onload = function() {{
-    try {{
-        const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-        if (parentTheme) {{
-            document.documentElement.setAttribute('data-theme', parentTheme);
-        }}
-    }} catch(e) {{}}
-}};
-</script>
-</head>
-<body>
-{top.to_html(index=False)}
-</body>
-</html>"""
-        
-        # Save HTML table with batting_ prefix
+        # Create and save HTML table with dark mode support using shared utility
         table_path = f"{output_path}/batting_{safe_stat}_table.html"
-        with open(table_path, "w") as f:
-            f.write(html)
+        save_html_table(top, table_path)
         
         print(f"✓ Created {stat} chart and table")
     
@@ -136,6 +70,4 @@ window.onload = function() {{
 
 except Exception as e:
     print(f"Error in batting_chart.py: {e}")
-    # Create a minimal fallback file
-    with open(f"{output_path}/last_updated_batting.txt", "w") as f:
-        f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    log_error(str(e), output_path)

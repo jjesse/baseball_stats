@@ -4,6 +4,7 @@ import seaborn as sns
 from pybaseball import pitching_stats
 from datetime import datetime
 import os
+from utils import save_html_table, save_standings_chart, log_error
 
 # Ensure output directory exists
 output_path = os.environ.get("OUTPUT_PATH", "docs")
@@ -39,103 +40,13 @@ try:
             plt.savefig(chart_path)
             plt.close()
 
-            # Table HTML with dark mode support
-            html_content = f"""
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <style>
-                    :root {{
-                        --bg: #ffffff;
-                        --text: #333333;
-                        --border: #dddddd;
-                        --header-bg: #f8f9fa;
-                    }}
-                    
-                    [data-theme='dark'] {{
-                        --bg: #1f1f1f;
-                        --text: #ffffff;
-                        --border: #555555;
-                        --header-bg: #2d2d2d;
-                        --row-even: #2a2a2a;
-                    }}
-                    
-                    body {{ 
-                        font-family: Arial, sans-serif; 
-                        margin: 0; 
-                        padding: 10px;
-                        background-color: var(--bg);
-                        color: var(--text);
-                        overflow: hidden;
-                    }}
-                    
-                    .table-container {{
-                        width: 100%;
-                        max-width: 100%;
-                        overflow-x: auto;
-                    }}
-                    
-                    table {{ 
-                        width: 100%; 
-                        border-collapse: collapse; 
-                        background-color: var(--bg);
-                        margin: 0 auto;
-                        font-size: 14px;
-                    }}
-                    
-                    th, td {{ 
-                        border: 1px solid var(--border); 
-                        padding: 6px; 
-                        text-align: center;
-                        color: var(--text) !important;
-                    }}
-                    
-                    th {{ 
-                        background-color: var(--header-bg) !important;
-                        font-weight: bold;
-                        color: var(--text) !important;
-                    }}
-                    
-                    tr:nth-child(even) td {{ 
-                        background-color: var(--row-even, #f9f9f9) !important;
-                        color: var(--text) !important;
-                    }}
-                    
-                    tr:nth-child(odd) td {{ 
-                        background-color: var(--bg) !important;
-                        color: var(--text) !important;
-                    }}
-                </style>
-                <script>
-                    // Inherit theme from parent window
-                    window.onload = function() {{
-                        try {{
-                            const parentTheme = window.parent.document.documentElement.getAttribute('data-theme');
-                            if (parentTheme) {{
-                                document.documentElement.setAttribute('data-theme', parentTheme);
-                            }}
-                        }} catch(e) {{
-                            // Cross-origin issues, use default
-                        }}
-                    }};
-                </script>
-            </head>
-            <body>
-                <div class="table-container">
-                    {top.to_html(index=False, classes='stats-table', escape=False)}
-                </div>
-            </body>
-            </html>
-            """
-
-            table_path = f"{output_path}/{stat.lower().replace('/', '_')}_table.html"
-            with open(table_path, "w") as f:
-                f.write(html_content)
+            # Use shared utility to save HTML table
+            save_html_table(top, stat, output_path)
 
             print(f"✓ Created chart and table for {stat}")
 
         except Exception as e:
-            print(f"Error creating chart for {stat}: {e}")
+            log_error(f"Error creating chart for {stat}: {e}")
 
     # List of stats to chart
     stats_to_plot = [
@@ -158,7 +69,7 @@ try:
     print("✓ Pitching charts and tables generated successfully!")
 
 except Exception as e:
-    print(f"Error in pitching_chart.py: {e}")
+    log_error(f"Error in pitching_chart.py: {e}")
     # Create a minimal fallback file so the workflow doesn't fail completely
     with open(f"{output_path}/last_updated_pitching.txt", "w") as f:
         f.write(f"Error: {str(e)} - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
