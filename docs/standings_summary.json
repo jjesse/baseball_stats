@@ -18,16 +18,16 @@
     "leader": {
       "team": "Milwaukee Brewers",
       "wins": 83,
-      "losses": 50,
-      "pct": 0.624
+      "losses": 51,
+      "pct": 0.619
     },
     "second": {
-      "team": "Detroit Tigers",
+      "team": "Toronto Blue Jays",
       "wins": 78,
       "losses": 56,
       "pct": 0.582
     },
-    "games_behind": 5.5
+    "games_behind": 5.0
   },
-  "last_updated": "2025-08-27 22:10:44"
+  "last_updated": "2025-08-28 04:02:23"
 }
