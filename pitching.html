@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLB Pitching Leaders</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-row">
+            <div class="nav-links">
+                <a href="index.html">Team Standings</a> |
+                <a href="batting.html">Batting Stats</a> |
+                <a href="pitching.html">Pitching Stats</a>
+            </div>
+            <h1>MLB Pitching Leaders</h1>
+        </div>
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="basic">Basic Stats</button>
+            <button class="tab-btn" data-tab="advanced">Advanced Stats</button>
+        </div>
+        <div id="pitching-leaders-basic" class="tab-content active">
+            <p>Loading basic pitching leaders...</p>
+        </div>
+        <div id="pitching-leaders-advanced" class="tab-content">
+            <p>Loading advanced pitching leaders...</p>
+        </div>
+    </div>
+    <script src="assets/pitching.js"></script>
+</body>
+</html>
