@@ -29,7 +29,7 @@ let currentSort = { key: null, asc: true };
 
 function renderStandings(data) {
     if (!data.records || !Array.isArray(data.records) || data.records.length === 0) {
-        standingsDiv.innerHTML = '<div class="no-data-message"><p>No standings data available yet for the ' + currentYear + ' season.</p><p>Check back once games have been played!</p></div>';
+        standingsDiv.innerHTML = `<div class="no-data-message"><p>No standings data available yet for the ${currentYear} season.</p><p>Check back once games have been played!</p></div>`;
         return;
     }
     // Group by league

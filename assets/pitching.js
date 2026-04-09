@@ -82,7 +82,7 @@ async function fetchLeaders(stats, containerId) {
         }
     }
     if (!hasAnyData) {
-        html = '<div class="no-data-message"><p>No pitching leader data available yet for the ' + currentYear + ' season.</p><p>Check back once games have been played!</p></div>';
+        html = `<div class="no-data-message"><p>No pitching leader data available yet for the ${currentYear} season.</p><p>Check back once games have been played!</p></div>`;
     }
     document.getElementById(containerId).innerHTML = html;
 }

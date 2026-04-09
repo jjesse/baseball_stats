@@ -68,12 +68,12 @@ async function fetchTeamRoster(teamId) {
         if (data.roster && data.roster.length > 0) {
             let html = '<table><thead><tr><th>#</th><th>Name</th><th>Position</th></tr></thead><tbody>';
             for (const player of data.roster) {
-            html += `<tr><td>${escapeHtml(player.jerseyNumber || '')}</td><td>${escapeHtml(player.person.fullName)}</td><td>${escapeHtml(player.position.abbreviation)}</td></tr>`;
+                html += `<tr><td>${escapeHtml(player.jerseyNumber || '')}</td><td>${escapeHtml(player.person.fullName)}</td><td>${escapeHtml(player.position.abbreviation)}</td></tr>`;
             }
             html += '</tbody></table>';
             teamRosterDiv.innerHTML = html;
         } else {
-            teamRosterDiv.innerHTML = '<div class="no-data-message"><p>No roster data available yet for the ' + currentYear + ' season.</p></div>';
+            teamRosterDiv.innerHTML = `<div class="no-data-message"><p>No roster data available yet for the ${currentYear} season.</p></div>`;
         }
     } catch (e) {
         teamRosterDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load roster. Please try again later.</p></div>';
