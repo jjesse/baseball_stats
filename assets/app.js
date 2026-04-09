@@ -2,25 +2,34 @@
 // API docs: https://statsapi.mlb.com/api/
 
 const standingsDiv = document.getElementById('standings');
+const currentYear = new Date().getFullYear();
+
+// Set dynamic page title
+const pageTitle = document.getElementById('page-title');
+if (pageTitle) pageTitle.textContent = `${currentYear} MLB Standings`;
+document.title = `${currentYear} MLB Standings`;
+
+// Set footer
+const footer = document.getElementById('footer');
+if (footer) footer.innerHTML = `${currentYear} MLB Season &middot; Data from MLB Stats API &middot; Updated live`;
 
 async function fetchStandings() {
-    // Dynamically get the current year
-    const year = new Date().getFullYear();
-    const url = `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${year}&standingsTypes=regularSeason`;
+    const url = `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${currentYear}&standingsTypes=regularSeason`;
     try {
         const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         renderStandings(data);
     } catch (e) {
-        standingsDiv.innerHTML = '<p>Failed to load standings. Please try again later.</p>';
+        standingsDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load standings.</p><p>The season may not have started yet, or the data service is temporarily unavailable. Please try again later.</p></div>';
     }
 }
 
 let currentSort = { key: null, asc: true };
 
 function renderStandings(data) {
-    if (!data.records || !Array.isArray(data.records)) {
-        standingsDiv.innerHTML = '<p>No standings data available.</p>';
+    if (!data.records || !Array.isArray(data.records) || data.records.length === 0) {
+        standingsDiv.innerHTML = `<div class="no-data-message"><p>No standings data available yet for the ${currentYear} season.</p><p>Check back once games have been played!</p></div>`;
         return;
     }
     // Group by league
