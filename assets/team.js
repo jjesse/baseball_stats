@@ -22,7 +22,18 @@ if (footer) footer.innerHTML = `${currentYear} MLB Season &middot; Data from MLB
 
 function getTeamIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    return params.get('teamId');
+    const rawId = params.get('teamId');
+    // Sanitize: only allow numeric team IDs
+    if (rawId && /^\d+$/.test(rawId)) {
+        return rawId;
+    }
+    return null;
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
 }
 
 async function fetchTeamInfo(teamId) {
@@ -35,8 +46,11 @@ async function fetchTeamInfo(teamId) {
         if (team) {
             teamNameHeader.textContent = team.name;
             document.title = `${team.name} - ${currentYear} MLB`;
-            const logoUrl = `https://www.mlbstatic.com/team-logos/${teamId}.svg`;
-            teamInfoDiv.innerHTML = `<img src="${logoUrl}" alt="${team.name} logo" class="team-logo" style="width:60px;vertical-align:middle;"> <strong>${team.name}</strong> (${team.abbreviation})<br>Founded: ${team.firstYearOfPlay}`;
+            const logoUrl = `https://www.mlbstatic.com/team-logos/${encodeURIComponent(teamId)}.svg`;
+            const safeName = escapeHtml(team.name);
+            const safeAbbr = escapeHtml(team.abbreviation);
+            const safeYear = escapeHtml(String(team.firstYearOfPlay));
+            teamInfoDiv.innerHTML = `<img src="${logoUrl}" alt="${safeName} logo" class="team-logo" style="width:60px;vertical-align:middle;"> <strong>${safeName}</strong> (${safeAbbr})<br>Founded: ${safeYear}`;
         }
     } catch (e) {
         teamInfoDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load team information. Please try again later.</p></div>';
@@ -54,7 +68,7 @@ async function fetchTeamRoster(teamId) {
         if (data.roster && data.roster.length > 0) {
             let html = '<table><thead><tr><th>#</th><th>Name</th><th>Position</th></tr></thead><tbody>';
             for (const player of data.roster) {
-                html += `<tr><td>${player.jerseyNumber || ''}</td><td>${player.person.fullName}</td><td>${player.position.abbreviation}</td></tr>`;
+            html += `<tr><td>${escapeHtml(player.jerseyNumber || '')}</td><td>${escapeHtml(player.person.fullName)}</td><td>${escapeHtml(player.position.abbreviation)}</td></tr>`;
             }
             html += '</tbody></table>';
             teamRosterDiv.innerHTML = html;
