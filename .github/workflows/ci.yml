@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate HTML and JavaScript
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install html-validate
+        run: npm install -g html-validate
+
+      - name: Validate HTML files
+        run: |
+          echo "Validating HTML files..."
+          html-validate index.html batting.html pitching.html team.html \
+            archives/2025/index.html archives/2025/batting.html archives/2025/pitching.html archives/2025/team.html
+          echo "HTML validation complete."
+
+      - name: Check JavaScript syntax
+        run: |
+          echo "Checking JavaScript syntax..."
+          failed=0
+          for f in assets/*.js; do
+            echo "Checking $f..."
+            if node --check "$f"; then
+              echo "  OK: $f"
+            else
+              echo "  SYNTAX ERROR: $f"
+              failed=1
+            fi
+          done
+          if [ "$failed" -eq 1 ]; then
+            echo "JavaScript syntax errors found!"
+            exit 1
+          fi
+          echo "All JavaScript files passed syntax check."
+
+      - name: Check for broken internal links
+        run: |
+          shopt -s globstar
+          echo "Checking internal links in HTML files..."
+          failed=0
+          for html in *.html archives/**/*.html; do
+            [ -f "$html" ] || continue
+            echo "Checking $html..."
+            dir=$(dirname "$html")
+            while IFS= read -r link; do
+              resolved="$dir/$link"
+              if [ ! -f "$resolved" ]; then
+                echo "  MISSING: $link (referenced in $html)"
+                failed=1
+              else
+                echo "  OK: $link"
+              fi
+            done < <(grep -oE '(href|src)="([^"#?]+)"' "$html" | grep -v 'http' | sed 's/.*="\(.*\)"/\1/')
+          done
+          if [ "$failed" -eq 1 ]; then
+            echo "Broken internal links found!"
+            exit 1
+          fi
+          echo "All internal links OK."
