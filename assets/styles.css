@@ -193,3 +193,169 @@ tr:nth-child(even) {
         padding: 4px;
     }
 }
+
+/* Search bar in nav header */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.search-bar-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.search-bar-nav input[type="text"] {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+    width: 180px;
+}
+.search-bar-nav button {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 0.9em;
+}
+.search-bar-nav button:hover {
+    background: #ddd;
+}
+body.dark .search-bar-nav input[type="text"] {
+    background: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+body.dark .search-bar-nav button {
+    background: #444;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+/* Large search bar on search.html */
+.search-bar-large {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+}
+.search-bar-large input[type="text"] {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1.1em;
+}
+.search-bar-large button {
+    padding: 10px 20px;
+    background: #0074d9;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1em;
+    cursor: pointer;
+}
+.search-bar-large button:hover {
+    background: #005fa3;
+}
+body.dark .search-bar-large input[type="text"] {
+    background: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+.search-more {
+    color: #888;
+    font-size: 0.9em;
+    margin-top: 8px;
+}
+
+/* Scoreboard grid */
+.scoreboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+.scoreboard-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+}
+body.dark .scoreboard-card {
+    background: #2a2a2a;
+    border-color: #444;
+}
+.scoreboard-status {
+    font-size: 0.8em;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.status-live { color: #e00; }
+.status-final { color: #666; }
+body.dark .status-final { color: #999; }
+.status-preview { color: #0074d9; }
+body.dark .status-preview { color: #66aaff; }
+.scoreboard-team {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+}
+.scoreboard-team.winner {
+    font-weight: bold;
+}
+.team-name-link {
+    flex: 1;
+    color: #0074d9;
+    text-decoration: none;
+}
+.team-name-link:hover { text-decoration: underline; }
+body.dark .team-name-link { color: #66aaff; }
+.team-score {
+    font-size: 1.2em;
+    font-weight: bold;
+    min-width: 28px;
+    text-align: right;
+}
+
+/* Date selector on scoreboard */
+.date-selector {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    font-size: 1.05em;
+    flex-wrap: wrap;
+}
+.date-selector button {
+    padding: 6px 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 0.95em;
+}
+.date-selector button:hover { background: #ddd; }
+body.dark .date-selector button {
+    background: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
+
+/* Player bio */
+.player-bio p {
+    margin: 4px 0;
+}
+
+/* Schedule result indicators */
+.result-win { color: #080; font-weight: bold; }
+.result-loss { color: #c00; font-weight: bold; }
+.result-live { color: #e00; font-weight: bold; }
+body.dark .result-win { color: #4c4; }
+body.dark .result-loss { color: #f66; }
