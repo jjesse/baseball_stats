@@ -116,7 +116,6 @@ function renderStandings(data) {
                 html += `<tr><td><a href="${teamLink}"><img src="${logoUrl}" alt="${team.team.name} logo" class="team-logo"> ${team.team.name}</a></td><td>${team.wins}</td><td>${team.losses}</td><td>${team.winningPercentage}</td><td>${team.gamesBack}</td><td>${streak}</td><td>${rank}</td><td>${magic}</td><td>${status}</td></tr>`;
             });
             html += `</tbody></table></div>`;
-            html += `</div>`;
         });
         html += `</section>`;
     }
