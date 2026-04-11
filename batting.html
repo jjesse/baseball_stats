@@ -13,10 +13,17 @@
                 <a href="index.html">Team Standings</a> |
                 <a href="batting.html">Batting Stats</a> |
                 <a href="pitching.html">Pitching Stats</a> |
+                <a href="scoreboard.html">Scoreboard</a> |
                 <a href="archives/2025/index.html">2025 Season Archive</a>
             </div>
             <h1 id="page-title">MLB Batting Leaders</h1>
-            <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
+            <div class="header-controls">
+                <form class="search-bar-nav" action="search.html" method="get" role="search">
+                    <input type="text" name="q" placeholder="Search teams or players…" aria-label="Search teams or players">
+                    <button type="submit" aria-label="Search">🔍</button>
+                </form>
+                <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
+            </div>
         </div>
         <div class="tabs">
             <button type="button" class="tab-btn active" data-tab="basic">Basic Stats</button>

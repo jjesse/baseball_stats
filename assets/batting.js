@@ -69,7 +69,8 @@ async function fetchLeaders(stats, containerId) {
                     html += '<tr><td colspan="4">No data available yet</td></tr>';
                 }
                 for (const leader of leaders) {
-                    html += `<tr><td>${leader.rank}</td><td>${leader.person.fullName}</td><td>${leader.team ? leader.team.name : ''}</td><td>${leader.value}</td></tr>`;
+                    const playerLink = `player.html?playerId=${leader.person.id}`;
+                    html += `<tr><td>${leader.rank}</td><td><a href="${playerLink}">${leader.person.fullName}</a></td><td>${leader.team ? leader.team.name : ''}</td><td>${leader.value}</td></tr>`;
                 }
             } catch (e) {
                 html += '<tr><td colspan="4">Failed to load data</td></tr>';

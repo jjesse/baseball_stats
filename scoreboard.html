@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MLB Pitching Leaders</title>
+    <title>MLB Scoreboard</title>
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
                 <a href="scoreboard.html">Scoreboard</a> |
                 <a href="archives/2025/index.html">2025 Season Archive</a>
             </div>
-            <h1 id="page-title">MLB Pitching Leaders</h1>
+            <h1 id="page-title">MLB Scoreboard</h1>
             <div class="header-controls">
                 <form class="search-bar-nav" action="search.html" method="get" role="search">
                     <input type="text" name="q" placeholder="Search teams or players…" aria-label="Search teams or players">
@@ -25,18 +25,14 @@
                 <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
             </div>
         </div>
-        <div class="tabs">
-            <button type="button" class="tab-btn active" data-tab="basic">Basic Stats</button>
-            <button type="button" class="tab-btn" data-tab="advanced">Advanced Stats</button>
+        <div id="date-selector" class="date-selector">
+            <button type="button" id="prev-day" aria-label="Previous day">&#8592; Prev</button>
+            <span id="selected-date"></span>
+            <button type="button" id="next-day" aria-label="Next day">Next &#8594;</button>
         </div>
-        <div id="pitching-leaders-basic" class="tab-content active">
-            <p>Loading basic pitching leaders...</p>
-        </div>
-        <div id="pitching-leaders-advanced" class="tab-content">
-            <p>Loading advanced pitching leaders...</p>
-        </div>
+        <div id="scoreboard"><p>Loading games...</p></div>
         <div class="footer" id="footer"></div>
     </div>
-    <script src="assets/pitching.js"></script>
+    <script src="assets/scoreboard.js"></script>
 </body>
 </html>
