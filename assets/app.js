@@ -16,10 +16,9 @@ if (footer) footer.innerHTML = `${currentYear} MLB Season &middot; Data from MLB
 async function fetchStandings() {
     const url = `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${currentYear}&standingsTypes=regularSeason`;
     try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const data = await fetchWithRetry(url);
         renderStandings(data);
+        updateFooterTimestamp(currentYear);
     } catch (e) {
         standingsDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load standings.</p><p>The season may not have started yet, or the data service is temporarily unavailable. Please try again later.</p></div>';
     }

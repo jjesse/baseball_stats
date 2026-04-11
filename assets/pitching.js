@@ -64,9 +64,7 @@ async function fetchLeaders(stats, containerId) {
             try {
                 const leagueId = league === "American League" ? 103 : 104;
                 const url = `https://statsapi.mlb.com/api/v1/stats/leaders?leaderCategories=${stat.key}&season=${currentYear}&limit=10&statGroup=pitching&leagueId=${leagueId}`;
-                const res = await fetch(url);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
+                const data = await fetchWithRetry(url);
                 const leaders = data.leagueLeaders && data.leagueLeaders[0] && data.leagueLeaders[0].leaders ? data.leagueLeaders[0].leaders : [];
                 if (leaders.length > 0) hasAnyData = true;
                 if (leaders.length === 0) {
@@ -85,6 +83,7 @@ async function fetchLeaders(stats, containerId) {
         html = `<div class="no-data-message"><p>No pitching leader data available yet for the ${currentYear} season.</p><p>Check back once games have been played!</p></div>`;
     }
     document.getElementById(containerId).innerHTML = html;
+    updateFooterTimestamp(currentYear);
 }
 
 setupTabs();

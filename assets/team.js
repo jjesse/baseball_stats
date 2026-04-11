@@ -39,9 +39,7 @@ function escapeHtml(str) {
 async function fetchTeamInfo(teamId) {
     try {
         const url = `https://statsapi.mlb.com/api/v1/teams/${teamId}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const data = await fetchWithRetry(url);
         const team = data.teams && data.teams[0];
         if (team) {
             teamNameHeader.textContent = team.name;
@@ -52,6 +50,7 @@ async function fetchTeamInfo(teamId) {
             const safeYear = escapeHtml(String(team.firstYearOfPlay));
             teamInfoDiv.innerHTML = `<img src="${logoUrl}" alt="${safeName} logo" class="team-logo" style="width:60px;vertical-align:middle;"> <strong>${safeName}</strong> (${safeAbbr})<br>Founded: ${safeYear}`;
         }
+        updateFooterTimestamp(currentYear);
     } catch (e) {
         teamInfoDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load team information. Please try again later.</p></div>';
     }
@@ -62,9 +61,7 @@ async function fetchTeamRoster(teamId) {
     if (rosterHeading) rosterHeading.textContent = `${currentYear} Roster`;
     try {
         const url = `https://statsapi.mlb.com/api/v1/teams/${teamId}/roster/Active?season=${currentYear}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const data = await fetchWithRetry(url);
         if (data.roster && data.roster.length > 0) {
             let html = '<table><thead><tr><th>#</th><th>Name</th><th>Position</th></tr></thead><tbody>';
             for (const player of data.roster) {

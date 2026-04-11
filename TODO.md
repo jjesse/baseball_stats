@@ -2,8 +2,8 @@
 
 ## User Experience & UI
 - Add loading indicators (spinners/progress bars) while data loads
-- Show user-friendly error messages for API failures
-- Further optimize tables and layout for mobile devices
+- ~~Show user-friendly error messages for API failures~~ ✅
+- ~~Further optimize tables and layout for mobile devices~~ ✅
 - Improve accessibility (ARIA labels, color contrast, keyboard navigation)
 
 ## Features & Functionality
@@ -24,13 +24,13 @@
 - Add more years to the archive system — currently only 2025 is archived; automate archiving or add a season dropdown
 
 ## Technical/Performance
-- Handle API rate limiting gracefully (retry, backoff, cache)
+- ~~Handle API rate limiting gracefully (retry, backoff, cache)~~ ✅
 - Modularize JavaScript (ES modules or framework if app grows)
-- Add meta tags and improve SEO
+- ~~Add meta tags and improve SEO~~ ✅
 - Add PWA support (installable, offline basic features)
-- Add CI/CD deployment automation (e.g., GitHub Pages deploy on merge to main) — CI currently only validates, it does not deploy
-- Add data freshness timestamp in the footer — currently says "Updated live" but doesn't show when data was last fetched
-- Add print stylesheet (`@media print`) so standings/stats pages print cleanly
+- ~~Add CI/CD deployment automation (e.g., GitHub Pages deploy on merge to main)~~ ✅
+- ~~Add data freshness timestamp in the footer~~ ✅
+- ~~Add print stylesheet (`@media print`) so standings/stats pages print cleanly~~ ✅
 - Add a Content Security Policy header if the app is self-hosted, to restrict external script/data sources
 - Run Lighthouse CI in the workflow to track performance, accessibility, and SEO scores over time
 
