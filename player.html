@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MLB player profiles with bio, career stats, season stats, and splits.">
+    <meta property="og:title" content="MLB Player Profile">
+    <meta property="og:description" content="View MLB player bio, season performance, career stats, and splits.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://jjesse.github.io/baseball_stats/player.html">
     <title>MLB Player Profile</title>
     <link rel="stylesheet" href="assets/styles.css">
 </head>
@@ -25,16 +30,16 @@
                 <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
             </div>
         </div>
-        <div id="player-info"><p>Loading player info...</p></div>
+        <div id="player-info"><div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading player info…</span></div></div>
         <div id="player-stats">
             <div class="tabs">
                 <button type="button" class="tab-btn active" data-tab="career">Career Stats</button>
                 <button type="button" class="tab-btn" data-tab="season">Season Stats</button>
                 <button type="button" class="tab-btn" data-tab="splits">Splits</button>
             </div>
-            <div id="player-career" class="tab-content active"><p>Loading career stats...</p></div>
-            <div id="player-season" class="tab-content"><p>Loading season stats...</p></div>
-            <div id="player-splits" class="tab-content"><p>Loading splits...</p></div>
+            <div id="player-career" class="tab-content active"><div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading career stats…</span></div></div>
+            <div id="player-season" class="tab-content"><div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading season stats…</span></div></div>
+            <div id="player-splits" class="tab-content"><div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading splits…</span></div></div>
         </div>
         <div class="footer" id="footer"></div>
     </div>

@@ -3,6 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Daily MLB scoreboard with live game states, final scores, and team links.">
+    <meta property="og:title" content="MLB Scoreboard">
+    <meta property="og:description" content="See today's MLB games, live scores, and final results.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jjesse.github.io/baseball_stats/scoreboard.html">
+    <link rel="canonical" href="https://jjesse.github.io/baseball_stats/scoreboard.html">
     <title>MLB Scoreboard</title>
     <link rel="stylesheet" href="assets/styles.css">
 </head>
@@ -30,7 +36,7 @@
             <span id="selected-date"></span>
             <button type="button" id="next-day" aria-label="Next day">Next &#8594;</button>
         </div>
-        <div id="scoreboard" aria-live="polite"><p>Loading games...</p></div>
+        <div id="scoreboard" aria-live="polite"><div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading games…</span></div></div>
         <div class="footer" id="footer"></div>
     </div>
     <script src="assets/shared.js"></script>

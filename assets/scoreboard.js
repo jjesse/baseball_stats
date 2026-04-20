@@ -33,7 +33,7 @@ function updatePageTitle() {
 
 async function fetchScoreboard() {
     updatePageTitle();
-    scoreboardDiv.innerHTML = '<p>Loading games...</p>';
+    scoreboardDiv.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading games…</span></div>';
     const dateParam = formatDateParam(viewDate);
     try {
         const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${dateParam}&hydrate=linescore,decisions`;

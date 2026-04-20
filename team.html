@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="MLB team pages with roster, season stats, schedule, and recent game results.">
+    <meta property="og:title" content="MLB Team Page">
+    <meta property="og:description" content="View MLB team details, roster stats, and schedule information.">
+    <meta property="og:type" content="website">
+    <link rel="canonical" href="https://jjesse.github.io/baseball_stats/team.html">
     <title>MLB Team Page</title>
     <link rel="stylesheet" href="assets/styles.css">
 </head>
@@ -27,9 +32,9 @@
         </div>
         <div id="team-info"></div>
         <h2 id="schedule-heading">Schedule &amp; Recent Results</h2>
-        <div id="team-schedule"><p>Loading schedule...</p></div>
+        <div id="team-schedule"><div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading schedule…</span></div></div>
         <h2 id="roster-heading">Roster</h2>
-        <div id="team-roster"><p>Loading roster...</p></div>
+        <div id="team-roster"><div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading roster…</span></div></div>
         <div class="footer" id="footer"></div>
     </div>
     <script src="assets/shared.js"></script>

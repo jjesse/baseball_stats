@@ -32,16 +32,16 @@
 
 ## 🟡 Medium Priority
 
-- [ ] Add loading indicators (spinners/progress bars) while data loads — pages currently show a plain "Loading…" text node; no visual spinner or progress bar
-- [ ] Enable selection of previous seasons for standings and leaders — currently the app always uses the current year; no season picker exists
+- [x] Add loading indicators (spinners/progress bars) while data loads — added reusable spinner UI and replaced plain loading text on main pages and live loading states
+- [x] Enable selection of previous seasons for standings and leaders — added season pickers on standings/batting/pitching pages with URL season persistence
 - [ ] Add more years to the archive system — only the 2025 season is archived; automate archiving or add a season dropdown to the main pages
 - [ ] Modularize JavaScript (ES modules or a lightweight bundler) — all JS files are standalone globals; switching to ES modules would enable proper imports and reduce duplication
-- [ ] Add meta tags and improve SEO — HTML pages lack `<meta name="description">`, Open Graph tags, and canonical URLs
+- [x] Add meta tags and improve SEO — added description, Open Graph, and canonical tags to current-season and 2025 archive pages
 - [ ] Add advanced stats (WAR, wOBA, FIP, etc.) on batting/pitching leaderboards and player pages
 - [ ] Add charts/visualizations for trends, comparisons, and playoff odds (e.g., using Chart.js)
 - [ ] Add end-to-end tests (e.g., Playwright or Cypress) to verify data renders correctly in the browser
 - [ ] Run Lighthouse CI in the workflow to track performance, accessibility, and SEO scores over time
-- [ ] Add print stylesheet (`@media print`) so standings/stats pages print cleanly
+- [x] Add print stylesheet (`@media print`) so standings/stats pages print cleanly
 
 ---
 
