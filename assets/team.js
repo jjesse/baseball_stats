@@ -80,7 +80,8 @@ async function fetchTeamRoster(teamId) {
 
             const buildRosterTable = (players, statGroup) => {
                 const isPitcher = statGroup === 'pitching';
-                let html = '<table><thead><tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Pos</th>';
+                const caption = isPitcher ? 'Pitchers roster and season stats' : 'Position players roster and season stats';
+                let html = `<table><caption class="sr-only">${caption}</caption><thead><tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Pos</th>`;
                 if (isPitcher) {
                     html += '<th scope="col">W</th><th scope="col">L</th><th scope="col">ERA</th><th scope="col">IP</th><th scope="col">K</th><th scope="col">WHIP</th>';
                 } else {
@@ -165,7 +166,7 @@ async function fetchTeamSchedule(teamId) {
             return;
         }
 
-        let html = '<table><thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col">Home/Away</th><th scope="col">Result/Time</th><th scope="col">Score</th></tr></thead><tbody>';
+        let html = '<table><caption class="sr-only">Recent and upcoming games for selected team</caption><thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col">Home/Away</th><th scope="col">Result/Time</th><th scope="col">Score</th></tr></thead><tbody>';
         allGames.forEach((game) => {
             const isHome = game.teams.home.team.id === Number(teamId);
             const opponent = isHome ? game.teams.away.team : game.teams.home.team;

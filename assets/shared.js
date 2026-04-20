@@ -4,7 +4,7 @@
         return;
     }
     root.MLBUtils = factory();
-})(typeof globalThis !== 'undefined' ? globalThis : this, function () {
+})(typeof globalThis !== 'undefined' ? globalThis : (typeof self !== 'undefined' ? self : this), function () {
     const responseCache = new Map();
 
     function escapeHtml(value) {
@@ -26,7 +26,7 @@
 
     function buildFooterText(year, timestamp) {
         const stamp = timestamp ? formatTimestamp(timestamp) : 'Waiting for data';
-        return `${year} MLB Season &middot; Data from MLB Stats API &middot; Last updated: ${stamp}`;
+        return `${year} MLB Season · Data from MLB Stats API · Last updated: ${stamp}`;
     }
 
     function createFooterUpdater(year, footerId = 'footer') {
@@ -34,7 +34,7 @@
         let latestTimestamp = 0;
 
         if (footer) {
-            footer.innerHTML = buildFooterText(year, null);
+            footer.textContent = buildFooterText(year, null);
         }
 
         return function updateFooter(timestamp = new Date()) {
@@ -42,7 +42,7 @@
             const ts = timestamp instanceof Date ? timestamp.getTime() : new Date(timestamp).getTime();
             if (Number.isNaN(ts) || ts < latestTimestamp) return;
             latestTimestamp = ts;
-            footer.innerHTML = buildFooterText(year, new Date(ts));
+            footer.textContent = buildFooterText(year, new Date(ts));
         };
     }
 
