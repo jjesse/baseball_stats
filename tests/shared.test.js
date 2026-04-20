@@ -1,4 +1,3 @@
-const { describe, it, expect } = require('vitest');
 const { escapeHtml, buildFooterText, formatTimestamp } = require('../assets/shared.js');
 
 describe('shared utilities', () => {

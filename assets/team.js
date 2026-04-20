@@ -78,7 +78,7 @@ async function fetchTeamRoster(teamId) {
             const pitchers = data.roster.filter((p) => p.position && (p.position.type === 'Pitcher' || p.position.abbreviation === 'P'));
             const batters = data.roster.filter((p) => !pitchers.includes(p));
 
-            function buildRosterTable(players, statGroup) {
+            const buildRosterTable = (players, statGroup) => {
                 const isPitcher = statGroup === 'pitching';
                 let html = '<table><thead><tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Pos</th>';
                 if (isPitcher) {
@@ -117,7 +117,7 @@ async function fetchTeamRoster(teamId) {
 
                 html += '</tbody></table>';
                 return html;
-            }
+            };
 
             let html = '';
             if (batters.length > 0) {
