@@ -100,8 +100,35 @@ body.dark .footer {
     color: #666;
     font-size: 1.1em;
 }
+.loading-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px 16px;
+    color: #666;
+    font-size: 1em;
+}
+.loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 3px solid #d0d0d0;
+    border-top-color: #0074d9;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
 body.dark .no-data-message {
     color: #aaa;
+}
+body.dark .loading-indicator {
+    color: #aaa;
+}
+body.dark .loading-spinner {
+    border-color: #555;
+    border-top-color: #66aaff;
 }
 #darkModeToggle {
     background: #222;
@@ -284,6 +311,26 @@ body.dark .search-bar-large input[type="text"] {
     font-size: 0.9em;
     margin-top: 8px;
 }
+.season-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.season-picker label {
+    font-weight: bold;
+}
+.season-picker select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95em;
+}
+body.dark .season-picker select {
+    background: #333;
+    color: #e0e0e0;
+    border-color: #555;
+}
 
 /* Scoreboard grid */
 .scoreboard-grid {
@@ -385,3 +432,33 @@ body.dark .date-selector button {
 .result-live { color: #e00; font-weight: bold; }
 body.dark .result-win { color: #4c4; }
 body.dark .result-loss { color: #f66; }
+
+@media print {
+    body {
+        background: #fff !important;
+        color: #000 !important;
+    }
+    .container {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    .nav-links,
+    .header-controls,
+    .search-bar-nav,
+    .search-bar-large,
+    .date-selector,
+    .footer,
+    #darkModeToggle {
+        display: none !important;
+    }
+    a {
+        color: #000 !important;
+        text-decoration: none;
+    }
+    table, tr, td, th {
+        page-break-inside: avoid;
+    }
+}

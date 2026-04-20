@@ -36,7 +36,7 @@ async function performSearch() {
         searchResultsDiv.innerHTML = '<p>Please enter at least 2 characters to search.</p>';
         return;
     }
-    searchResultsDiv.innerHTML = '<p>Searching…</p>';
+    searchResultsDiv.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Searching…</span></div>';
     const lower = query.toLowerCase();
 
     const matchedTeams = allTeams.filter((t) =>

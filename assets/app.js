@@ -3,6 +3,7 @@
 
 const standingsDiv = document.getElementById('standings');
 const currentYear = new Date().getFullYear();
+const seasonSelect = document.getElementById('season-select');
 const pageTitle = document.getElementById('page-title');
 const {
     createFooterUpdater,
@@ -12,16 +13,33 @@ const {
     makeSortableHeadersAccessible
 } = window.MLBUtils;
 
-if (pageTitle) pageTitle.textContent = `${currentYear} MLB Standings`;
-document.title = `${currentYear} MLB Standings`;
+function getInitialSeason() {
+    const params = new URLSearchParams(window.location.search);
+    const raw = params.get('season');
+    if (raw && /^\d{4}$/.test(raw)) {
+        const season = Number(raw);
+        if (season >= 1901 && season <= currentYear) return season;
+    }
+    return currentYear;
+}
 
-const updateFooter = createFooterUpdater(currentYear);
+let selectedSeason = getInitialSeason();
+
+function setPageTitleForSeason() {
+    if (pageTitle) pageTitle.textContent = `${selectedSeason} MLB Standings`;
+    document.title = `${selectedSeason} MLB Standings`;
+}
+
+setPageTitleForSeason();
+
+let updateFooter = createFooterUpdater(selectedSeason);
 initDarkModeToggle();
 
 let currentSort = { key: null, asc: true };
 
 async function fetchStandings() {
-    const url = `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${currentYear}&standingsTypes=regularSeason`;
+    standingsDiv.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading standings…</span></div>';
+    const url = `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${selectedSeason}&standingsTypes=regularSeason`;
     try {
         const data = await fetchJsonWithRetry(url, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 });
         renderStandings(data);
@@ -33,7 +51,7 @@ async function fetchStandings() {
 
 function renderStandings(data) {
     if (!data.records || !Array.isArray(data.records) || data.records.length === 0) {
-        standingsDiv.innerHTML = `<div class="no-data-message"><p>No standings data available yet for the ${currentYear} season.</p><p>Check back once games have been played!</p></div>`;
+        standingsDiv.innerHTML = `<div class="no-data-message"><p>No standings data available yet for the ${selectedSeason} season.</p><p>Check back once games have been played!</p></div>`;
         return;
     }
 
@@ -144,4 +162,28 @@ function renderStandings(data) {
     );
 }
 
+function updateSeasonQueryParam() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('season', String(selectedSeason));
+    window.history.replaceState({}, '', url);
+}
+
+function initSeasonSelector() {
+    if (!seasonSelect) return;
+    let optionsHtml = '';
+    for (let season = currentYear; season >= 1901; season -= 1) {
+        optionsHtml += `<option value="${season}"${season === selectedSeason ? ' selected' : ''}>${season}</option>`;
+    }
+    seasonSelect.innerHTML = optionsHtml;
+
+    seasonSelect.addEventListener('change', () => {
+        selectedSeason = Number(seasonSelect.value);
+        setPageTitleForSeason();
+        updateFooter = createFooterUpdater(selectedSeason);
+        updateSeasonQueryParam();
+        fetchStandings();
+    });
+}
+
+initSeasonSelector();
 fetchStandings();
