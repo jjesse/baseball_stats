@@ -4,45 +4,24 @@ const teamRosterDiv = document.getElementById('team-roster');
 const teamScheduleDiv = document.getElementById('team-schedule');
 const teamNameHeader = document.getElementById('team-name');
 const currentYear = new Date().getFullYear();
+const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } = window.MLBUtils;
 
-// Dark mode toggle
-const darkModeToggle = document.getElementById('darkModeToggle');
-if (darkModeToggle) {
-    darkModeToggle.onclick = function() {
-        document.body.classList.toggle('dark');
-        localStorage.setItem('mlbDarkMode', document.body.classList.contains('dark'));
-    };
-    if (localStorage.getItem('mlbDarkMode') === 'true') {
-        document.body.classList.add('dark');
-    }
-}
-
-// Set footer
-const footer = document.getElementById('footer');
-if (footer) footer.innerHTML = `${currentYear} MLB Season &middot; Data from MLB Stats API &middot; Updated live`;
+const updateFooter = createFooterUpdater(currentYear);
+initDarkModeToggle();
 
 function getTeamIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     const rawId = params.get('teamId');
-    // Sanitize: only allow numeric team IDs
     if (rawId && /^\d+$/.test(rawId)) {
         return rawId;
     }
     return null;
 }
 
-function escapeHtml(str) {
-    const div = document.createElement('div');
-    div.textContent = str;
-    return div.innerHTML;
-}
-
 async function fetchTeamInfo(teamId) {
     try {
         const url = `https://statsapi.mlb.com/api/v1/teams/${teamId}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const data = await fetchJsonWithRetry(url, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 });
         const team = data.teams && data.teams[0];
         if (team) {
             teamNameHeader.textContent = team.name;
@@ -52,6 +31,7 @@ async function fetchTeamInfo(teamId) {
             const safeAbbr = escapeHtml(team.abbreviation);
             const safeYear = escapeHtml(String(team.firstYearOfPlay));
             teamInfoDiv.innerHTML = `<img src="${logoUrl}" alt="${safeName} logo" class="team-logo" style="width:60px;vertical-align:middle;"> <strong>${safeName}</strong> (${safeAbbr})<br>Founded: ${safeYear}`;
+            updateFooter(new Date());
         }
     } catch (e) {
         teamInfoDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load team information. Please try again later.</p></div>';
@@ -59,30 +39,27 @@ async function fetchTeamInfo(teamId) {
 }
 
 async function fetchRosterStats(teamId) {
-    // Returns a map of playerId -> { hitting, pitching } season stats
     try {
-        const [hitRes, pitchRes] = await Promise.all([
-            fetch(`https://statsapi.mlb.com/api/v1/teams/${teamId}/stats?stats=season&season=${currentYear}&group=hitting&sportId=1`),
-            fetch(`https://statsapi.mlb.com/api/v1/teams/${teamId}/stats?stats=season&season=${currentYear}&group=pitching&sportId=1`)
+        const [hitData, pitchData] = await Promise.all([
+            fetchJsonWithRetry(`https://statsapi.mlb.com/api/v1/teams/${teamId}/stats?stats=season&season=${currentYear}&group=hitting&sportId=1`, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 }),
+            fetchJsonWithRetry(`https://statsapi.mlb.com/api/v1/teams/${teamId}/stats?stats=season&season=${currentYear}&group=pitching&sportId=1`, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 })
         ]);
+
         const statsMap = {};
-        if (hitRes.ok) {
-            const hitData = await hitRes.json();
-            const splits = hitData.stats && hitData.stats[0] && hitData.stats[0].splits ? hitData.stats[0].splits : [];
-            splits.forEach(s => {
-                if (s.player) statsMap[s.player.id] = { hitting: s.stat };
-            });
-        }
-        if (pitchRes.ok) {
-            const pitchData = await pitchRes.json();
-            const splits = pitchData.stats && pitchData.stats[0] && pitchData.stats[0].splits ? pitchData.stats[0].splits : [];
-            splits.forEach(s => {
-                if (s.player) {
-                    if (!statsMap[s.player.id]) statsMap[s.player.id] = {};
-                    statsMap[s.player.id].pitching = s.stat;
-                }
-            });
-        }
+        const hitSplits = hitData.stats && hitData.stats[0] && hitData.stats[0].splits ? hitData.stats[0].splits : [];
+        hitSplits.forEach((s) => {
+            if (s.player) statsMap[s.player.id] = { hitting: s.stat };
+        });
+
+        const pitchSplits = pitchData.stats && pitchData.stats[0] && pitchData.stats[0].splits ? pitchData.stats[0].splits : [];
+        pitchSplits.forEach((s) => {
+            if (s.player) {
+                if (!statsMap[s.player.id]) statsMap[s.player.id] = {};
+                statsMap[s.player.id].pitching = s.stat;
+            }
+        });
+
+        updateFooter(new Date());
         return statsMap;
     } catch (e) {
         return {};
@@ -94,25 +71,25 @@ async function fetchTeamRoster(teamId) {
     if (rosterHeading) rosterHeading.textContent = `${currentYear} Roster`;
     try {
         const url = `https://statsapi.mlb.com/api/v1/teams/${teamId}/roster/Active?season=${currentYear}`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const data = await fetchJsonWithRetry(url, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 });
+
         if (data.roster && data.roster.length > 0) {
-            // Fetch per-player stats in parallel
             const statsMap = await fetchRosterStats(teamId);
-            // Separate pitchers vs position players
-            const pitchers = data.roster.filter(p => p.position && (p.position.type === 'Pitcher' || p.position.abbreviation === 'P'));
-            const batters = data.roster.filter(p => !pitchers.includes(p));
-            function buildRosterTable(players, statGroup) {
+            const pitchers = data.roster.filter((p) => p.position && (p.position.type === 'Pitcher' || p.position.abbreviation === 'P'));
+            const batters = data.roster.filter((p) => !pitchers.includes(p));
+
+            const buildRosterTable = (players, statGroup) => {
                 const isPitcher = statGroup === 'pitching';
-                let html = '<table><thead><tr><th>#</th><th>Name</th><th>Pos</th>';
+                const caption = isPitcher ? 'Pitchers roster and season stats' : 'Position players roster and season stats';
+                let html = `<table><caption class="sr-only">${caption}</caption><thead><tr><th scope="col">#</th><th scope="col">Name</th><th scope="col">Pos</th>`;
                 if (isPitcher) {
-                    html += '<th>W</th><th>L</th><th>ERA</th><th>IP</th><th>K</th><th>WHIP</th>';
+                    html += '<th scope="col">W</th><th scope="col">L</th><th scope="col">ERA</th><th scope="col">IP</th><th scope="col">K</th><th scope="col">WHIP</th>';
                 } else {
-                    html += '<th>AVG</th><th>HR</th><th>RBI</th><th>H</th><th>R</th><th>SB</th><th>OPS</th>';
+                    html += '<th scope="col">AVG</th><th scope="col">HR</th><th scope="col">RBI</th><th scope="col">H</th><th scope="col">R</th><th scope="col">SB</th><th scope="col">OPS</th>';
                 }
                 html += '</tr></thead><tbody>';
-                players.forEach(player => {
+
+                players.forEach((player) => {
                     const pid = player.person.id;
                     const pStats = statsMap[pid];
                     const s = pStats && pStats[statGroup] ? pStats[statGroup] : null;
@@ -138,9 +115,11 @@ async function fetchTeamRoster(teamId) {
                     }
                     html += '</tr>';
                 });
+
                 html += '</tbody></table>';
                 return html;
-            }
+            };
+
             let html = '';
             if (batters.length > 0) {
                 html += '<h3>Position Players</h3>' + buildRosterTable(batters, 'hitting');
@@ -149,6 +128,7 @@ async function fetchTeamRoster(teamId) {
                 html += '<h3>Pitchers</h3>' + buildRosterTable(pitchers, 'pitching');
             }
             teamRosterDiv.innerHTML = html;
+            updateFooter(new Date());
         } else {
             teamRosterDiv.innerHTML = `<div class="no-data-message"><p>No roster data available yet for the ${currentYear} season.</p></div>`;
         }
@@ -160,33 +140,34 @@ async function fetchTeamRoster(teamId) {
 async function fetchTeamSchedule(teamId) {
     const scheduleHeading = document.getElementById('schedule-heading');
     if (!teamScheduleDiv) return;
-    // Fetch recent results (last 7 days) and upcoming games (next 7 days)
     const today = new Date();
     const past = new Date(today);
     past.setDate(today.getDate() - 7);
     const future = new Date(today);
     future.setDate(today.getDate() + 7);
+
     function fmt(d) {
         const mm = String(d.getMonth() + 1).padStart(2, '0');
         const dd = String(d.getDate()).padStart(2, '0');
         return `${mm}/${dd}/${d.getFullYear()}`;
     }
+
     if (scheduleHeading) scheduleHeading.textContent = 'Schedule & Recent Results';
     try {
         const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=1&teamId=${teamId}&startDate=${fmt(past)}&endDate=${fmt(future)}&hydrate=linescore`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
+        const data = await fetchJsonWithRetry(url, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 });
         const allGames = [];
-        (data.dates || []).forEach(dateObj => {
-            (dateObj.games || []).forEach(g => allGames.push({ date: dateObj.date, ...g }));
+        (data.dates || []).forEach((dateObj) => {
+            (dateObj.games || []).forEach((g) => allGames.push({ date: dateObj.date, ...g }));
         });
+
         if (allGames.length === 0) {
             teamScheduleDiv.innerHTML = '<div class="no-data-message"><p>No schedule data available for this period.</p></div>';
             return;
         }
-        let html = '<table><thead><tr><th>Date</th><th>Opponent</th><th>Home/Away</th><th>Result/Time</th><th>Score</th></tr></thead><tbody>';
-        allGames.forEach(game => {
+
+        let html = '<table><caption class="sr-only">Recent and upcoming games for selected team</caption><thead><tr><th scope="col">Date</th><th scope="col">Opponent</th><th scope="col">Home/Away</th><th scope="col">Result/Time</th><th scope="col">Score</th></tr></thead><tbody>';
+        allGames.forEach((game) => {
             const isHome = game.teams.home.team.id === Number(teamId);
             const opponent = isHome ? game.teams.away.team : game.teams.home.team;
             const myTeamData = isHome ? game.teams.home : game.teams.away;
@@ -195,6 +176,7 @@ async function fetchTeamSchedule(teamId) {
             const abstract = game.status ? game.status.abstractGameState : '';
             let result = '';
             let score = '';
+
             if (abstract === 'Final') {
                 const myScore = myTeamData.score !== undefined ? myTeamData.score : 0;
                 const oppScore = oppTeamData.score !== undefined ? oppTeamData.score : 0;
@@ -205,15 +187,13 @@ async function fetchTeamSchedule(teamId) {
                 const myScore = myTeamData.score !== undefined ? myTeamData.score : 0;
                 const oppScore = oppTeamData.score !== undefined ? oppTeamData.score : 0;
                 score = `${myScore}-${oppScore}`;
+            } else if (game.gameDate) {
+                const gameTime = new Date(game.gameDate);
+                result = gameTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
             } else {
-                // Scheduled
-                if (game.gameDate) {
-                    const gameTime = new Date(game.gameDate);
-                    result = gameTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' });
-                } else {
-                    result = escapeHtml(game.status ? game.status.detailedState : '');
-                }
+                result = escapeHtml(game.status ? game.status.detailedState : '');
             }
+
             html += `<tr>
                 <td>${escapeHtml(game.date || '')}</td>
                 <td><a href="${oppLink}">${escapeHtml(opponent.name)}</a></td>
@@ -222,8 +202,10 @@ async function fetchTeamSchedule(teamId) {
                 <td>${escapeHtml(score)}</td>
             </tr>`;
         });
+
         html += '</tbody></table>';
         teamScheduleDiv.innerHTML = html;
+        updateFooter(new Date());
     } catch (e) {
         teamScheduleDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load schedule. Please try again later.</p></div>';
     }

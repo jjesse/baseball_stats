@@ -1,0 +1,15 @@
+{
+  "name": "baseball_stats",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint assets/*.js archives/2025/assets/*.js tests/**/*.js",
+    "test": "vitest run --globals",
+    "validate:html": "html-validate index.html batting.html pitching.html team.html search.html player.html scoreboard.html archives/2025/index.html archives/2025/batting.html archives/2025/pitching.html archives/2025/team.html"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.1",
+    "html-validate": "^9.7.1",
+    "vitest": "^2.1.9"
+  }
+}
