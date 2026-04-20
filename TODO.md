@@ -19,14 +19,14 @@
 
 ## 🔴 High Priority
 
-- [ ] **Fix CSS syntax bug in `archives/2025/assets/styles.css`** — the `body {}` block is missing its closing `}`, causing `.header-row`, `.nav-links`, and related rules to be incorrectly nested inside it (around lines 41–64)
-- [ ] Extract shared utilities (`escapeHtml`, dark mode toggle, footer setter) into a single shared module — the same code is duplicated across `app.js`, `batting.js`, `pitching.js`, `team.js`, `search.js`, and `player.js`
-- [ ] Add data freshness timestamp in the footer — currently all pages say "Updated live" but never show when data was last fetched; replace with the actual fetch timestamp
-- [ ] Add ESLint to CI for consistent code style enforcement — currently CI only runs `node --check` (syntax only) and `html-validate`
-- [ ] Add unit tests for JavaScript functions (e.g., with Jest or Vitest) — CI currently only does syntax checks, not behavioral tests
-- [ ] Add CI/CD deployment automation (e.g., GitHub Pages deploy on merge to main) — CI currently only validates; it does not deploy
-- [ ] Handle API rate limiting gracefully (retry, backoff, cache) — no retry/backoff logic exists; repeated failed fetches have no protection
-- [ ] Improve accessibility (ARIA labels, color contrast, keyboard navigation) — only the nav search bar has `aria-label`; tables, buttons, and tabs lack proper ARIA roles and keyboard support
+- [x] **Fix CSS syntax bug in `archives/2025/assets/styles.css`** — closed the missing `body {}` block so header/nav rules are no longer nested incorrectly
+- [x] Extract shared utilities (`escapeHtml`, dark mode toggle, footer setter) into a single shared module — added `assets/shared.js` and refactored main scripts to consume it
+- [x] Add data freshness timestamp in the footer — replaced “Updated live” with “Last updated” timestamps from successful API fetches
+- [x] Add ESLint to CI for consistent code style enforcement — added ESLint config, npm scripts, and CI lint step
+- [x] Add unit tests for JavaScript functions (e.g., with Jest or Vitest) — added Vitest tests for shared utilities and CI test step
+- [x] Add CI/CD deployment automation (e.g., GitHub Pages deploy on merge to main) — added `.github/workflows/deploy.yml` for GitHub Pages deployment
+- [x] Handle API rate limiting gracefully (retry, backoff, cache) — added `fetchJsonWithRetry` utility and adopted it across live-data pages
+- [x] Improve accessibility (ARIA labels, color contrast, keyboard navigation) — added accessible tab semantics, keyboard-sortable headers, aria-live regions, and focus-visible styles
 
 ---
 

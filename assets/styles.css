@@ -13,6 +13,17 @@
     outline: none;
     transition: background 0.2s;
 }
+.tab-btn:focus-visible,
+.sortable:focus-visible,
+.search-bar-nav button:focus-visible,
+.search-bar-large button:focus-visible,
+.date-selector button:focus-visible,
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 2px solid #005fa3;
+    outline-offset: 2px;
+}
 .tab-btn.active {
     background: #fff;
     border-bottom: 2px solid #fff;
@@ -114,6 +125,9 @@ body.dark .no-data-message {
 .sortable {
     cursor: pointer;
     text-decoration: underline;
+}
+.sortable[role="button"] {
+    user-select: none;
 }
 body.dark {
     background: #181818;
