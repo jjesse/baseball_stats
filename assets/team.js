@@ -4,10 +4,29 @@ const teamRosterDiv = document.getElementById('team-roster');
 const teamScheduleDiv = document.getElementById('team-schedule');
 const teamNameHeader = document.getElementById('team-name');
 const currentYear = new Date().getFullYear();
-const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } = window.MLBUtils;
+const {
+    createFooterUpdater,
+    escapeHtml,
+    fetchJsonWithRetry,
+    initDarkModeToggle,
+    isFavorite,
+    toggleFavorite
+} = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
+
+const shareBtn = document.getElementById('shareBtn');
+if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                shareBtn.textContent = '✓ Copied!';
+                setTimeout(() => { shareBtn.textContent = '🔗 Share'; }, 2000);
+            }).catch(() => {});
+        }
+    });
+}
 
 function getTeamIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -31,6 +50,21 @@ async function fetchTeamInfo(teamId) {
             const safeAbbr = escapeHtml(team.abbreviation);
             const safeYear = escapeHtml(String(team.firstYearOfPlay));
             teamInfoDiv.innerHTML = `<img src="${logoUrl}" alt="${safeName} logo" class="team-logo" style="width:60px;vertical-align:middle;"> <strong>${safeName}</strong> (${safeAbbr})<br>Founded: ${safeYear}`;
+
+            const favBtn = document.createElement('button');
+            favBtn.type = 'button';
+            favBtn.className = 'btn-favorite';
+            const favored = isFavorite('teams', teamId);
+            favBtn.textContent = favored ? '⭐ Favorited' : '☆ Add to Favorites';
+            favBtn.setAttribute('aria-pressed', favored ? 'true' : 'false');
+            favBtn.addEventListener('click', () => {
+                const nowFav = toggleFavorite('teams', teamId, team.name);
+                favBtn.textContent = nowFav ? '⭐ Favorited' : '☆ Add to Favorites';
+                favBtn.setAttribute('aria-pressed', nowFav ? 'true' : 'false');
+            });
+            teamInfoDiv.appendChild(document.createElement('br'));
+            teamInfoDiv.appendChild(favBtn);
+
             updateFooter(new Date());
         }
     } catch (e) {

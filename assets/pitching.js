@@ -1,4 +1,4 @@
-const { createFooterUpdater, fetchJsonWithRetry, initDarkModeToggle, setupAccessibleTabs } = window.MLBUtils;
+const { createFooterUpdater, exportSectionToCsv, fetchJsonWithRetry, initDarkModeToggle, setupAccessibleTabs } = window.MLBUtils;
 const currentYear = new Date().getFullYear();
 const seasonSelect = document.getElementById('season-select');
 const pageTitle = document.getElementById('page-title');
@@ -82,6 +82,15 @@ async function fetchLeaders(stats, containerId) {
         html = `<div class="no-data-message"><p>No pitching leader data available yet for the ${selectedSeason} season.</p><p>Check back once games have been played!</p></div>`;
     }
     target.innerHTML = html;
+    if (hasAnyData) {
+        const exportBtn = document.createElement('button');
+        exportBtn.type = 'button';
+        exportBtn.className = 'btn-export';
+        exportBtn.textContent = '⬇ Export CSV';
+        exportBtn.setAttribute('aria-label', `Export pitching leaders as CSV`);
+        exportBtn.addEventListener('click', () => exportSectionToCsv(target, `mlb-pitching-${containerId.replace('pitching-leaders-', '')}-${selectedSeason}.csv`));
+        target.prepend(exportBtn);
+    }
 }
 
 function updateSeasonQueryParam() {

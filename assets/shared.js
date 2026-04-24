@@ -165,6 +165,73 @@
         });
     }
 
+    function getFavorites() {
+        if (typeof localStorage === 'undefined') return { teams: [], players: [] };
+        try {
+            const raw = localStorage.getItem('mlbFavorites');
+            const parsed = raw ? JSON.parse(raw) : {};
+            return {
+                teams: Array.isArray(parsed.teams) ? parsed.teams : [],
+                players: Array.isArray(parsed.players) ? parsed.players : []
+            };
+        } catch (e) {
+            return { teams: [], players: [] };
+        }
+    }
+
+    function toggleFavorite(type, id, name) {
+        if (typeof localStorage === 'undefined') return false;
+        const favs = getFavorites();
+        if (!Array.isArray(favs[type])) favs[type] = [];
+        const sid = String(id);
+        const idx = favs[type].findIndex((item) => String(item.id) === sid);
+        let nowFavorited;
+        if (idx >= 0) {
+            favs[type].splice(idx, 1);
+            nowFavorited = false;
+        } else {
+            favs[type].push({ id: sid, name: String(name) });
+            nowFavorited = true;
+        }
+        try {
+            localStorage.setItem('mlbFavorites', JSON.stringify(favs));
+        } catch (e) { /* quota exceeded or private browsing */ }
+        return nowFavorited;
+    }
+
+    function isFavorite(type, id) {
+        const favs = getFavorites();
+        const list = Array.isArray(favs[type]) ? favs[type] : [];
+        const sid = String(id);
+        return list.some((item) => String(item.id) === sid);
+    }
+
+    function exportSectionToCsv(containerEl, filename) {
+        if (typeof document === 'undefined' || typeof URL === 'undefined' || !URL.createObjectURL) return;
+        const lines = [];
+        containerEl.querySelectorAll('h2, h3, table').forEach((el) => {
+            if (el.tagName === 'H2' || el.tagName === 'H3') {
+                if (lines.length > 0) lines.push('');
+                lines.push(el.textContent.trim());
+            } else {
+                el.querySelectorAll('tr').forEach((row) => {
+                    const cols = Array.from(row.querySelectorAll('th, td'))
+                        .map((cell) => `"${cell.textContent.trim().replace(/"/g, '""')}"`);
+                    if (cols.length > 0) lines.push(cols.join(','));
+                });
+            }
+        });
+        if (lines.length === 0) return;
+        const blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(a.href);
+    }
+
     function makeSortableHeadersAccessible(selector, onActivate, getSortState) {
         if (typeof document === 'undefined') return;
         document.querySelectorAll(selector).forEach((th) => {
@@ -198,10 +265,14 @@
         buildFooterText,
         createFooterUpdater,
         escapeHtml,
+        exportSectionToCsv,
         fetchJsonWithRetry,
         formatTimestamp,
+        getFavorites,
         initDarkModeToggle,
+        isFavorite,
         makeSortableHeadersAccessible,
-        setupAccessibleTabs
+        setupAccessibleTabs,
+        toggleFavorite
     };
 });
