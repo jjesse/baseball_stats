@@ -57,6 +57,9 @@ function renderFavoritesSection() {
 }
 
 renderFavoritesSection();
+window.addEventListener('storage', (e) => {
+    if (e.key === 'mlbFavorites') renderFavoritesSection();
+});
 
 let currentSort = { key: null, asc: true };
 

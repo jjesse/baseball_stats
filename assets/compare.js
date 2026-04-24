@@ -32,7 +32,7 @@ async function searchPlayers(query, slotNum) {
     resultsDiv.innerHTML = '<span>Searching…</span>';
     try {
         const data = await fetchJsonWithRetry(
-            `https://statsapi.mlb.com/api/v1/people/search?names=${encodeURIComponent(query)}&sportId=1&active=true`,
+            `https://statsapi.mlb.com/api/v1/people/search?names=${encodeURIComponent(query)}&sportId=1`,
             { retries: 2, retryDelayMs: 400, cacheTtlMs: 15000 }
         );
         const people = data.people || [];
