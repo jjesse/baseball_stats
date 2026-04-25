@@ -48,12 +48,12 @@
 ## 🟢 Low Priority
 
 - [ ] Add playoff picture/bracket visualization (e.g., Wild Card race leaders, projected matchups)
-- [ ] Add player-vs-player comparison tool (side-by-side career/season stats)
-- [ ] Let users favorite/star teams or players (persisted in `localStorage`)
+- [x] Add player-vs-player comparison tool (side-by-side career/season stats) — added `compare.html` + `compare.js` with dual player search, bio, season and career stats
+- [x] Let users favorite/star teams or players (persisted in `localStorage`) — ⭐ favorite buttons on team/player pages; favorites panel on standings page
 - [ ] Add PWA support (installable, offline basic features via a Service Worker)
 - [ ] Add a Content Security Policy header if the app is self-hosted, to restrict external script/data sources
 - [ ] Integrate MLB news or team/player headlines
-- [ ] Add social sharing buttons for teams, players, and leaderboards
+- [x] Add social sharing buttons for teams, players, and leaderboards — 🔗 Share button (copies URL to clipboard) on team and player pages
 - [ ] Support multiple languages and time zones (localization / `Intl` API)
-- [ ] Add CSV/JSON export buttons on standings and leader tables so users can download data
+- [x] Add CSV/JSON export buttons on standings and leader tables so users can download data — ⬇ Export CSV buttons on standings, batting leaders, and pitching leaders
 - [ ] Add game alerts or notifications (browser Push API or email) for tracked teams' game results

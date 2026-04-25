@@ -2,10 +2,30 @@
 const playerNameHeader = document.getElementById('player-name');
 const playerInfoDiv = document.getElementById('player-info');
 const currentYear = new Date().getFullYear();
-const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle, setupAccessibleTabs } = window.MLBUtils;
+const {
+    createFooterUpdater,
+    escapeHtml,
+    fetchJsonWithRetry,
+    initDarkModeToggle,
+    isFavorite,
+    setupAccessibleTabs,
+    toggleFavorite
+} = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
+
+const shareBtn = document.getElementById('shareBtn');
+if (shareBtn) {
+    shareBtn.addEventListener('click', () => {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(window.location.href).then(() => {
+                shareBtn.textContent = '✓ Copied!';
+                setTimeout(() => { shareBtn.textContent = '🔗 Share'; }, 2000);
+            }).catch(() => {});
+        }
+    });
+}
 
 function getPlayerIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -51,6 +71,27 @@ async function fetchPlayerInfo(playerId) {
                 <p><strong>Born:</strong> ${dob} in ${birthplace}</p>
                 <p><strong>Height/Weight:</strong> ${height} / ${weight}</p>
             </div>`;
+
+        const favBtn = document.createElement('button');
+        favBtn.type = 'button';
+        favBtn.className = 'btn-favorite';
+        const favored = isFavorite('players', playerId);
+        favBtn.textContent = favored ? '⭐ Favorited' : '☆ Add to Favorites';
+        favBtn.setAttribute('aria-pressed', favored ? 'true' : 'false');
+        favBtn.addEventListener('click', () => {
+            const nowFav = toggleFavorite('players', playerId, person.fullName);
+            favBtn.textContent = nowFav ? '⭐ Favorited' : '☆ Add to Favorites';
+            favBtn.setAttribute('aria-pressed', nowFav ? 'true' : 'false');
+        });
+        playerInfoDiv.appendChild(favBtn);
+
+        const compareLink = document.createElement('a');
+        compareLink.href = `compare.html?p1=${encodeURIComponent(playerId)}`;
+        compareLink.textContent = '⚔️ Compare with another player';
+        compareLink.style.marginLeft = '10px';
+        compareLink.style.fontSize = '0.9em';
+        playerInfoDiv.appendChild(compareLink);
+
         updateFooter(new Date());
         return person;
     } catch (e) {

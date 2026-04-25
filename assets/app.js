@@ -8,7 +8,9 @@ const pageTitle = document.getElementById('page-title');
 const {
     createFooterUpdater,
     escapeHtml,
+    exportSectionToCsv,
     fetchJsonWithRetry,
+    getFavorites,
     initDarkModeToggle,
     makeSortableHeadersAccessible
 } = window.MLBUtils;
@@ -34,6 +36,30 @@ setPageTitleForSeason();
 
 let updateFooter = createFooterUpdater(selectedSeason);
 initDarkModeToggle();
+
+function renderFavoritesSection() {
+    const section = document.getElementById('favorites-section');
+    if (!section) return;
+    const { teams, players } = getFavorites();
+    if (teams.length === 0 && players.length === 0) {
+        section.innerHTML = '';
+        return;
+    }
+    let html = '<div class="favorites-panel"><h2>⭐ Favorites</h2><ul class="favorites-list">';
+    teams.forEach((t) => {
+        html += `<li><a href="team.html?teamId=${encodeURIComponent(t.id)}">🏟️ ${escapeHtml(t.name)}</a></li>`;
+    });
+    players.forEach((p) => {
+        html += `<li><a href="player.html?playerId=${encodeURIComponent(p.id)}">👤 ${escapeHtml(p.name)}</a></li>`;
+    });
+    html += '</ul></div>';
+    section.innerHTML = html;
+}
+
+renderFavoritesSection();
+window.addEventListener('storage', (e) => {
+    if (e.key === 'mlbFavorites') renderFavoritesSection();
+});
 
 let currentSort = { key: null, asc: true };
 
@@ -142,6 +168,15 @@ function renderStandings(data) {
     }
 
     standingsDiv.innerHTML = html;
+
+    const exportBtn = document.createElement('button');
+    exportBtn.type = 'button';
+    exportBtn.className = 'btn-export';
+    exportBtn.textContent = '⬇ Export CSV';
+    exportBtn.setAttribute('aria-label', `Export ${selectedSeason} standings as CSV`);
+    exportBtn.addEventListener('click', () => exportSectionToCsv(standingsDiv, `mlb-standings-${selectedSeason}.csv`));
+    standingsDiv.insertBefore(exportBtn, standingsDiv.firstChild);
+
     makeSortableHeadersAccessible(
         '.sortable',
         (th) => {

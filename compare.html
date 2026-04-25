@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Compare two MLB players side by side with career and season stats.">
+    <meta property="og:title" content="MLB Player Comparison">
+    <meta property="og:description" content="Compare two MLB players side by side with career and season statistics.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jjesse.github.io/baseball_stats/compare.html">
+    <link rel="canonical" href="https://jjesse.github.io/baseball_stats/compare.html">
+    <title>MLB Player Comparison</title>
+    <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header-row">
+            <div class="nav-links">
+                <a href="index.html">Team Standings</a> |
+                <a href="batting.html">Batting Stats</a> |
+                <a href="pitching.html">Pitching Stats</a> |
+                <a href="scoreboard.html">Scoreboard</a> |
+                <a href="compare.html">Compare Players</a> |
+                <a href="archives/2025/index.html">2025 Season Archive</a>
+            </div>
+            <h1 id="page-title">Player Comparison</h1>
+            <div class="header-controls">
+                <form class="search-bar-nav" action="search.html" method="get" role="search">
+                    <input type="text" name="q" placeholder="Search teams or players…" aria-label="Search teams or players">
+                    <button type="submit" aria-label="Search">🔍</button>
+                </form>
+                <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
+            </div>
+        </div>
+        <div id="compare-container" class="compare-grid">
+            <div id="compare-slot-1" class="compare-player">
+                <h2>Player 1</h2>
+                <div class="compare-search-slot">
+                    <input type="text" id="search-input-1" placeholder="Search player name…" aria-label="Search for player 1" autocomplete="off">
+                    <button type="button" id="search-btn-1">Search</button>
+                    <div id="search-results-1" class="compare-search-results" aria-live="polite"></div>
+                </div>
+                <div id="player-data-1"></div>
+            </div>
+            <div id="compare-slot-2" class="compare-player">
+                <h2>Player 2</h2>
+                <div class="compare-search-slot">
+                    <input type="text" id="search-input-2" placeholder="Search player name…" aria-label="Search for player 2" autocomplete="off">
+                    <button type="button" id="search-btn-2">Search</button>
+                    <div id="search-results-2" class="compare-search-results" aria-live="polite"></div>
+                </div>
+                <div id="player-data-2"></div>
+            </div>
+        </div>
+        <div class="footer" id="footer"></div>
+    </div>
+    <script src="assets/shared.js"></script>
+    <script src="assets/compare.js"></script>
+</body>
+</html>
