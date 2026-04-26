@@ -79,7 +79,8 @@ async function fetchScoreboard() {
             }
 
             const statusClass = abstractState === 'Live' ? 'status-live' : (abstractState === 'Final' ? 'status-final' : 'status-preview');
-            html += `<div class="scoreboard-card">
+            const cardStatusClass = abstractState === 'Live' ? 'status-live-card' : (abstractState === 'Final' ? 'status-final-card' : 'status-preview-card');
+            html += `<div class="scoreboard-card ${cardStatusClass}">
                 <div class="scoreboard-status ${statusClass}">${escapeHtml(inningInfo)}</div>
                 <div class="scoreboard-team ${awayWin ? 'winner' : ''}">
                     <a href="${awayLink}"><img src="${awayLogoUrl}" alt="${escapeHtml(awayTeam.name)} logo" class="team-logo"></a>
