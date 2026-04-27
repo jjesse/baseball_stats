@@ -37,7 +37,7 @@
 - [ ] Add more years to the archive system — only the 2025 season is archived; automate archiving or add a season dropdown to the main pages
 - [ ] Modularize JavaScript (ES modules or a lightweight bundler) — all JS files are standalone globals; switching to ES modules would enable proper imports and reduce duplication
 - [x] Add meta tags and improve SEO — added description, Open Graph, and canonical tags to current-season and 2025 archive pages
-- [ ] Add advanced stats (WAR, wOBA, FIP, etc.) on batting/pitching leaderboards and player pages
+- [x] Add advanced stats (WAR, wOBA, FIP, etc.) on batting/pitching leaderboards and player pages — added OBP/SLG/OPS/TB/XBH to batting advanced tab, added K/9/BB/9/HR/9/OBA/K/BB to pitching advanced tab (WAR/wOBA/FIP unavailable from official MLB Stats API); player stats tables expanded with TB/XBH for batters and K/9/K/BB for pitchers
 - [x] Add charts/visualizations for trends, comparisons, and playoff odds (e.g., using Chart.js) — added Chart.js bar charts on batting/pitching leader pages and a career stats line chart on player profiles; the compare page shows a grouped season stats chart when both players are loaded
 - [ ] Add end-to-end tests (e.g., Playwright or Cypress) to verify data renders correctly in the browser
 - [ ] Run Lighthouse CI in the workflow to track performance, accessibility, and SEO scores over time

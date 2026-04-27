@@ -41,13 +41,15 @@ const basicStats = [
     { key: 'stolenBases', label: 'SB' }
 ];
 const advancedStats = [
-    { key: 'obp', label: 'OBP' },
-    { key: 'slg', label: 'SLG' },
-    { key: 'ops', label: 'OPS' }
+    { key: 'onBasePercentage', label: 'OBP' },
+    { key: 'sluggingPercentage', label: 'SLG' },
+    { key: 'onBasePlusSlugging', label: 'OPS' },
+    { key: 'totalBases', label: 'TB' },
+    { key: 'extraBaseHits', label: 'XBH' }
 ];
 
 // Keys for which we show charts (basic and advanced tabs)
-const BATTING_CHART_KEYS = ['avg', 'homeRuns', 'rbi', 'obp', 'slg', 'ops'];
+const BATTING_CHART_KEYS = ['avg', 'homeRuns', 'rbi', 'onBasePercentage', 'sluggingPercentage', 'onBasePlusSlugging', 'totalBases', 'extraBaseHits'];
 let activeBattingCharts = [];
 
 function getChartTheme() {
