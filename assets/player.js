@@ -246,15 +246,17 @@ function buildStatsTable(stats, statGroup) {
     if (!stats || stats.length === 0) return '<div class="no-data-message"><p>No stats available.</p></div>';
     let keys;
     if (statGroup === 'hitting') {
-        keys = ['season', 'gamesPlayed', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'rbi', 'runs', 'stolenBases', 'avg', 'obp', 'slg', 'ops'];
+        keys = ['season', 'gamesPlayed', 'atBats', 'hits', 'doubles', 'triples', 'homeRuns', 'rbi', 'runs', 'stolenBases', 'avg', 'obp', 'slg', 'ops', 'totalBases', 'extraBaseHits'];
     } else {
-        keys = ['season', 'gamesPlayed', 'wins', 'losses', 'era', 'gamesStarted', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'whip', 'avg'];
+        keys = ['season', 'gamesPlayed', 'wins', 'losses', 'era', 'gamesStarted', 'saves', 'inningsPitched', 'strikeOuts', 'baseOnBalls', 'whip', 'avg', 'strikeoutsPer9Inn', 'strikeoutWalkRatio'];
     }
     const headers = {
         season: 'Season', gamesPlayed: 'G', atBats: 'AB', hits: 'H', doubles: '2B', triples: '3B',
         homeRuns: 'HR', rbi: 'RBI', runs: 'R', stolenBases: 'SB', avg: 'AVG', obp: 'OBP',
-        slg: 'SLG', ops: 'OPS', wins: 'W', losses: 'L', era: 'ERA', gamesStarted: 'GS',
-        saves: 'SV', inningsPitched: 'IP', strikeOuts: 'K', baseOnBalls: 'BB', whip: 'WHIP'
+        slg: 'SLG', ops: 'OPS', totalBases: 'TB', extraBaseHits: 'XBH',
+        wins: 'W', losses: 'L', era: 'ERA', gamesStarted: 'GS',
+        saves: 'SV', inningsPitched: 'IP', strikeOuts: 'K', baseOnBalls: 'BB', whip: 'WHIP',
+        strikeoutsPer9Inn: 'K/9', strikeoutWalkRatio: 'K/BB'
     };
     let html = '<table><thead><tr>';
     keys.forEach((k) => { html += `<th scope="col">${headers[k] || k}</th>`; });
