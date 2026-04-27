@@ -1,9 +1,144 @@
+/* global Chart */
 // Player comparison page - compare two players side by side
 const currentYear = new Date().getFullYear();
 const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
+
+const comparePlayerData = { 1: null, 2: null };
+let compareCharts = [];
+
+function getChartTheme() {
+    const s = getComputedStyle(document.body);
+    return {
+        text: s.getPropertyValue('--clr-text').trim() || '#1a2035',
+        muted: s.getPropertyValue('--clr-text-muted').trim() || '#64748b',
+        grid: s.getPropertyValue('--clr-border').trim() || '#d1dce8'
+    };
+}
+
+function renderCompareCharts() {
+    if (typeof Chart === 'undefined') return;
+    const d1 = comparePlayerData[1];
+    const d2 = comparePlayerData[2];
+    if (!d1 || !d2) return;
+
+    const section = document.getElementById('compare-chart-section');
+    if (!section) return;
+
+    // Destroy old charts
+    compareCharts.forEach(c => c.destroy());
+    compareCharts = [];
+    section.innerHTML = '';
+    section.hidden = false;
+
+    const statGroup = (d1.statGroup === 'pitching' && d2.statGroup === 'pitching') ? 'pitching' : 'hitting';
+    const theme = getChartTheme();
+
+    const getVal = (stats, key) => {
+        if (!stats || stats.length === 0) return 0;
+        const s = stats[0].stat;
+        return parseFloat(s[key]) || 0;
+    };
+
+    let chartConfigs;
+    if (statGroup === 'hitting') {
+        chartConfigs = [
+            {
+                title: `${currentYear} Rate Stats`,
+                keys:   ['avg', 'obp', 'slg', 'ops'],
+                labels: ['AVG', 'OBP', 'SLG', 'OPS']
+            },
+            {
+                title: `${currentYear} Counting Stats`,
+                keys:   ['homeRuns', 'rbi', 'runs', 'stolenBases'],
+                labels: ['HR', 'RBI', 'R', 'SB']
+            }
+        ];
+    } else {
+        chartConfigs = [
+            {
+                title: `${currentYear} Rate Stats`,
+                keys:   ['era', 'whip'],
+                labels: ['ERA', 'WHIP']
+            },
+            {
+                title: `${currentYear} Counting Stats`,
+                keys:   ['wins', 'strikeOuts', 'saves'],
+                labels: ['W', 'K', 'SV']
+            }
+        ];
+    }
+
+    const heading = document.createElement('h2');
+    heading.textContent = 'Season Comparison';
+    section.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'compare-charts-grid';
+    section.appendChild(grid);
+
+    chartConfigs.forEach(({ title, keys, labels }) => {
+        const d1Values = keys.map(k => getVal(d1.seasonStats, k));
+        const d2Values = keys.map(k => getVal(d2.seasonStats, k));
+
+        const card = document.createElement('div');
+        card.className = 'chart-card';
+        const titleEl = document.createElement('p');
+        titleEl.className = 'chart-card-title';
+        titleEl.textContent = title;
+        const wrap = document.createElement('div');
+        wrap.className = 'compare-chart-wrap';
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('aria-label', `${title} comparison bar chart`);
+        canvas.setAttribute('role', 'img');
+        wrap.appendChild(canvas);
+        card.append(titleEl, wrap);
+        grid.appendChild(card);
+
+        const chart = new Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: d1.name,
+                        data: d1Values,
+                        backgroundColor: 'rgba(4,30,66,0.82)',
+                        borderRadius: 3
+                    },
+                    {
+                        label: d2.name,
+                        data: d2Values,
+                        backgroundColor: 'rgba(213,0,50,0.82)',
+                        borderRadius: 3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { labels: { color: theme.text, font: { size: 12 } } }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: theme.text, font: { size: 11 } },
+                        grid: { color: theme.grid }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: theme.text, font: { size: 11 } },
+                        grid: { color: theme.grid }
+                    }
+                }
+            }
+        });
+        compareCharts.push(chart);
+    });
+}
 
 function getParamsFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -165,6 +300,10 @@ async function loadPlayerSlot(slotNum, playerId) {
 
         dataDiv.innerHTML = html;
         updateFooter(new Date());
+
+        // Store data for comparison chart and re-render if both slots are filled
+        comparePlayerData[slotNum] = { name: person.fullName, statGroup, seasonStats };
+        renderCompareCharts();
     } catch (err) {
         dataDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load player data. Please try again later.</p></div>';
     }

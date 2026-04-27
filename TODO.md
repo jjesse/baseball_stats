@@ -38,7 +38,7 @@
 - [ ] Modularize JavaScript (ES modules or a lightweight bundler) — all JS files are standalone globals; switching to ES modules would enable proper imports and reduce duplication
 - [x] Add meta tags and improve SEO — added description, Open Graph, and canonical tags to current-season and 2025 archive pages
 - [ ] Add advanced stats (WAR, wOBA, FIP, etc.) on batting/pitching leaderboards and player pages
-- [ ] Add charts/visualizations for trends, comparisons, and playoff odds (e.g., using Chart.js)
+- [x] Add charts/visualizations for trends, comparisons, and playoff odds (e.g., using Chart.js) — added Chart.js bar charts on batting/pitching leader pages and a career stats line chart on player profiles; the compare page shows a grouped season stats chart when both players are loaded
 - [ ] Add end-to-end tests (e.g., Playwright or Cypress) to verify data renders correctly in the browser
 - [ ] Run Lighthouse CI in the workflow to track performance, accessibility, and SEO scores over time
 - [x] Add print stylesheet (`@media print`) so standings/stats pages print cleanly
