@@ -49,10 +49,10 @@ const advancedStats = [
     { key: 'opponentBattingAvg', label: 'OBA' }
 ];
 
-// Keys for which we show charts (basic tab only — active on page load)
+// Keys for which we show charts (basic and advanced tabs)
 // lowerIsBetter: true reverses the x-axis so shorter bar = worse stat (more intuitive)
-const PITCHING_CHART_KEYS = ['era', 'strikeouts', 'wins'];
-const PITCHING_LOWER_IS_BETTER = new Set(['era', 'whip', 'opponentBattingAvg']);
+const PITCHING_CHART_KEYS = ['era', 'strikeouts', 'wins', 'whip', 'kPer9', 'bbPer9', 'hrPer9', 'opponentBattingAvg'];
+const PITCHING_LOWER_IS_BETTER = new Set(['era', 'whip', 'bbPer9', 'hrPer9', 'opponentBattingAvg']);
 let activePitchingCharts = [];
 
 function getChartTheme() {
@@ -155,10 +155,9 @@ async function fetchLeaders(stats, containerId) {
     target.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading pitching leaders…</span></div>';
     let html = '';
     let hasAnyData = false;
-    const wantCharts = containerId === 'pitching-leaders-basic';
     const chartDataMap = {};
     for (const stat of stats) {
-        const collectChart = wantCharts && PITCHING_CHART_KEYS.includes(stat.key);
+        const collectChart = PITCHING_CHART_KEYS.includes(stat.key);
         const statLeaders = [];
         html += `<h2>${stat.label} Leaders</h2>`;
         for (const league of ['American League', 'National League']) {

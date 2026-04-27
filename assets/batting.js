@@ -46,8 +46,8 @@ const advancedStats = [
     { key: 'ops', label: 'OPS' }
 ];
 
-// Keys for which we show charts (basic tab only — active on page load)
-const BATTING_CHART_KEYS = ['avg', 'homeRuns', 'rbi'];
+// Keys for which we show charts (basic and advanced tabs)
+const BATTING_CHART_KEYS = ['avg', 'homeRuns', 'rbi', 'obp', 'slg', 'ops'];
 let activeBattingCharts = [];
 
 function getChartTheme() {
@@ -149,10 +149,9 @@ async function fetchLeaders(stats, containerId) {
     target.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading batting leaders…</span></div>';
     let html = '';
     let hasAnyData = false;
-    const wantCharts = containerId === 'batting-leaders-basic';
     const chartDataMap = {};
     for (const stat of stats) {
-        const collectChart = wantCharts && BATTING_CHART_KEYS.includes(stat.key);
+        const collectChart = BATTING_CHART_KEYS.includes(stat.key);
         const statLeaders = [];
         html += `<h2>${stat.label} Leaders</h2>`;
         for (const league of ['American League', 'National League']) {
