@@ -62,7 +62,9 @@ function getChartTheme() {
 function buildLeaderBarChart(canvas, label, leaders) {
     if (typeof Chart === 'undefined') return null;
     const theme = getChartTheme();
-    const top = leaders.slice(0, 10);
+    // Sort descending (higher is better for all batting chart stats) and take top 10
+    const sorted = [...leaders].sort((a, b) => b.value - a.value);
+    const top = sorted.slice(0, 10);
     return new Chart(canvas, {
         type: 'bar',
         data: {
@@ -171,7 +173,7 @@ async function fetchLeaders(stats, containerId) {
                 }
                 if (collectChart) {
                     const leagueCode = league === 'American League' ? 'AL' : 'NL';
-                    leaders.slice(0, 5).forEach(l => statLeaders.push({
+                    leaders.forEach(l => statLeaders.push({
                         name: l.person.fullName,
                         value: parseFloat(l.value),
                         league: leagueCode
