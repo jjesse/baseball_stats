@@ -1,3 +1,4 @@
+/* global Chart */
 const { createFooterUpdater, exportSectionToCsv, fetchJsonWithRetry, initDarkModeToggle, setupAccessibleTabs } = window.MLBUtils;
 const currentYear = new Date().getFullYear();
 const seasonSelect = document.getElementById('season-select');
@@ -45,12 +46,112 @@ const advancedStats = [
     { key: 'ops', label: 'OPS' }
 ];
 
+// Keys for which we show charts (basic tab only — active on page load)
+const BATTING_CHART_KEYS = ['avg', 'homeRuns', 'rbi'];
+let activeBattingCharts = [];
+
+function getChartTheme() {
+    const s = getComputedStyle(document.body);
+    return {
+        text: s.getPropertyValue('--clr-text').trim() || '#1a2035',
+        muted: s.getPropertyValue('--clr-text-muted').trim() || '#64748b',
+        grid: s.getPropertyValue('--clr-border').trim() || '#d1dce8'
+    };
+}
+
+function buildLeaderBarChart(canvas, label, leaders) {
+    if (typeof Chart === 'undefined') return null;
+    const theme = getChartTheme();
+    const top = leaders.slice(0, 10);
+    return new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: top.map(l => `${l.name} (${l.league})`),
+            datasets: [{
+                label,
+                data: top.map(l => l.value),
+                backgroundColor: top.map(l => l.league === 'AL' ? 'rgba(4,30,66,0.82)' : 'rgba(213,0,50,0.82)'),
+                borderRadius: 3,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (ctx) => `${label}: ${ctx.raw}` } }
+            },
+            scales: {
+                x: {
+                    ticks: { color: theme.text, font: { size: 11 } },
+                    grid: { color: theme.grid }
+                },
+                y: {
+                    ticks: { color: theme.text, font: { size: 11 } },
+                    grid: { color: theme.grid }
+                }
+            }
+        }
+    });
+}
+
+function renderLeaderCharts(target, chartDataMap) {
+    if (typeof Chart === 'undefined') return;
+    activeBattingCharts.forEach(c => c.destroy());
+    activeBattingCharts = [];
+    const entries = Object.values(chartDataMap);
+    if (entries.length === 0) return;
+
+    const section = document.createElement('div');
+    section.className = 'charts-section';
+
+    const legend = document.createElement('div');
+    legend.className = 'chart-legend';
+    legend.innerHTML = '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:rgba(4,30,66,0.82)"></span>American League</span>'
+        + '<span class="chart-legend-item"><span class="chart-legend-dot" style="background:rgba(213,0,50,0.82)"></span>National League</span>';
+    section.appendChild(legend);
+
+    const grid = document.createElement('div');
+    grid.className = 'charts-grid';
+    entries.forEach(({ label, leaders }) => {
+        const card = document.createElement('div');
+        card.className = 'chart-card';
+        const title = document.createElement('p');
+        title.className = 'chart-card-title';
+        title.textContent = `${label} Leaders`;
+        const wrap = document.createElement('div');
+        wrap.className = 'chart-canvas-wrap';
+        const canvas = document.createElement('canvas');
+        canvas.setAttribute('aria-label', `${label} leaders bar chart`);
+        canvas.setAttribute('role', 'img');
+        wrap.appendChild(canvas);
+        card.append(title, wrap);
+        grid.appendChild(card);
+        const chart = buildLeaderBarChart(canvas, label, leaders);
+        if (chart) activeBattingCharts.push(chart);
+    });
+    section.appendChild(grid);
+
+    const exportBtn = target.querySelector('.btn-export');
+    if (exportBtn) {
+        exportBtn.insertAdjacentElement('afterend', section);
+    } else {
+        target.insertBefore(section, target.firstChild);
+    }
+}
+
 async function fetchLeaders(stats, containerId) {
     const target = document.getElementById(containerId);
     target.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading batting leaders…</span></div>';
     let html = '';
     let hasAnyData = false;
+    const wantCharts = containerId === 'batting-leaders-basic';
+    const chartDataMap = {};
     for (const stat of stats) {
+        const collectChart = wantCharts && BATTING_CHART_KEYS.includes(stat.key);
+        const statLeaders = [];
         html += `<h2>${stat.label} Leaders</h2>`;
         for (const league of ['American League', 'National League']) {
             html += `<h3>${league}</h3>`;
@@ -68,11 +169,22 @@ async function fetchLeaders(stats, containerId) {
                     const playerLink = `player.html?playerId=${leader.person.id}`;
                     html += `<tr><td>${leader.rank}</td><td><a href="${playerLink}">${leader.person.fullName}</a></td><td>${leader.team ? leader.team.name : ''}</td><td>${leader.value}</td></tr>`;
                 }
+                if (collectChart) {
+                    const leagueCode = league === 'American League' ? 'AL' : 'NL';
+                    leaders.slice(0, 5).forEach(l => statLeaders.push({
+                        name: l.person.fullName,
+                        value: parseFloat(l.value),
+                        league: leagueCode
+                    }));
+                }
                 updateFooter(new Date());
             } catch (e) {
                 html += '<tr><td colspan="4">Failed to load data</td></tr>';
             }
             html += '</tbody></table>';
+        }
+        if (collectChart && statLeaders.length > 0) {
+            chartDataMap[stat.key] = { label: stat.label, leaders: statLeaders };
         }
     }
     if (!hasAnyData) {
@@ -87,6 +199,7 @@ async function fetchLeaders(stats, containerId) {
         exportBtn.setAttribute('aria-label', `Export batting leaders as CSV`);
         exportBtn.addEventListener('click', () => exportSectionToCsv(target, `mlb-batting-${containerId.replace('batting-leaders-', '')}-${selectedSeason}.csv`));
         target.prepend(exportBtn);
+        renderLeaderCharts(target, chartDataMap);
     }
 }
 

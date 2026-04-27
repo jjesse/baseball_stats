@@ -1,3 +1,4 @@
+/* global Chart */
 // Player profile page - shows bio, career stats, season stats, and splits
 const playerNameHeader = document.getElementById('player-name');
 const playerInfoDiv = document.getElementById('player-info');
@@ -39,6 +40,147 @@ setupAccessibleTabs({
     panelPrefix: 'player-',
     idPrefix: 'player-tab'
 });
+
+let careerChart = null;
+
+function getChartTheme() {
+    const s = getComputedStyle(document.body);
+    return {
+        text: s.getPropertyValue('--clr-text').trim() || '#1a2035',
+        muted: s.getPropertyValue('--clr-text-muted').trim() || '#64748b',
+        grid: s.getPropertyValue('--clr-border').trim() || '#d1dce8'
+    };
+}
+
+function renderCareerChart(stats, statGroup) {
+    if (typeof Chart === 'undefined' || stats.length === 0) return;
+    const careerDiv = document.getElementById('player-career');
+    if (!careerDiv) return;
+    if (careerChart) { careerChart.destroy(); careerChart = null; }
+
+    // Limit to the most recent 15 seasons for readability
+    const recent = stats.slice(-15);
+    const years = recent.map(s => s.season || '');
+    const theme = getChartTheme();
+
+    let datasets;
+    if (statGroup === 'hitting') {
+        datasets = [
+            {
+                label: 'AVG',
+                data: recent.map(s => parseFloat(s.stat.avg) || 0),
+                borderColor: '#041E42',
+                backgroundColor: 'rgba(4,30,66,0.08)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4
+            },
+            {
+                label: 'OBP',
+                data: recent.map(s => parseFloat(s.stat.obp) || 0),
+                borderColor: '#D50032',
+                backgroundColor: 'rgba(213,0,50,0.08)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4
+            },
+            {
+                label: 'SLG',
+                data: recent.map(s => parseFloat(s.stat.slg) || 0),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.08)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4
+            }
+        ];
+    } else {
+        datasets = [
+            {
+                label: 'ERA',
+                data: recent.map(s => parseFloat(s.stat.era) || 0),
+                borderColor: '#D50032',
+                backgroundColor: 'rgba(213,0,50,0.08)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                yAxisID: 'yEra'
+            },
+            {
+                label: 'WHIP',
+                data: recent.map(s => parseFloat(s.stat.whip) || 0),
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59,130,246,0.08)',
+                fill: true,
+                tension: 0.3,
+                pointRadius: 4,
+                yAxisID: 'yWhip'
+            }
+        ];
+    }
+
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    card.style.marginBottom = '20px';
+    const titleEl = document.createElement('p');
+    titleEl.className = 'chart-card-title';
+    titleEl.textContent = statGroup === 'hitting' ? 'Career Batting Trends (AVG / OBP / SLG)' : 'Career Pitching Trends (ERA / WHIP)';
+    const wrap = document.createElement('div');
+    wrap.className = 'chart-canvas-wrap';
+    const canvas = document.createElement('canvas');
+    canvas.setAttribute('aria-label', 'Career statistics line chart');
+    canvas.setAttribute('role', 'img');
+    wrap.appendChild(canvas);
+    card.append(titleEl, wrap);
+
+    const heading = careerDiv.querySelector('h2');
+    if (heading) {
+        careerDiv.insertBefore(card, heading);
+    } else {
+        careerDiv.insertBefore(card, careerDiv.firstChild);
+    }
+
+    const scales = {
+        x: {
+            ticks: { color: theme.text, font: { size: 11 } },
+            grid: { color: theme.grid }
+        }
+    };
+    if (statGroup === 'hitting') {
+        scales.y = {
+            ticks: { color: theme.text, font: { size: 11 } },
+            grid: { color: theme.grid },
+            title: { display: true, text: 'Rate', color: theme.muted, font: { size: 11 } }
+        };
+    } else {
+        scales.yEra = {
+            position: 'left',
+            ticks: { color: theme.text, font: { size: 11 } },
+            grid: { color: theme.grid },
+            title: { display: true, text: 'ERA', color: theme.muted, font: { size: 11 } }
+        };
+        scales.yWhip = {
+            position: 'right',
+            ticks: { color: theme.text, font: { size: 11 } },
+            grid: { drawOnChartArea: false },
+            title: { display: true, text: 'WHIP', color: theme.muted, font: { size: 11 } }
+        };
+    }
+
+    careerChart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: years, datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { labels: { color: theme.text, font: { size: 12 } } }
+            },
+            scales
+        }
+    });
+}
 
 async function fetchPlayerInfo(playerId) {
     try {
@@ -144,6 +286,7 @@ async function fetchCareerStats(playerId, statGroup) {
             careerDiv.innerHTML = '<div class="no-data-message"><p>No career stats available.</p></div>';
         } else {
             careerDiv.innerHTML = '<h2>Career Stats (Year by Year)</h2>' + buildStatsTable(stats, statGroup);
+            renderCareerChart(stats, statGroup);
         }
         updateFooter(new Date());
     } catch (e) {

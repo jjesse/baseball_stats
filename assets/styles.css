@@ -1151,6 +1151,106 @@ body.dark .compare-search-results a:hover {
     }
 }
 
+/* ── Charts ──────────────────────────────────────────────── */
+.charts-section {
+    padding: 16px 28px 24px;
+    border-bottom: 1px solid var(--clr-border);
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.chart-card {
+    background: var(--clr-surface-alt);
+    border: 1px solid var(--clr-border);
+    border-radius: var(--r-md);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+}
+
+.chart-card-title {
+    font-family: var(--font-heading);
+    font-size: 0.82em;
+    font-weight: 600;
+    text-align: center;
+    margin: 0 0 10px;
+    color: var(--clr-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.chart-canvas-wrap {
+    position: relative;
+    height: 300px;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 0 0 4px;
+    font-size: 0.85em;
+    flex-wrap: wrap;
+    color: var(--clr-text-muted);
+}
+
+.chart-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.chart-legend-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+.compare-charts-section {
+    padding: 4px 28px 28px;
+}
+
+.compare-charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 10px;
+}
+
+.compare-chart-wrap {
+    position: relative;
+    height: 280px;
+}
+
+@media (max-width: 600px) {
+    .charts-section {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-canvas-wrap {
+        height: 220px;
+    }
+
+    .compare-charts-section {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .compare-chart-wrap {
+        height: 220px;
+    }
+}
+
 /* ── Print ───────────────────────────────────────────────── */
 @media print {
     body {
@@ -1178,7 +1278,9 @@ body.dark .compare-search-results a:hover {
     #darkModeToggle,
     .btn-export,
     .btn-share,
-    .btn-favorite {
+    .btn-favorite,
+    .charts-section,
+    .compare-charts-section {
         display: none !important;
     }
 
