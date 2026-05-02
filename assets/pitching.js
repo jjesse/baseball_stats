@@ -39,21 +39,24 @@ const basicStats = [
     { key: 'saves', label: 'SV' },
     { key: 'whip', label: 'WHIP' },
     { key: 'inningsPitched', label: 'IP' },
-    { key: 'opponentBattingAverage', label: 'OBA' }
+    { key: 'opponentBattingAvg', label: 'OBA' },
+    { key: 'qualityStarts', label: 'QS' },
+    { key: 'holds', label: 'HLD' }
 ];
 const advancedStats = [
     { key: 'whip', label: 'WHIP' },
-    { key: 'strikeoutsPer9Inn', label: 'K/9' },
-    { key: 'baseOnBallsPer9Inn', label: 'BB/9' },
-    { key: 'homeRunsPer9', label: 'HR/9' },
-    { key: 'opponentBattingAverage', label: 'OBA' },
-    { key: 'strikeoutWalkRatio', label: 'K/BB' }
+    { key: 'kPer9', label: 'K/9' },
+    { key: 'bbPer9', label: 'BB/9' },
+    { key: 'hrPer9', label: 'HR/9' },
+    { key: 'opponentBattingAvg', label: 'OBA' },
+    { key: 'strikeoutWalkRatio', label: 'K/BB' },
+    { key: 'hitsPer9Inn', label: 'H/9' }
 ];
 
 // Keys for which we show charts (basic and advanced tabs)
 // lowerIsBetter: true reverses the x-axis so shorter bar = worse stat (more intuitive)
-const PITCHING_CHART_KEYS = ['era', 'strikeouts', 'wins', 'whip', 'strikeoutsPer9Inn', 'baseOnBallsPer9Inn', 'homeRunsPer9', 'opponentBattingAverage', 'strikeoutWalkRatio'];
-const PITCHING_LOWER_IS_BETTER = new Set(['era', 'whip', 'baseOnBallsPer9Inn', 'homeRunsPer9', 'opponentBattingAverage']);
+const PITCHING_CHART_KEYS = ['era', 'strikeouts', 'wins', 'whip', 'kPer9', 'bbPer9', 'hrPer9', 'opponentBattingAvg', 'strikeoutWalkRatio', 'qualityStarts', 'holds', 'hitsPer9Inn'];
+const PITCHING_LOWER_IS_BETTER = new Set(['era', 'whip', 'bbPer9', 'hrPer9', 'opponentBattingAvg', 'hitsPer9Inn']);
 let activePitchingCharts = [];
 
 function getChartTheme() {
