@@ -13,3 +13,6 @@ Thumbs.db
 
 # Node modules (if added in future)
 node_modules/
+
+# Cloudflare Pages build output
+dist/
