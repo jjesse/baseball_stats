@@ -1,4 +1,4 @@
-name = "baseball-stats"
+name = "baseballstats"
 pages_build_output_dir = "dist"
 
 [build]
