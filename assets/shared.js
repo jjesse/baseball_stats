@@ -232,6 +232,23 @@
         URL.revokeObjectURL(a.href);
     }
 
+    function updateCanonicalUrls() {
+        if (typeof window === 'undefined' || typeof document === 'undefined') return;
+        const url = window.location.origin + window.location.pathname;
+        const ogUrl = document.querySelector('meta[property="og:url"]');
+        if (ogUrl) ogUrl.setAttribute('content', url);
+        const canonical = document.querySelector('link[rel="canonical"]');
+        if (canonical) canonical.setAttribute('href', url);
+    }
+
+    if (typeof document !== 'undefined') {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateCanonicalUrls);
+        } else {
+            updateCanonicalUrls();
+        }
+    }
+
     function makeSortableHeadersAccessible(selector, onActivate, getSortState) {
         if (typeof document === 'undefined') return;
         document.querySelectorAll(selector).forEach((th) => {
@@ -273,6 +290,7 @@
         isFavorite,
         makeSortableHeadersAccessible,
         setupAccessibleTabs,
-        toggleFavorite
+        toggleFavorite,
+        updateCanonicalUrls
     };
 });
