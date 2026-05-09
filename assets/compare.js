@@ -1,7 +1,8 @@
 /* global Chart */
 // Player comparison page - compare two players side by side
+import { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } from './shared.module.js';
+
 const currentYear = new Date().getFullYear();
-const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();

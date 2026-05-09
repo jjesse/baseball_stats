@@ -1,17 +1,18 @@
 // Display team info, roster (with stats), and schedule based on teamId in URL
-const teamInfoDiv = document.getElementById('team-info');
-const teamRosterDiv = document.getElementById('team-roster');
-const teamScheduleDiv = document.getElementById('team-schedule');
-const teamNameHeader = document.getElementById('team-name');
-const currentYear = new Date().getFullYear();
-const {
+import {
     createFooterUpdater,
     escapeHtml,
     fetchJsonWithRetry,
     initDarkModeToggle,
     isFavorite,
     toggleFavorite
-} = window.MLBUtils;
+} from './shared.module.js';
+
+const teamInfoDiv = document.getElementById('team-info');
+const teamRosterDiv = document.getElementById('team-roster');
+const teamScheduleDiv = document.getElementById('team-schedule');
+const teamNameHeader = document.getElementById('team-name');
+const currentYear = new Date().getFullYear();
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
