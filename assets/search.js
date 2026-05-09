@@ -1,9 +1,10 @@
 // Global search - find teams or players by name
+import { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } from './shared.module.js';
+
 const searchInput = document.getElementById('search-input');
 const searchBtn = document.getElementById('search-btn');
 const searchResultsDiv = document.getElementById('search-results');
 const currentYear = new Date().getFullYear();
-const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();

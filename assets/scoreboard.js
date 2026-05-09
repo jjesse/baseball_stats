@@ -1,8 +1,9 @@
 // Scoreboard - show today's games with live/final scores and date navigation
+import { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } from './shared.module.js';
+
 const scoreboardDiv = document.getElementById('scoreboard');
 const selectedDateSpan = document.getElementById('selected-date');
 const currentYear = new Date().getFullYear();
-const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();

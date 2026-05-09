@@ -1,11 +1,6 @@
 // Fetch MLB standings from the MLB Stats API and render them
 // API docs: https://statsapi.mlb.com/api/
-
-const standingsDiv = document.getElementById('standings');
-const currentYear = new Date().getFullYear();
-const seasonSelect = document.getElementById('season-select');
-const pageTitle = document.getElementById('page-title');
-const {
+import {
     createFooterUpdater,
     escapeHtml,
     exportSectionToCsv,
@@ -13,7 +8,12 @@ const {
     getFavorites,
     initDarkModeToggle,
     makeSortableHeadersAccessible
-} = window.MLBUtils;
+} from './shared.module.js';
+
+const standingsDiv = document.getElementById('standings');
+const currentYear = new Date().getFullYear();
+const seasonSelect = document.getElementById('season-select');
+const pageTitle = document.getElementById('page-title');
 
 function getInitialSeason() {
     const params = new URLSearchParams(window.location.search);

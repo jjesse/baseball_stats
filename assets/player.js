@@ -1,9 +1,6 @@
 /* global Chart */
 // Player profile page - shows bio, career stats, season stats, and splits
-const playerNameHeader = document.getElementById('player-name');
-const playerInfoDiv = document.getElementById('player-info');
-const currentYear = new Date().getFullYear();
-const {
+import {
     createFooterUpdater,
     escapeHtml,
     fetchJsonWithRetry,
@@ -11,7 +8,11 @@ const {
     isFavorite,
     setupAccessibleTabs,
     toggleFavorite
-} = window.MLBUtils;
+} from './shared.module.js';
+
+const playerNameHeader = document.getElementById('player-name');
+const playerInfoDiv = document.getElementById('player-info');
+const currentYear = new Date().getFullYear();
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();

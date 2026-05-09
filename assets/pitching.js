@@ -1,5 +1,11 @@
 /* global Chart */
-const { createFooterUpdater, exportSectionToCsv, fetchJsonWithRetry, initDarkModeToggle, setupAccessibleTabs } = window.MLBUtils;
+import {
+    createFooterUpdater,
+    exportSectionToCsv,
+    fetchJsonWithRetry,
+    initDarkModeToggle,
+    setupAccessibleTabs
+} from './shared.module.js';
 const currentYear = new Date().getFullYear();
 const seasonSelect = document.getElementById('season-select');
 const pageTitle = document.getElementById('page-title');
