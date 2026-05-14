@@ -76,8 +76,8 @@ async function fetchTeamInfo(teamId) {
 async function fetchRosterStats(teamId) {
     try {
         const [hitData, pitchData] = await Promise.all([
-            fetchJsonWithRetry(`https://statsapi.mlb.com/api/v1/teams/${teamId}/stats?stats=season&season=${currentYear}&group=hitting&sportId=1`, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 }),
-            fetchJsonWithRetry(`https://statsapi.mlb.com/api/v1/teams/${teamId}/stats?stats=season&season=${currentYear}&group=pitching&sportId=1`, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 })
+            fetchJsonWithRetry(`https://statsapi.mlb.com/api/v1/stats?stats=season&season=${currentYear}&group=hitting&sportId=1&teamId=${teamId}`, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 }),
+            fetchJsonWithRetry(`https://statsapi.mlb.com/api/v1/stats?stats=season&season=${currentYear}&group=pitching&sportId=1&teamId=${teamId}`, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 })
         ]);
 
         const statsMap = {};
