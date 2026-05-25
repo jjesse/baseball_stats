@@ -1,8 +1,9 @@
 // Scoreboard - show today's games with live/final scores and date navigation
+import { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } from './shared.module.js';
+
 const scoreboardDiv = document.getElementById('scoreboard');
 const selectedDateSpan = document.getElementById('selected-date');
 const currentYear = new Date().getFullYear();
-const { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
@@ -79,7 +80,8 @@ async function fetchScoreboard() {
             }
 
             const statusClass = abstractState === 'Live' ? 'status-live' : (abstractState === 'Final' ? 'status-final' : 'status-preview');
-            html += `<div class="scoreboard-card">
+            const cardStatusClass = abstractState === 'Live' ? 'status-live-card' : (abstractState === 'Final' ? 'status-final-card' : 'status-preview-card');
+            html += `<div class="scoreboard-card ${cardStatusClass}">
                 <div class="scoreboard-status ${statusClass}">${escapeHtml(inningInfo)}</div>
                 <div class="scoreboard-team ${awayWin ? 'winner' : ''}">
                     <a href="${awayLink}"><img src="${awayLogoUrl}" alt="${escapeHtml(awayTeam.name)} logo" class="team-logo"></a>
