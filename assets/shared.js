@@ -54,6 +54,12 @@
         const applyDarkMode = (enabled) => {
             document.body.classList.toggle('dark', enabled);
             darkModeToggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
+            if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
+                const event = typeof window.CustomEvent === 'function'
+                    ? new window.CustomEvent('mlb:themechange', { detail: { dark: enabled } })
+                    : null;
+                if (event) window.dispatchEvent(event);
+            }
         };
 
         applyDarkMode(localStorage.getItem(storageKey) === 'true');
@@ -232,6 +238,36 @@
         URL.revokeObjectURL(a.href);
     }
 
+    function getChartTheme() {
+        const isDark = typeof document !== 'undefined' && document.body.classList.contains('dark');
+        return {
+            isDark,
+            textColor: isDark ? '#e0e0e0' : '#222',
+            gridColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
+            legendColor: isDark ? '#e0e0e0' : '#222'
+        };
+    }
+
+    function buildChartFallbackTable(caption, headers, rows) {
+        const safeHeaders = Array.isArray(headers) ? headers : [];
+        const safeRows = Array.isArray(rows) ? rows : [];
+        let html = `<table class="sr-only"><caption>${escapeHtml(String(caption || 'Chart data table'))}</caption><thead><tr>`;
+        safeHeaders.forEach((header) => {
+            html += `<th scope="col">${escapeHtml(String(header))}</th>`;
+        });
+        html += '</tr></thead><tbody>';
+        safeRows.forEach((row) => {
+            const cells = Array.isArray(row) ? row : [];
+            html += '<tr>';
+            cells.forEach((cell) => {
+                html += `<td>${escapeHtml(String(cell))}</td>`;
+            });
+            html += '</tr>';
+        });
+        html += '</tbody></table>';
+        return html;
+    }
+
     function updateCanonicalUrls() {
         if (typeof window === 'undefined' || typeof document === 'undefined') return;
         const url = window.location.origin + window.location.pathname;
@@ -281,10 +317,12 @@
     return {
         buildFooterText,
         createFooterUpdater,
+        buildChartFallbackTable,
         escapeHtml,
         exportSectionToCsv,
         fetchJsonWithRetry,
         formatTimestamp,
+        getChartTheme,
         getFavorites,
         initDarkModeToggle,
         isFavorite,

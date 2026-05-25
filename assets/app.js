@@ -1,19 +1,21 @@
 // Fetch MLB standings from the MLB Stats API and render them
 // API docs: https://statsapi.mlb.com/api/
-import {
-    createFooterUpdater,
-    escapeHtml,
-    exportSectionToCsv,
-    fetchJsonWithRetry,
-    getFavorites,
-    initDarkModeToggle,
-    makeSortableHeadersAccessible
-} from './shared.module.js';
 
 const standingsDiv = document.getElementById('standings');
 const currentYear = new Date().getFullYear();
 const seasonSelect = document.getElementById('season-select');
 const pageTitle = document.getElementById('page-title');
+const {
+    buildChartFallbackTable,
+    createFooterUpdater,
+    escapeHtml,
+    exportSectionToCsv,
+    fetchJsonWithRetry,
+    getChartTheme,
+    getFavorites,
+    initDarkModeToggle,
+    makeSortableHeadersAccessible
+} = window.MLBUtils;
 
 function getInitialSeason() {
     const params = new URLSearchParams(window.location.search);
@@ -62,6 +64,63 @@ window.addEventListener('storage', (e) => {
 });
 
 let currentSort = { key: null, asc: true };
+let divisionWinsCharts = [];
+let latestDivisionChartData = [];
+
+function destroyDivisionCharts() {
+    divisionWinsCharts.forEach((chart) => chart.destroy());
+    divisionWinsCharts = [];
+}
+
+function renderDivisionWinsCharts(chartDataList) {
+    destroyDivisionCharts();
+    if (!window.Chart || !Array.isArray(chartDataList) || chartDataList.length === 0) return;
+    const theme = getChartTheme();
+    chartDataList.forEach((chartData) => {
+        const canvas = document.getElementById(chartData.canvasId);
+        const fallback = document.getElementById(chartData.fallbackId);
+        if (!canvas) return;
+        if (fallback) {
+            const rows = chartData.labels.map((label, idx) => [label, chartData.values[idx]]);
+            fallback.innerHTML = buildChartFallbackTable(`${chartData.title} data`, ['Team', 'Wins'], rows);
+        }
+        const chart = new window.Chart(canvas, {
+            type: 'bar',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'Wins',
+                    data: chartData.values,
+                    backgroundColor: chartData.colors
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: chartData.title,
+                        color: theme.legendColor
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: theme.textColor },
+                        grid: { color: theme.gridColor }
+                    },
+                    y: {
+                        ticks: { color: theme.textColor },
+                        grid: { color: theme.gridColor }
+                    }
+                }
+            }
+        });
+        divisionWinsCharts.push(chart);
+    });
+}
 
 async function fetchStandings() {
     standingsDiv.innerHTML = '<div class="loading-indicator" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span><span>Loading standings…</span></div>';
@@ -90,6 +149,7 @@ function renderStandings(data) {
         leagues[leagueName].push(record);
     });
 
+    latestDivisionChartData = [];
     let html = '';
     for (const [league, divisions] of Object.entries(leagues)) {
         if (league && league !== 'undefined') {
@@ -108,10 +168,21 @@ function renderStandings(data) {
                 if (divisionId === 203) divisionName = 'National League West';
             }
 
+            const divisionChartIdSafe = `${(divisionName || 'division').toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${selectedSeason}`;
+            const canvasId = `wins-chart-${divisionChartIdSafe}`;
+            const fallbackId = `wins-chart-fallback-${divisionChartIdSafe}`;
             html += '<div class="division-section">';
             if (divisionName && divisionName !== 'undefined') {
                 html += `<h3 class="division-header">${escapeHtml(divisionName)}</h3>`;
             }
+            html += `
+                <details class="chart-block" open>
+                    <summary>📈 Division wins chart</summary>
+                    <div class="chart-wrap">
+                        <canvas id="${canvasId}" aria-label="${escapeHtml(divisionName || 'Division')} wins bar chart" role="img"></canvas>
+                        <div id="${fallbackId}" class="chart-fallback"></div>
+                    </div>
+                </details>`;
 
             html += `<table><thead><tr>
                 <th scope="col">Team</th>
@@ -140,6 +211,9 @@ function renderStandings(data) {
                 });
             }
 
+            const chartLabels = [];
+            const chartValues = [];
+            const chartColors = [];
             teamRecords.forEach((team) => {
                 let status = '';
                 if (team.clinched) {
@@ -160,7 +234,20 @@ function renderStandings(data) {
                 const rank = `Lg: ${team.leagueRank || ''} / Div: ${team.divisionRank || ''}`;
                 const magic = team.magicNumber !== undefined && team.magicNumber !== null ? team.magicNumber : '';
                 const teamLink = `team.html?teamId=${team.team.id}`;
-                html += `<tr><td><a href="${teamLink}"><img src="${logoUrl}" alt="${escapeHtml(team.team.name)} logo" class="team-logo"> ${escapeHtml(team.team.name)}</a></td><td>${team.wins}</td><td>${team.losses}</td><td>${team.winningPercentage}</td><td>${escapeHtml(String(team.gamesBack || ''))}</td><td>${escapeHtml(streak)}</td><td>${escapeHtml(rank)}</td><td>${escapeHtml(String(magic))}</td><td>${escapeHtml(status)}</td></tr>`;
+                const winningPct = Number.parseFloat(team.winningPercentage);
+                const pctPercent = Number.isFinite(winningPct) ? Math.max(0, Math.min(100, winningPct * 100)) : 0;
+                html += `<tr><td><a href="${teamLink}"><img src="${logoUrl}" alt="${escapeHtml(team.team.name)} logo" class="team-logo"> ${escapeHtml(team.team.name)}</a></td><td>${team.wins}</td><td>${team.losses}</td><td><div class="win-pct-cell"><span>${escapeHtml(String(team.winningPercentage || ''))}</span><span class="win-pct-bar-track"><span class="win-pct-bar-fill" style="width:${pctPercent.toFixed(1)}%" aria-hidden="true"></span></span></div></td><td>${escapeHtml(String(team.gamesBack || ''))}</td><td>${escapeHtml(streak)}</td><td>${escapeHtml(rank)}</td><td>${escapeHtml(String(magic))}</td><td>${escapeHtml(status)}</td></tr>`;
+                chartLabels.push(team.team.name);
+                chartValues.push(Number(team.wins) || 0);
+                chartColors.push('#0074d9');
+            });
+            latestDivisionChartData.push({
+                canvasId,
+                fallbackId,
+                title: `${divisionName || 'Division'} wins`,
+                labels: chartLabels,
+                values: chartValues,
+                colors: chartColors
             });
             html += '</tbody></table></div>';
         });
@@ -168,6 +255,7 @@ function renderStandings(data) {
     }
 
     standingsDiv.innerHTML = html;
+    renderDivisionWinsCharts(latestDivisionChartData);
 
     const exportBtn = document.createElement('button');
     exportBtn.type = 'button';
@@ -187,6 +275,7 @@ function renderStandings(data) {
                 currentSort.key = key;
                 currentSort.asc = false;
             }
+
             fetchStandings();
         },
         (th) => {
@@ -196,6 +285,10 @@ function renderStandings(data) {
         }
     );
 }
+
+window.addEventListener('mlb:themechange', () => {
+    renderDivisionWinsCharts(latestDivisionChartData);
+});
 
 function updateSeasonQueryParam() {
     const url = new URL(window.location.href);

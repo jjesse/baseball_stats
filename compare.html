@@ -10,22 +10,19 @@
     <meta property="og:url" content="https://jjesse.github.io/baseball_stats/compare.html">
     <link rel="canonical" href="https://jjesse.github.io/baseball_stats/compare.html">
     <title>MLB Player Comparison</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap">
     <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
     <div class="container">
-        <nav class="nav-links" aria-label="Main navigation">
-            <a href="index.html">Team Standings</a>
-            <a href="batting.html">Batting Stats</a>
-            <a href="pitching.html">Pitching Stats</a>
-            <a href="scoreboard.html">Scoreboard</a>
-            <a href="compare.html">Compare Players</a>
-            <a href="archives/2025/index.html">2025 Archive</a>
-        </nav>
         <div class="header-row">
+            <div class="nav-links">
+                <a href="index.html">Team Standings</a> |
+                <a href="batting.html">Batting Stats</a> |
+                <a href="pitching.html">Pitching Stats</a> |
+                <a href="scoreboard.html">Scoreboard</a> |
+                <a href="compare.html">Compare Players</a> |
+                <a href="archives/2025/index.html">2025 Season Archive</a>
+            </div>
             <h1 id="page-title">Player Comparison</h1>
             <div class="header-controls">
                 <form class="search-bar-nav" action="search.html" method="get" role="search">
@@ -35,6 +32,23 @@
                 <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
             </div>
         </div>
+        <section id="compare-charts" class="compare-charts" aria-live="polite">
+            <details class="chart-block" open>
+                <summary>🕸️ Head-to-head radar chart</summary>
+                <div class="chart-wrap">
+                    <canvas id="compare-radar-chart" role="img" aria-label="Player comparison radar chart"></canvas>
+                    <div id="compare-radar-fallback" class="chart-fallback"></div>
+                </div>
+            </details>
+            <details class="chart-block" open>
+                <summary>📊 Key stats grouped bar chart</summary>
+                <div class="chart-wrap">
+                    <canvas id="compare-bar-chart" role="img" aria-label="Player comparison grouped bar chart"></canvas>
+                    <div id="compare-bar-fallback" class="chart-fallback"></div>
+                </div>
+            </details>
+            <div id="compare-chart-message" class="compare-chart-message"></div>
+        </section>
         <div id="compare-container" class="compare-grid">
             <div id="compare-slot-1" class="compare-player">
                 <h2>Player 1</h2>
@@ -55,11 +69,10 @@
                 <div id="player-data-2"></div>
             </div>
         </div>
-        <div id="compare-chart-section" class="compare-charts-section" hidden></div>
         <div class="footer" id="footer"></div>
     </div>
     <script src="assets/shared.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
-    <script type="module" src="assets/compare.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="assets/compare.js"></script>
 </body>
 </html>

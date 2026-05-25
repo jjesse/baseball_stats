@@ -1,144 +1,30 @@
-/* global Chart */
 // Player comparison page - compare two players side by side
-import { createFooterUpdater, escapeHtml, fetchJsonWithRetry, initDarkModeToggle } from './shared.module.js';
-
 const currentYear = new Date().getFullYear();
+const {
+    buildChartFallbackTable,
+    createFooterUpdater,
+    escapeHtml,
+    fetchJsonWithRetry,
+    getChartTheme,
+    initDarkModeToggle
+} = window.MLBUtils;
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
 
-const comparePlayerData = { 1: null, 2: null };
-let compareCharts = [];
+let radarChart = null;
+let groupedBarChart = null;
+const loadedPlayers = { 1: null, 2: null };
 
-function getChartTheme() {
-    const s = getComputedStyle(document.body);
-    return {
-        text: s.getPropertyValue('--clr-text').trim() || '#1a2035',
-        muted: s.getPropertyValue('--clr-text-muted').trim() || '#64748b',
-        grid: s.getPropertyValue('--clr-border').trim() || '#d1dce8'
-    };
-}
-
-function renderCompareCharts() {
-    if (typeof Chart === 'undefined') return;
-    const d1 = comparePlayerData[1];
-    const d2 = comparePlayerData[2];
-    if (!d1 || !d2) return;
-
-    const section = document.getElementById('compare-chart-section');
-    if (!section) return;
-
-    // Destroy old charts
-    compareCharts.forEach(c => c.destroy());
-    compareCharts = [];
-    section.innerHTML = '';
-    section.hidden = false;
-
-    const statGroup = (d1.statGroup === 'pitching' && d2.statGroup === 'pitching') ? 'pitching' : 'hitting';
-    const theme = getChartTheme();
-
-    const getVal = (stats, key) => {
-        if (!stats || stats.length === 0) return 0;
-        const s = stats[0].stat;
-        return parseFloat(s[key]) || 0;
-    };
-
-    let chartConfigs;
-    if (statGroup === 'hitting') {
-        chartConfigs = [
-            {
-                title: `${currentYear} Rate Stats`,
-                keys:   ['avg', 'obp', 'slg', 'ops'],
-                labels: ['AVG', 'OBP', 'SLG', 'OPS']
-            },
-            {
-                title: `${currentYear} Counting Stats`,
-                keys:   ['homeRuns', 'rbi', 'runs', 'stolenBases'],
-                labels: ['HR', 'RBI', 'R', 'SB']
-            }
-        ];
-    } else {
-        chartConfigs = [
-            {
-                title: `${currentYear} Rate Stats`,
-                keys:   ['era', 'whip'],
-                labels: ['ERA', 'WHIP']
-            },
-            {
-                title: `${currentYear} Counting Stats`,
-                keys:   ['wins', 'strikeOuts', 'saves'],
-                labels: ['W', 'K', 'SV']
-            }
-        ];
+function destroyCompareCharts() {
+    if (radarChart) {
+        radarChart.destroy();
+        radarChart = null;
     }
-
-    const heading = document.createElement('h2');
-    heading.textContent = 'Season Comparison';
-    section.appendChild(heading);
-
-    const grid = document.createElement('div');
-    grid.className = 'compare-charts-grid';
-    section.appendChild(grid);
-
-    chartConfigs.forEach(({ title, keys, labels }) => {
-        const d1Values = keys.map(k => getVal(d1.seasonStats, k));
-        const d2Values = keys.map(k => getVal(d2.seasonStats, k));
-
-        const card = document.createElement('div');
-        card.className = 'chart-card';
-        const titleEl = document.createElement('p');
-        titleEl.className = 'chart-card-title';
-        titleEl.textContent = title;
-        const wrap = document.createElement('div');
-        wrap.className = 'compare-chart-wrap';
-        const canvas = document.createElement('canvas');
-        canvas.setAttribute('aria-label', `${title} comparison bar chart`);
-        canvas.setAttribute('role', 'img');
-        wrap.appendChild(canvas);
-        card.append(titleEl, wrap);
-        grid.appendChild(card);
-
-        const chart = new Chart(canvas, {
-            type: 'bar',
-            data: {
-                labels,
-                datasets: [
-                    {
-                        label: d1.name,
-                        data: d1Values,
-                        backgroundColor: 'rgba(4,30,66,0.82)',
-                        borderRadius: 3
-                    },
-                    {
-                        label: d2.name,
-                        data: d2Values,
-                        backgroundColor: 'rgba(213,0,50,0.82)',
-                        borderRadius: 3
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { labels: { color: theme.text, font: { size: 12 } } }
-                },
-                scales: {
-                    x: {
-                        ticks: { color: theme.text, font: { size: 11 } },
-                        grid: { color: theme.grid }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: { color: theme.text, font: { size: 11 } },
-                        grid: { color: theme.grid }
-                    }
-                }
-            }
-        });
-        compareCharts.push(chart);
-    });
+    if (groupedBarChart) {
+        groupedBarChart.destroy();
+        groupedBarChart = null;
+    }
 }
 
 function getParamsFromUrl() {
@@ -156,6 +42,191 @@ function updateUrlParams(p1, p2) {
     if (p1) url.searchParams.set('p1', p1); else url.searchParams.delete('p1');
     if (p2) url.searchParams.set('p2', p2); else url.searchParams.delete('p2');
     window.history.replaceState({}, '', url);
+}
+
+function getMetricConfig(statGroup) {
+    if (statGroup === 'pitching') {
+        return [
+            { key: 'era', label: 'ERA', reverse: true },
+            { key: 'strikeOuts', label: 'K', reverse: false },
+            { key: 'whip', label: 'WHIP', reverse: true },
+            { key: 'wins', label: 'W', reverse: false },
+            { key: 'saves', label: 'SV', reverse: false }
+        ];
+    }
+    return [
+        { key: 'avg', label: 'AVG', reverse: false },
+        { key: 'homeRuns', label: 'HR', reverse: false },
+        { key: 'rbi', label: 'RBI', reverse: false },
+        { key: 'obp', label: 'OBP', reverse: false },
+        { key: 'slg', label: 'SLG', reverse: false },
+        { key: 'ops', label: 'OPS', reverse: false }
+    ];
+}
+
+function getMetricValue(statRow, key) {
+    if (!statRow || !statRow.stat || statRow.stat[key] === undefined || statRow.stat[key] === null) return 0;
+    const value = Number.parseFloat(statRow.stat[key]);
+    return Number.isFinite(value) ? value : 0;
+}
+
+function normalizePair(a, b, reverse) {
+    const max = Math.max(a, b, 1);
+    if (!reverse) {
+        return [Math.round((a / max) * 100), Math.round((b / max) * 100)];
+    }
+    const invA = a > 0 ? 1 / a : 0;
+    const invB = b > 0 ? 1 / b : 0;
+    const invMax = Math.max(invA, invB, 0.0001);
+    return [Math.round((invA / invMax) * 100), Math.round((invB / invMax) * 100)];
+}
+
+function renderCompareCharts() {
+    const message = document.getElementById('compare-chart-message');
+    const radarFallback = document.getElementById('compare-radar-fallback');
+    const barFallback = document.getElementById('compare-bar-fallback');
+    message.textContent = '';
+
+    const left = loadedPlayers[1];
+    const right = loadedPlayers[2];
+
+    if (!left || !right) {
+        destroyCompareCharts();
+        message.textContent = 'Load two players to see comparison charts.';
+        if (radarFallback) radarFallback.innerHTML = '';
+        if (barFallback) barFallback.innerHTML = '';
+        return;
+    }
+
+    if (left.statGroup !== right.statGroup) {
+        destroyCompareCharts();
+        message.textContent = 'Charts require two players from the same stat group (both hitters or both pitchers).';
+        if (radarFallback) radarFallback.innerHTML = '';
+        if (barFallback) barFallback.innerHTML = '';
+        return;
+    }
+
+    const statGroup = left.statGroup;
+    const metrics = getMetricConfig(statGroup);
+    const labels = metrics.map((m) => m.label);
+    const leftRaw = metrics.map((m) => getMetricValue(left.seasonStat, m.key));
+    const rightRaw = metrics.map((m) => getMetricValue(right.seasonStat, m.key));
+
+    const leftRadar = [];
+    const rightRadar = [];
+    metrics.forEach((metric, idx) => {
+        const [a, b] = normalizePair(leftRaw[idx], rightRaw[idx], metric.reverse);
+        leftRadar.push(a);
+        rightRadar.push(b);
+    });
+
+    destroyCompareCharts();
+    const theme = getChartTheme();
+
+    const radarCanvas = document.getElementById('compare-radar-chart');
+    if (radarCanvas && window.Chart) {
+        radarChart = new window.Chart(radarCanvas, {
+            type: 'radar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: left.person.fullName,
+                        data: leftRadar,
+                        borderColor: '#0074d9',
+                        backgroundColor: 'rgba(0,116,217,0.2)'
+                    },
+                    {
+                        label: right.person.fullName,
+                        data: rightRadar,
+                        borderColor: '#ff4136',
+                        backgroundColor: 'rgba(255,65,54,0.2)'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: theme.legendColor } },
+                    title: {
+                        display: true,
+                        text: 'Normalized head-to-head profile (season)',
+                        color: theme.legendColor
+                    }
+                },
+                scales: {
+                    r: {
+                        suggestedMin: 0,
+                        suggestedMax: 100,
+                        ticks: { color: theme.textColor },
+                        grid: { color: theme.gridColor },
+                        angleLines: { color: theme.gridColor },
+                        pointLabels: { color: theme.textColor }
+                    }
+                }
+            }
+        });
+    }
+
+    const barCanvas = document.getElementById('compare-bar-chart');
+    if (barCanvas && window.Chart) {
+        groupedBarChart = new window.Chart(barCanvas, {
+            type: 'bar',
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: left.person.fullName,
+                        data: leftRaw,
+                        backgroundColor: '#0074d9'
+                    },
+                    {
+                        label: right.person.fullName,
+                        data: rightRaw,
+                        backgroundColor: '#ff4136'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: theme.legendColor } },
+                    title: {
+                        display: true,
+                        text: `${currentYear} key stats side-by-side`,
+                        color: theme.legendColor
+                    }
+                },
+                scales: {
+                    x: {
+                        ticks: { color: theme.textColor },
+                        grid: { color: theme.gridColor }
+                    },
+                    y: {
+                        ticks: { color: theme.textColor },
+                        grid: { color: theme.gridColor }
+                    }
+                }
+            }
+        });
+    }
+
+    if (radarFallback) {
+        radarFallback.innerHTML = buildChartFallbackTable(
+            'Radar chart normalized scores',
+            ['Metric', left.person.fullName, right.person.fullName],
+            labels.map((label, idx) => [label, leftRadar[idx], rightRadar[idx]])
+        );
+    }
+    if (barFallback) {
+        barFallback.innerHTML = buildChartFallbackTable(
+            'Grouped bar chart raw values',
+            ['Metric', left.person.fullName, right.person.fullName],
+            labels.map((label, idx) => [label, leftRaw[idx], rightRaw[idx]])
+        );
+    }
 }
 
 async function searchPlayers(query, slotNum) {
@@ -269,6 +340,8 @@ async function loadPlayerSlot(slotNum, playerId) {
         const person = personData.people && personData.people[0];
         if (!person) {
             dataDiv.innerHTML = '<div class="no-data-message"><p>Player not found.</p></div>';
+            loadedPlayers[slotNum] = null;
+            renderCompareCharts();
             return;
         }
         if (slotHeading) slotHeading.textContent = escapeHtml(person.fullName);
@@ -293,6 +366,13 @@ async function loadPlayerSlot(slotNum, playerId) {
         const careerStats = careerData.stats && careerData.stats[0] && careerData.stats[0].splits ? careerData.stats[0].splits : [];
         const seasonStats = seasonData.stats && seasonData.stats[0] && seasonData.stats[0].splits ? seasonData.stats[0].splits : [];
 
+        loadedPlayers[slotNum] = {
+            person,
+            statGroup,
+            seasonStat: seasonStats[0] || null,
+            careerStats
+        };
+
         let html = buildBioHtml(person);
         html += `<h3>${currentYear} Season Stats</h3>`;
         html += buildStatsTable(seasonStats, statGroup);
@@ -301,11 +381,10 @@ async function loadPlayerSlot(slotNum, playerId) {
 
         dataDiv.innerHTML = html;
         updateFooter(new Date());
-
-        // Store data for comparison chart and re-render if both slots are filled
-        comparePlayerData[slotNum] = { name: person.fullName, statGroup, seasonStats };
         renderCompareCharts();
     } catch (err) {
+        loadedPlayers[slotNum] = null;
+        renderCompareCharts();
         dataDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load player data. Please try again later.</p></div>';
     }
 }
@@ -321,6 +400,10 @@ function setupSlot(slotNum) {
     });
 }
 
+window.addEventListener('mlb:themechange', () => {
+    renderCompareCharts();
+});
+
 function init() {
     setupSlot(1);
     setupSlot(2);
@@ -328,6 +411,7 @@ function init() {
     const { p1, p2 } = getParamsFromUrl();
     if (p1) loadPlayerSlot(1, p1);
     if (p2) loadPlayerSlot(2, p2);
+    renderCompareCharts();
 }
 
 init();
