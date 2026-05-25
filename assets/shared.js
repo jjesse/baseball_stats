@@ -46,7 +46,7 @@
         };
     }
 
-    function initDarkModeToggle(toggleId = 'darkModeToggle', storageKey = 'mlbDarkMode', onThemeChange) {
+    function initDarkModeToggle(toggleId = 'darkModeToggle', storageKey = 'mlbDarkMode') {
         if (typeof document === 'undefined') return;
         const darkModeToggle = document.getElementById(toggleId);
         if (!darkModeToggle) return;
@@ -54,11 +54,6 @@
         const applyDarkMode = (enabled) => {
             document.body.classList.toggle('dark', enabled);
             darkModeToggle.setAttribute('aria-pressed', enabled ? 'true' : 'false');
-            if (typeof onThemeChange === 'function') {
-                try {
-                    onThemeChange(enabled);
-                } catch (e) { /* ignore callback errors */ }
-            }
             if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function') {
                 const event = typeof window.CustomEvent === 'function'
                     ? new window.CustomEvent('mlb:themechange', { detail: { dark: enabled } })

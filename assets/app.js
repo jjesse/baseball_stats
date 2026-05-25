@@ -276,9 +276,6 @@ function renderStandings(data) {
                 currentSort.asc = false;
             }
 
-            window.addEventListener('mlb:themechange', () => {
-                renderDivisionWinsCharts(latestDivisionChartData);
-            });
             fetchStandings();
         },
         (th) => {
@@ -288,6 +285,10 @@ function renderStandings(data) {
         }
     );
 }
+
+window.addEventListener('mlb:themechange', () => {
+    renderDivisionWinsCharts(latestDivisionChartData);
+});
 
 function updateSeasonQueryParam() {
     const url = new URL(window.location.href);
