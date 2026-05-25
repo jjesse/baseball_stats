@@ -84,7 +84,7 @@ function renderDivisionWinsCharts(chartDataList) {
             const rows = chartData.labels.map((label, idx) => [label, chartData.values[idx]]);
             fallback.innerHTML = buildChartFallbackTable(`${chartData.title} data`, ['Team', 'Wins'], rows);
         }
-        const chart = new Chart(canvas, {
+        const chart = new window.Chart(canvas, {
             type: 'bar',
             data: {
                 labels: chartData.labels,

@@ -138,7 +138,7 @@ function renderChartsForContainer(containerId, configs) {
                 }
             };
 
-        const chart = new Chart(canvas, {
+        const chart = new window.Chart(canvas, {
             type: cfg.type,
             data: cfg.data,
             options

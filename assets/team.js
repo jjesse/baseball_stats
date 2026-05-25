@@ -58,7 +58,7 @@ function renderRecordChart(summary) {
     }
 
     const theme = getChartTheme();
-    recordChart = new Chart(canvas, {
+    recordChart = new window.Chart(canvas, {
         type: 'doughnut',
         data: {
             labels: ['Wins', 'Losses', 'Remaining'],
@@ -102,7 +102,7 @@ function renderRosterLeadersChart(config) {
     }
 
     const theme = getChartTheme();
-    rosterChart = new Chart(canvas, {
+    rosterChart = new window.Chart(canvas, {
         type: 'bar',
         data: {
             labels: config.labels,

@@ -125,7 +125,7 @@ function renderCompareCharts() {
 
     const radarCanvas = document.getElementById('compare-radar-chart');
     if (radarCanvas && window.Chart) {
-        radarChart = new Chart(radarCanvas, {
+        radarChart = new window.Chart(radarCanvas, {
             type: 'radar',
             data: {
                 labels,
@@ -171,7 +171,7 @@ function renderCompareCharts() {
 
     const barCanvas = document.getElementById('compare-bar-chart');
     if (barCanvas && window.Chart) {
-        groupedBarChart = new Chart(barCanvas, {
+        groupedBarChart = new window.Chart(barCanvas, {
             type: 'bar',
             data: {
                 labels,

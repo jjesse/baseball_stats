@@ -86,7 +86,7 @@ function renderCareerTrendChart(stats, statGroup) {
     }
 
     const theme = getChartTheme();
-    careerChart = new Chart(canvas, {
+    careerChart = new window.Chart(canvas, {
         type: 'line',
         data: { labels: seasons, datasets },
         options: {
@@ -162,7 +162,7 @@ function renderSplitsChart(splits, statGroup) {
     }
 
     const theme = getChartTheme();
-    splitsChart = new Chart(canvas, {
+    splitsChart = new window.Chart(canvas, {
         type: 'bar',
         data: { labels, datasets },
         options: {
