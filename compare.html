@@ -32,6 +32,23 @@
                 <button type="button" id="darkModeToggle">🌙 Dark Mode</button>
             </div>
         </div>
+        <section id="compare-charts" class="compare-charts" aria-live="polite">
+            <details class="chart-block" open>
+                <summary>🕸️ Head-to-head radar chart</summary>
+                <div class="chart-wrap">
+                    <canvas id="compare-radar-chart" role="img" aria-label="Player comparison radar chart"></canvas>
+                    <div id="compare-radar-fallback" class="chart-fallback"></div>
+                </div>
+            </details>
+            <details class="chart-block" open>
+                <summary>📊 Key stats grouped bar chart</summary>
+                <div class="chart-wrap">
+                    <canvas id="compare-bar-chart" role="img" aria-label="Player comparison grouped bar chart"></canvas>
+                    <div id="compare-bar-fallback" class="chart-fallback"></div>
+                </div>
+            </details>
+            <div id="compare-chart-message" class="compare-chart-message"></div>
+        </section>
         <div id="compare-container" class="compare-grid">
             <div id="compare-slot-1" class="compare-player">
                 <h2>Player 1</h2>
@@ -55,6 +72,7 @@
         <div class="footer" id="footer"></div>
     </div>
     <script src="assets/shared.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <script src="assets/compare.js"></script>
 </body>
 </html>

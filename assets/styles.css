@@ -627,6 +627,67 @@ body.dark .compare-search-results a {
     color: #66aaff;
 }
 
+.chart-block {
+    margin: 12px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fafafa;
+}
+.chart-block > summary {
+    cursor: pointer;
+    padding: 8px 12px;
+    font-weight: bold;
+}
+.chart-wrap {
+    position: relative;
+    height: 320px;
+    padding: 8px 12px 12px;
+}
+.chart-wrap-small {
+    height: 240px;
+}
+.chart-fallback {
+    margin-top: 8px;
+}
+body.dark .chart-block {
+    background: #232323;
+    border-color: #444;
+}
+
+.win-pct-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.win-pct-bar-track {
+    display: inline-block;
+    width: 70px;
+    height: 6px;
+    border-radius: 999px;
+    background: #d6d6d6;
+    overflow: hidden;
+}
+.win-pct-bar-fill {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, #2ecc40, #0074d9);
+}
+body.dark .win-pct-bar-track {
+    background: #555;
+}
+
+.compare-charts {
+    margin: 10px 0 20px;
+}
+.compare-chart-message {
+    color: #666;
+    font-size: 0.95em;
+    margin-top: 8px;
+}
+body.dark .compare-chart-message {
+    color: #aaa;
+}
+
 @media print {
     body {
         background: #fff !important;

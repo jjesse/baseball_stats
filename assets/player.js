@@ -3,9 +3,11 @@ const playerNameHeader = document.getElementById('player-name');
 const playerInfoDiv = document.getElementById('player-info');
 const currentYear = new Date().getFullYear();
 const {
+    buildChartFallbackTable,
     createFooterUpdater,
     escapeHtml,
     fetchJsonWithRetry,
+    getChartTheme,
     initDarkModeToggle,
     isFavorite,
     setupAccessibleTabs,
@@ -14,6 +16,181 @@ const {
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
+
+let careerChart = null;
+let splitsChart = null;
+let latestCareerStats = null;
+let latestSplitsStats = null;
+let latestStatGroup = 'hitting';
+
+function destroyCareerChart() {
+    if (careerChart) {
+        careerChart.destroy();
+        careerChart = null;
+    }
+}
+
+function destroySplitsChart() {
+    if (splitsChart) {
+        splitsChart.destroy();
+        splitsChart = null;
+    }
+}
+
+function renderCareerTrendChart(stats, statGroup) {
+    destroyCareerChart();
+    latestCareerStats = stats;
+    latestStatGroup = statGroup;
+    if (!window.Chart || !Array.isArray(stats) || stats.length === 0) return;
+
+    const canvas = document.getElementById('player-career-trend-chart');
+    const fallback = document.getElementById('player-career-chart-fallback');
+    if (!canvas) return;
+
+    const seasons = stats.map((row) => String(row.season || ''));
+    const metricConfig = statGroup === 'hitting'
+        ? [
+            { key: 'avg', label: 'AVG', color: '#0074d9' },
+            { key: 'homeRuns', label: 'HR', color: '#2ecc40' },
+            { key: 'ops', label: 'OPS', color: '#b10dc9' }
+        ]
+        : [
+            { key: 'era', label: 'ERA', color: '#ff4136' },
+            { key: 'whip', label: 'WHIP', color: '#ff851b' },
+            { key: 'strikeOuts', label: 'K', color: '#0074d9' }
+        ];
+
+    const datasets = metricConfig.map((metric) => ({
+        label: metric.label,
+        data: stats.map((row) => {
+            const raw = row.stat && row.stat[metric.key] !== undefined ? row.stat[metric.key] : null;
+            const parsed = Number.parseFloat(raw);
+            return Number.isFinite(parsed) ? parsed : null;
+        }),
+        borderColor: metric.color,
+        backgroundColor: metric.color,
+        tension: 0.2,
+        spanGaps: true
+    }));
+
+    if (fallback) {
+        const fallbackRows = stats.map((row) => {
+            const season = row.season || '';
+            return [season, ...metricConfig.map((metric) => row.stat && row.stat[metric.key] !== undefined ? row.stat[metric.key] : '')];
+        });
+        fallback.innerHTML = buildChartFallbackTable(
+            `${currentYear} career trend data`,
+            ['Season', ...metricConfig.map((metric) => metric.label)],
+            fallbackRows
+        );
+    }
+
+    const theme = getChartTheme();
+    careerChart = new Chart(canvas, {
+        type: 'line',
+        data: { labels: seasons, datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Career trend by season',
+                    color: theme.legendColor
+                },
+                legend: {
+                    labels: { color: theme.legendColor }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
+                },
+                y: {
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
+                }
+            }
+        }
+    });
+}
+
+function renderSplitsChart(splits, statGroup) {
+    destroySplitsChart();
+    latestSplitsStats = splits;
+    latestStatGroup = statGroup;
+    if (!window.Chart || !Array.isArray(splits) || splits.length === 0) return;
+
+    const canvas = document.getElementById('player-splits-chart');
+    const fallback = document.getElementById('player-splits-chart-fallback');
+    if (!canvas) return;
+
+    const labels = splits.map((row) => row.split ? row.split.description : 'Split');
+    const metricConfig = statGroup === 'hitting'
+        ? [
+            { key: 'avg', label: 'AVG', color: '#0074d9' },
+            { key: 'obp', label: 'OBP', color: '#2ecc40' },
+            { key: 'slg', label: 'SLG', color: '#b10dc9' }
+        ]
+        : [
+            { key: 'era', label: 'ERA', color: '#ff4136' },
+            { key: 'whip', label: 'WHIP', color: '#ff851b' },
+            { key: 'strikeOuts', label: 'K', color: '#0074d9' }
+        ];
+
+    const datasets = metricConfig.map((metric) => ({
+        label: metric.label,
+        data: splits.map((row) => {
+            const raw = row.stat && row.stat[metric.key] !== undefined ? row.stat[metric.key] : null;
+            const parsed = Number.parseFloat(raw);
+            return Number.isFinite(parsed) ? parsed : 0;
+        }),
+        backgroundColor: metric.color
+    }));
+
+    if (fallback) {
+        const fallbackRows = splits.map((row) => {
+            const splitName = row.split ? row.split.description : 'Split';
+            return [splitName, ...metricConfig.map((metric) => row.stat && row.stat[metric.key] !== undefined ? row.stat[metric.key] : '')];
+        });
+        fallback.innerHTML = buildChartFallbackTable(
+            `${currentYear} splits chart data`,
+            ['Split', ...metricConfig.map((metric) => metric.label)],
+            fallbackRows
+        );
+    }
+
+    const theme = getChartTheme();
+    splitsChart = new Chart(canvas, {
+        type: 'bar',
+        data: { labels, datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: `${currentYear} split comparison`,
+                    color: theme.legendColor
+                },
+                legend: {
+                    labels: { color: theme.legendColor }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
+                },
+                y: {
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
+                }
+            }
+        }
+    });
+}
 
 const shareBtn = document.getElementById('shareBtn');
 if (shareBtn) {
@@ -141,9 +318,12 @@ async function fetchCareerStats(playerId, statGroup) {
         const data = await fetchJsonWithRetry(url, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 });
         const stats = data.stats && data.stats[0] && data.stats[0].splits ? data.stats[0].splits : [];
         if (stats.length === 0) {
+            destroyCareerChart();
+            latestCareerStats = null;
             careerDiv.innerHTML = '<div class="no-data-message"><p>No career stats available.</p></div>';
         } else {
-            careerDiv.innerHTML = '<h2>Career Stats (Year by Year)</h2>' + buildStatsTable(stats, statGroup);
+            careerDiv.innerHTML = `<h2>Career Stats (Year by Year)</h2><details class="chart-block" open><summary>📈 Career trend chart</summary><div class="chart-wrap"><canvas id="player-career-trend-chart" role="img" aria-label="Career trend chart"></canvas><div id="player-career-chart-fallback" class="chart-fallback"></div></div></details>${buildStatsTable(stats, statGroup)}`;
+            renderCareerTrendChart(stats, statGroup);
         }
         updateFooter(new Date());
     } catch (e) {
@@ -160,7 +340,7 @@ async function fetchSeasonStats(playerId, statGroup) {
         if (stats.length === 0) {
             seasonDiv.innerHTML = `<div class="no-data-message"><p>No ${currentYear} season stats available yet.</p></div>`;
         } else {
-            seasonDiv.innerHTML = `<h2>${currentYear} Season Stats</h2>` + buildStatsTable(stats, statGroup);
+            seasonDiv.innerHTML = `<h2>${currentYear} Season Stats</h2>${buildStatsTable(stats, statGroup)}`;
         }
         updateFooter(new Date());
     } catch (e) {
@@ -175,9 +355,11 @@ async function fetchSplits(playerId, statGroup) {
         const data = await fetchJsonWithRetry(url, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 });
         const splits = data.stats && data.stats[0] && data.stats[0].splits ? data.stats[0].splits : [];
         if (splits.length === 0) {
+            destroySplitsChart();
+            latestSplitsStats = null;
             splitsDiv.innerHTML = `<div class="no-data-message"><p>No ${currentYear} splits data available yet.</p></div>`;
         } else {
-            let html = `<h2>${currentYear} Splits</h2><table><thead><tr><th scope="col">Split</th>`;
+            let html = `<h2>${currentYear} Splits</h2><details class="chart-block" open><summary>📊 Splits comparison chart</summary><div class="chart-wrap"><canvas id="player-splits-chart" role="img" aria-label="Player splits chart"></canvas><div id="player-splits-chart-fallback" class="chart-fallback"></div></div></details><table><thead><tr><th scope="col">Split</th>`;
             const keys = statGroup === 'hitting'
                 ? ['gamesPlayed', 'atBats', 'hits', 'homeRuns', 'rbi', 'avg', 'obp', 'slg', 'ops']
                 : ['gamesPlayed', 'wins', 'losses', 'era', 'inningsPitched', 'strikeOuts', 'whip'];
@@ -197,12 +379,18 @@ async function fetchSplits(playerId, statGroup) {
             });
             html += '</tbody></table>';
             splitsDiv.innerHTML = html;
+            renderSplitsChart(splits, statGroup);
         }
         updateFooter(new Date());
     } catch (e) {
         splitsDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load splits. Please try again later.</p></div>';
     }
 }
+
+window.addEventListener('mlb:themechange', () => {
+    if (latestCareerStats && latestCareerStats.length > 0) renderCareerTrendChart(latestCareerStats, latestStatGroup);
+    if (latestSplitsStats && latestSplitsStats.length > 0) renderSplitsChart(latestSplitsStats, latestStatGroup);
+});
 
 async function init() {
     const playerId = getPlayerIdFromUrl();
@@ -220,6 +408,7 @@ async function init() {
             statGroup = 'pitching';
         }
     }
+    latestStatGroup = statGroup;
     fetchCareerStats(playerId, statGroup);
     fetchSeasonStats(playerId, statGroup);
     fetchSplits(playerId, statGroup);

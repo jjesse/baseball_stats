@@ -5,9 +5,11 @@ const teamScheduleDiv = document.getElementById('team-schedule');
 const teamNameHeader = document.getElementById('team-name');
 const currentYear = new Date().getFullYear();
 const {
+    buildChartFallbackTable,
     createFooterUpdater,
     escapeHtml,
     fetchJsonWithRetry,
+    getChartTheme,
     initDarkModeToggle,
     isFavorite,
     toggleFavorite
@@ -15,6 +17,132 @@ const {
 
 const updateFooter = createFooterUpdater(currentYear);
 initDarkModeToggle();
+
+let recordChart = null;
+let rosterChart = null;
+let latestRecordSummary = null;
+let latestRosterLeaders = null;
+
+function destroyRecordChart() {
+    if (recordChart) {
+        recordChart.destroy();
+        recordChart = null;
+    }
+}
+
+function destroyRosterChart() {
+    if (rosterChart) {
+        rosterChart.destroy();
+        rosterChart = null;
+    }
+}
+
+function renderRecordChart(summary) {
+    destroyRecordChart();
+    latestRecordSummary = summary;
+    if (!window.Chart || !summary) return;
+    const canvas = document.getElementById('team-record-chart');
+    const fallback = document.getElementById('team-record-chart-fallback');
+    if (!canvas) return;
+
+    if (fallback) {
+        fallback.innerHTML = buildChartFallbackTable(
+            `${currentYear} team record`,
+            ['Category', 'Games'],
+            [
+                ['Wins', summary.wins],
+                ['Losses', summary.losses],
+                ['Remaining', summary.remaining]
+            ]
+        );
+    }
+
+    const theme = getChartTheme();
+    recordChart = new Chart(canvas, {
+        type: 'doughnut',
+        data: {
+            labels: ['Wins', 'Losses', 'Remaining'],
+            datasets: [{
+                data: [summary.wins, summary.losses, summary.remaining],
+                backgroundColor: ['#2ecc40', '#ff4136', '#aaaaaa']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: `${currentYear} season record snapshot`,
+                    color: theme.legendColor
+                },
+                legend: {
+                    labels: { color: theme.legendColor }
+                }
+            }
+        }
+    });
+}
+
+function renderRosterLeadersChart(config) {
+    destroyRosterChart();
+    latestRosterLeaders = config;
+    if (!window.Chart || !config || !Array.isArray(config.labels) || config.labels.length === 0) return;
+
+    const canvas = document.getElementById('team-roster-leaders-chart');
+    const fallback = document.getElementById('team-roster-chart-fallback');
+    if (!canvas) return;
+
+    if (fallback) {
+        fallback.innerHTML = buildChartFallbackTable(
+            config.title,
+            ['Player', config.metricLabel],
+            config.labels.map((label, idx) => [label, config.values[idx]])
+        );
+    }
+
+    const theme = getChartTheme();
+    rosterChart = new Chart(canvas, {
+        type: 'bar',
+        data: {
+            labels: config.labels,
+            datasets: [{
+                label: config.metricLabel,
+                data: config.values,
+                backgroundColor: '#0074d9'
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            onClick: (event, elements) => {
+                if (!elements || elements.length === 0) return;
+                const idx = elements[0].index;
+                const playerId = config.playerIds[idx];
+                if (playerId) window.location.href = `player.html?playerId=${encodeURIComponent(playerId)}`;
+            },
+            plugins: {
+                title: {
+                    display: true,
+                    text: config.title,
+                    color: theme.legendColor
+                },
+                legend: { display: false }
+            },
+            scales: {
+                x: {
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
+                },
+                y: {
+                    ticks: { color: theme.textColor },
+                    grid: { color: theme.gridColor }
+                }
+            }
+        }
+    });
+}
 
 const shareBtn = document.getElementById('shareBtn');
 if (shareBtn) {
@@ -37,6 +165,27 @@ function getTeamIdFromUrl() {
     return null;
 }
 
+async function fetchTeamRecordSummary(teamId) {
+    try {
+        const url = `https://statsapi.mlb.com/api/v1/standings?leagueId=103,104&season=${currentYear}&standingsTypes=regularSeason`;
+        const data = await fetchJsonWithRetry(url, { retries: 3, retryDelayMs: 400, cacheTtlMs: 60000 });
+        const records = Array.isArray(data.records) ? data.records : [];
+        for (const divisionRecord of records) {
+            const teams = Array.isArray(divisionRecord.teamRecords) ? divisionRecord.teamRecords : [];
+            const found = teams.find((entry) => entry.team && String(entry.team.id) === String(teamId));
+            if (found) {
+                const wins = Number(found.wins) || 0;
+                const losses = Number(found.losses) || 0;
+                const remaining = Math.max(162 - (wins + losses), 0);
+                return { wins, losses, remaining };
+            }
+        }
+    } catch (e) {
+        return null;
+    }
+    return null;
+}
+
 async function fetchTeamInfo(teamId) {
     try {
         const url = `https://statsapi.mlb.com/api/v1/teams/${teamId}`;
@@ -49,7 +198,7 @@ async function fetchTeamInfo(teamId) {
             const safeName = escapeHtml(team.name);
             const safeAbbr = escapeHtml(team.abbreviation);
             const safeYear = escapeHtml(String(team.firstYearOfPlay));
-            teamInfoDiv.innerHTML = `<img src="${logoUrl}" alt="${safeName} logo" class="team-logo" style="width:60px;vertical-align:middle;"> <strong>${safeName}</strong> (${safeAbbr})<br>Founded: ${safeYear}`;
+            teamInfoDiv.innerHTML = `<img src="${logoUrl}" alt="${safeName} logo" class="team-logo" style="width:60px;vertical-align:middle;"> <strong>${safeName}</strong> (${safeAbbr})<br>Founded: ${safeYear}<details class="chart-block" open><summary>🍩 ${currentYear} record chart</summary><div class="chart-wrap chart-wrap-small"><canvas id="team-record-chart" role="img" aria-label="Team season record chart"></canvas><div id="team-record-chart-fallback" class="chart-fallback"></div></div></details>`;
 
             const favBtn = document.createElement('button');
             favBtn.type = 'button';
@@ -65,6 +214,8 @@ async function fetchTeamInfo(teamId) {
             teamInfoDiv.appendChild(document.createElement('br'));
             teamInfoDiv.appendChild(favBtn);
 
+            const recordSummary = await fetchTeamRecordSummary(teamId);
+            renderRecordChart(recordSummary);
             updateFooter(new Date());
         }
     } catch (e) {
@@ -154,7 +305,53 @@ async function fetchTeamRoster(teamId) {
                 return html;
             };
 
+            const topBatters = batters
+                .map((player) => {
+                    const s = statsMap[player.person.id] && statsMap[player.person.id].hitting;
+                    const ops = s ? Number.parseFloat(s.ops) : NaN;
+                    return Number.isFinite(ops)
+                        ? { playerId: String(player.person.id), name: player.person.fullName, value: ops }
+                        : null;
+                })
+                .filter(Boolean)
+                .sort((a, b) => b.value - a.value)
+                .slice(0, 5);
+
+            const topPitchers = pitchers
+                .map((player) => {
+                    const s = statsMap[player.person.id] && statsMap[player.person.id].pitching;
+                    const era = s ? Number.parseFloat(s.era) : NaN;
+                    return Number.isFinite(era) && era > 0
+                        ? { playerId: String(player.person.id), name: player.person.fullName, value: era }
+                        : null;
+                })
+                .filter(Boolean)
+                .sort((a, b) => a.value - b.value)
+                .slice(0, 5);
+
+            let chartConfig = null;
+            if (topBatters.length > 0) {
+                chartConfig = {
+                    title: `${currentYear} roster OPS leaders`,
+                    metricLabel: 'OPS',
+                    labels: topBatters.map((p) => p.name),
+                    values: topBatters.map((p) => Number(p.value.toFixed(3))),
+                    playerIds: topBatters.map((p) => p.playerId)
+                };
+            } else if (topPitchers.length > 0) {
+                chartConfig = {
+                    title: `${currentYear} roster ERA leaders (lowest ERA)`,
+                    metricLabel: 'ERA',
+                    labels: topPitchers.map((p) => p.name),
+                    values: topPitchers.map((p) => Number(p.value.toFixed(2))),
+                    playerIds: topPitchers.map((p) => p.playerId)
+                };
+            }
+
             let html = '';
+            if (chartConfig) {
+                html += '<details class="chart-block" open><summary>📊 Roster leaders chart</summary><div class="chart-wrap"><canvas id="team-roster-leaders-chart" role="img" aria-label="Team roster leaders chart"></canvas><div id="team-roster-chart-fallback" class="chart-fallback"></div></div></details>';
+            }
             if (batters.length > 0) {
                 html += '<h3>Position Players</h3>' + buildRosterTable(batters, 'hitting');
             }
@@ -162,6 +359,7 @@ async function fetchTeamRoster(teamId) {
                 html += '<h3>Pitchers</h3>' + buildRosterTable(pitchers, 'pitching');
             }
             teamRosterDiv.innerHTML = html;
+            renderRosterLeadersChart(chartConfig);
             updateFooter(new Date());
         } else {
             teamRosterDiv.innerHTML = `<div class="no-data-message"><p>No roster data available yet for the ${currentYear} season.</p></div>`;
@@ -244,6 +442,11 @@ async function fetchTeamSchedule(teamId) {
         teamScheduleDiv.innerHTML = '<div class="no-data-message"><p>⚠️ Unable to load schedule. Please try again later.</p></div>';
     }
 }
+
+window.addEventListener('mlb:themechange', () => {
+    if (latestRecordSummary) renderRecordChart(latestRecordSummary);
+    if (latestRosterLeaders) renderRosterLeadersChart(latestRosterLeaders);
+});
 
 const teamId = getTeamIdFromUrl();
 if (teamId) {
