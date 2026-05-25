@@ -244,8 +244,7 @@
             isDark,
             textColor: isDark ? '#e0e0e0' : '#222',
             gridColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)',
-            legendColor: isDark ? '#e0e0e0' : '#222',
-            cardBackground: isDark ? '#232323' : '#ffffff'
+            legendColor: isDark ? '#e0e0e0' : '#222'
         };
     }
 
